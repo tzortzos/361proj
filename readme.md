@@ -30,11 +30,11 @@ Group 4
 
 ### Contributing workflow
 
-1. [Create a new branch](#branch-naming-conventions)
-3. Set up virtual environment
-4. Make changes & [Commit](#commit-expectations)
-5. Test to make sure your code is up to standards
-6. [Submit a pull request](#pull-request-expectations)
+1. Get a task from the trello
+2. [Create a new branch](#branch-naming-conventions)
+3. Make changes & [Commit](#commit-expectations)
+4. Test to make sure your code is up to standards
+5. [Submit a pull request](#pull-request-expectations)
 
 ### Branch Naming Conventions
 
