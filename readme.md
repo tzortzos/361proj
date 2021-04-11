@@ -36,7 +36,7 @@ Group 4
 5. Test to make sure your code is up to standards
 6. [Submit a pull request](#pull-request-expectations)
 
-#### Branch Naming Conventions
+### Branch Naming Conventions
 
 The naming convention of a branch depends on what kind of change you are making.
 If you are attempting to add a new feature the format should be (in all lowercase):
@@ -45,7 +45,7 @@ would do `< first name >_bugfix_< snake case bug name >`. It is important that
 you include as much information as possible in these so that the team can tell at
 a glance what is being worked on.
 
-#### Commit Expectations
+### Commit Expectations
 
 A commit serves three functions: keeping track of changes over time in a growing
 codebase, reminding you of what parts you have already completed, and giving
@@ -76,7 +76,7 @@ That last line may seem obvious by the first, but there is still value in laying
 you what you intend to do next explicitly, both for yourself and others. It is not
 hard to forget what you were working on.
 
-#### Pull Request Expectations
+### Pull Request Expectations
 
 A pull request should have at least three things before it is considered ready
 for review.
