@@ -19,14 +19,19 @@ Group 4
 	- Go to `File > Settings > Project > Python Interpreter`
 	- Click on the gear and then add
 	- Create the new directory next to the project directory
+	- Add Django to venv
+		1. Click the plus button in the bottom left
+		2. search for django
+		3. Install 
 3. Add configuration
 	- Go to drop down just to the left of the run button
-	- Click `Edit Configurations`
+	- Click `Edit Configurations` (or `Add Configuration`)
 	- Click Add and select `Django Server`
 	- Add the following to the end of the env section:  
 	  `,DJANGO_SETTINGS_MODULE=project.settings`  
 	  (Mind the comma, it is there to separate the value from the default one)
 	- Click Ok
+4. Run the server
 
 ### Contributing workflow
 
