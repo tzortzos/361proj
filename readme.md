@@ -40,8 +40,8 @@ Group 4
 
 The naming convention of a branch depends on what kind of change you are making.
 If you are attempting to add a new feature the format should be (in all lowercase):
-`< first name >_feature_< snake case feature name >`, whereas for a bugfix you
-would do `< first name >_bugfix_< snake case bug name >`. It is important that
+`<first name>_feature_<snake case feature name>`, whereas for a bugfix you
+would do `<first name>_bugfix_<snake case bug name>`. It is important that
 you include as much information as possible in these so that the team can tell at
 a glance what is being worked on.
 
