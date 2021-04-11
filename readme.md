@@ -26,10 +26,13 @@ Group 4
 3. Add configuration
 	- Go to drop down just to the left of the run button
 	- Click `Edit Configurations` (or `Add Configuration`)
+	- Name configuration aribtrarily
 	- Click Add and select `Django Server`
-	- Add the following to the end of the env section:  
-	  `,DJANGO_SETTINGS_MODULE=project.settings`  
-	  (Mind the comma, it is there to separate the value from the default one)
+	- Click fix in the bottom right
+		- Select Enable Django Support
+		- Select Django Root as `<repo name>/project`
+		- Select Settings as `project/settings.py`
+		- Click Ok
 	- Click Ok
 4. Run the server
 
