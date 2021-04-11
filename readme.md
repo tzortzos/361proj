@@ -12,10 +12,25 @@ Group 4
 
 ## Contributing
 
-#### Getting started
+### Getting started
 
 1. Pull repository into pycharm
-2. [Create a new branch](#branch-naming-conventions)
+2. Add venv
+	- Go to `File > Settings > Project > Python Interpreter`
+	- Click on the gear and then add
+	- Create the new directory next to the project directory
+3. Add configuration
+	- Go to drop down just to the left of the run button
+	- Click `Edit Configurations`
+	- Click Add and select `Django Server`
+	- Add the following to the end of the env section:  
+	  `,DJANGO_SETTINGS_MODULE=project.settings`  
+	  (Mind the comma, it is there to separate the value from the default one)
+	- Click Ok
+
+### Contributing workflow
+
+1. [Create a new branch](#branch-naming-conventions)
 3. Set up virtual environment
 4. Make changes & [Commit](#commit-expectations)
 5. Test to make sure your code is up to standards
