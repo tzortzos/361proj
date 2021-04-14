@@ -1,0 +1,40 @@
+<style>
+body {
+	text-align: center;
+}
+
+form {
+	display: inline-block;
+	border: 3px solid #000000;
+}
+
+input[type=user], input[type=pass] {
+	width: 100%;
+	padding: 8px 12px;
+	margin: 4px;
+	display: inline-block;
+	border: 1px solid #000000;
+	box-sizing: border-box;
+}
+
+.container {
+	padding: 20px;
+}
+
+.wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+</style>
+
+<form>
+	<div class="wrapper">
+		<div class ="container">
+			<input type="user" placeholder="Username" required>
+			<input type="pass" placeholder="Password" required>
+			<input type="submit" value="Log In">
+			<a href="#">Forgot Password?</a>
+		</div>
+	</div>
+</form>
