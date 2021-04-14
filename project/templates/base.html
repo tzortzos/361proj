@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bootstrap Demo!</title>
+    <title>{{ page_title|default:'TA Scheduler' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap -->
@@ -16,7 +16,14 @@
 
 <div id="content" class="container-fluid">
 
-    {% include page %}
+    <!-- This sections here makes this template extendable,
+      -- so now instead of rendering it directly we say
+      -- `extends 'base.html'` like in login and index
+      -->
+    {% block content %}
+        <h1>You should not render base.html directly</h1>
+        <p>You may also have forgotten to wrap your extension <pre>block</pre> tags</p>
+    {% endblock %}
 
 </div>
 
@@ -26,5 +33,6 @@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
 <!-- Bootsrap -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
 </body>
 </html>
