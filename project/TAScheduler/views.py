@@ -10,3 +10,12 @@ class Index(View):
 
     def post(self, request):
         return render(request, 'index.html')
+
+class Login(View):
+    def get(self, request):
+        return render(request, 'login.html')
+
+    def post(self, request):
+        print('User Tried to log in')
+        print(request)
+        pass
