@@ -55,14 +55,38 @@ class CourseSection(models.Model):
 
     course_section_id = models.AutoField ('Course Section ID', primary_key=True)
     course_section_code = models.CharField('Course Section Code', blank=False)
-    lecture_days = models.CharField('Lecture Days', blank=True, max_length=6)
+    lecture_days = models.CharField('Lecture Day(s)', blank=True, max_length=6)
     lecture_time = models.TextField('Lecture Time', blank=True, max_length=12)
     course_id = models.ForeignKey('Course', on_delete=models.CASCADE, blank=False, help_text="Course ID" )
-    instructor_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True, help_text="Instructor ID")
+    instructor_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
+                                      help_text="Instructor ID")
 
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['course_section_code', 'course_id']
+
+
+
+class LabSection(models.Model):
+    """
+    Represent an Abstract Lab Section (lab section 901, 902, etc.. for Course section 201, Course CS361)
+    """
+
+    lab_section_id = models.AutoField('Lab Section ID', primary_key=True)
+    lab_section_code = models.CharField('Lab Section Code', blank=False)
+    lab_days = models.CharField('Lab Day(s)', blank=True, max_length=6)
+    lab_time = models.TextField('Lab Time', blank=True, max_length=12)
+    course_section_id = models.ForeignKey('CourseSection', on_delete=models.CASCADE, blank=False,
+                                          help_text="Course Section ID")
+    ta_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
+                              help_text="TA ID" )
+
+    class Meta:
+        # Adds a unique constraint combination on the two fields
+        unique_together = ['course_section_id', 'lab_section_code']
+
+
+
 
 
 
