@@ -1,0 +1,25 @@
+{% comment %}
+Navbar is a dynamic sidebar which expects a context item `navbar_items` which is a list of sidebar items with three properties:
+- name: str
+- active: bool (true implies `not enabled`)
+- enabled: ?bool
+- url: str (should be absolute i.e. start with '/')
+
+for convenience use
+{% endcomment %}
+<ul class="nav nav-pills nav-stacked" id="navbar">
+{% for item in navbar_items %}
+    {% if not item.get_enabled %}
+        <li class="active disabled">
+    {% else %}
+        <li>
+    {% endif %}
+        <a href="{{ item.get_url }}">
+            {% if item.has_icons %}
+                <span class="{{ item.get_icon_classes }}"></span>
+            {% endif %}
+            {{ item.get_name }}
+        </a>
+    </li>
+{% endfor %}
+</ul>
