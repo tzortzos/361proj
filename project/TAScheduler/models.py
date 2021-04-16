@@ -47,4 +47,24 @@ class Course(models.Model):
     admin_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True)
 
 
+class CourseSection(models.Model):
+    """
+    Represents an Abstract Course Section (section 201 of CS361) which may have multiple Lab Sections
+    associated to it.
+    """
+
+    course_section_id = models.AutoField ('Course Section ID', primary_key=True)
+    course_section_code = models.CharField('Course Section Code', blank=False)
+    lecture_days = models.CharField('Lecture Days', blank=True, max_length=6)
+    lecture_time = models.TextField('Lecture Time', blank=True, max_length=12)
+    course_id = models.ForeignKey('Course', on_delete=models.CASCADE, blank=False, help_text="Course ID" )
+    instructor_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True, help_text="Instructor ID")
+
+    class Meta:
+        # Adds a unique constraint combination on the two fields
+        unique_together = ['course_section_code', 'course_id']
+
+
+
+
 
