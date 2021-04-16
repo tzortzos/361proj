@@ -15,10 +15,10 @@ class User(models.Model):
     type = models.CharField('User Type', max_length=1, choices=UserType.choices, blank=False)
 
     """The first part of the university email"""
-    univ_id = models.CharField('University ID', max_length=20)
+    univ_id = models.CharField('University ID', max_length=20, blank=False)
 
-    l_name = models.CharField('Last Name', max_length=20)
-    f_name = models.CharField('First Name', max_length=20)
+    l_name = models.CharField('Last Name', max_length=20, blank=True)
+    f_name = models.CharField('First Name', max_length=20, blank=True)
 
     phone = models.CharField(max_length=10, blank=True)
 
@@ -26,10 +26,12 @@ class User(models.Model):
     Output of a Password Hasher
     see: https://docs.djangoproject.com/en/3.2/topics/auth/passwords/
     """
-    password = models.CharField(max_length=64)
+    password = models.CharField(max_length=64, blank=False)
     tmp_password = models.BooleanField(default=True, blank=False)
 
+
+
     def __str__(self):
-        return f'{self.f_name} {self.l_name} ({self.email}) [{self.get_type_display()}]'
+        return f'{self.f_name} {self.l_name} ({self.univ_id}@umw.edu) [{self.get_type_display()}]'
 
 
