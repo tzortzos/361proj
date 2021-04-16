@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% comment %}
+This template is intended to be extended by each individual page which needs it, and to be rendered with the
+context variable sidebar refrerencing the specific sidebar needed (admin or regular).
+
+You will also need to make sure to set the page_name context variable so that the correct sidebar link is highlighted and
+disabled. See sidebar for more usage information
+
+{% endcomment %}
+
+{% block content %}
+<div id="application">
+    {% include 'partials/sidebar.html' %}
+
+    {% block application_pane %}
+        <h1>app_base is not intended to be rendered directly</h1>
+        <p>In the extension template you must define the block <code>application_pane</code></p>
+    {% endblock %}
+</div>
+{% endblock %}
