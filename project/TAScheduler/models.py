@@ -6,7 +6,6 @@ class User(models.Model):
     """
     Represents all three types of user of our application
     """
-
     class UserType(models.TextChoices):
         ADMIN = "A", ("Administrator")
         PROF = "P", ("Professor")
@@ -22,13 +21,15 @@ class User(models.Model):
     f_name = models.CharField('First Name', max_length=20)
 
     phone = models.CharField(max_length=10, blank=True)
-    email = models.CharField(max_length=30)
 
     """
     Output of a Password Hasher
     see: https://docs.djangoproject.com/en/3.2/topics/auth/passwords/
     """
     password = models.CharField(max_length=64)
+    tmp_password = models.BooleanField(default=True, blank=False)
 
     def __str__(self):
         return f'{self.f_name} {self.l_name} ({self.email}) [{self.get_type_display()}]'
+
+
