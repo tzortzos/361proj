@@ -1,11 +1,6 @@
 {% comment %}
-Navbar is a dynamic sidebar which expects a context item `navbar_items` which is a list of sidebar items with three properties:
-- name: str
-- active: bool (true implies `not enabled`)
-- enabled: ?bool
-- url: str (should be absolute i.e. start with '/')
-
-for convenience use
+Navbar is a convenience template which takes a list or iterator of NavbarItem objects and creates a sidebar from it.
+See documentation for the TAScheduler.viewsupport.navbar for more information
 {% endcomment %}
 <div class="row" id="sidebar-header">
     <div style="display: flex">
