@@ -10,12 +10,18 @@ disabled. See sidebar for more usage information
 {% endcomment %}
 
 {% block content %}
-<div id="application">
-    {% include 'partials/sidebar.html' %}
+<div id="application" class="row">
 
-    {% block application_pane %}
-        <h1>app_base is not intended to be rendered directly</h1>
-        <p>In the extension template you must define the block <code>application_pane</code></p>
-    {% endblock %}
+    <div class="col-xs-12 col-sm-9">
+        <div id="application-content" class="content-fluid">
+            {% block application_pane %}
+                <h1>app_base is not intended to be rendered directly</h1>
+                <p>In the extension template you must define the block <code>application_pane</code></p>
+            {% endblock %}
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3">
+        {% include 'partials/sidebar.html' %}
+    </div>
 </div>
 {% endblock %}
