@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 
 {% comment %}
-This template is intended to be extended by each individual page which needs it, and to be rendered with the
-context variable sidebar refrerencing the specific sidebar needed (admin or regular).
+This template is intended to be extended by each individual page which in the application.
 
-You will also need to make sure to set the page_name context variable so that the correct sidebar link is highlighted and
-disabled. See sidebar for more usage information
+Includes a sidebar for navigation, see documentation on paritals/sidebar.html for usage information.
+You will need to define the following blocks in the extension:
+- application_pane (wrapped in a container_fluid already)
+
+and the following variables in the context
+- user_name (will be changed to user once we have IAccount done
+- navbar_items: Iterable[NavbarItem] (see TAScheduler.viewsupport.navbar)
 
 {% endcomment %}
 
