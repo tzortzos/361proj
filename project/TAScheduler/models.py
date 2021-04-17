@@ -83,7 +83,7 @@ class LabSection(models.Model):
 
     class Meta:
         # Adds a unique constraint combination on the two fields
-        unique_together = ['course_section_id', 'lab_section_code']
+        unique_together = ['lab_section_code', 'course_section_id']
 
 class TACourseSectionAssign(models.Model):
     """
