@@ -9,6 +9,7 @@ class Index(View):
     def get(self, request):
         return render(request, 'pages/example.html', context={
             'navbar_items': AdminItems.HOME.items_iterable_except(),
+            'user_name': 'Josiah Hilden'
         })
 
     def post(self, request):
