@@ -17,11 +17,17 @@
                     <input type="email" name="username" class="form-control"/>
                     <div class="input-group-addon">@uwm.edu</div>
                 </div>
+                {% if error is not None and error.place_username %}
+                    {% include 'partials/inline_error.html' with error=error.error only %}
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="password">password</label>
                 <input type="password" name="password" class="form-control" />
+                {% if error is not None and error.place_password %}
+                    {% include 'partials/inline_error.html' with error=error.error only %}
+                {% endif %}
             </div>
 
             <div class="form-group">

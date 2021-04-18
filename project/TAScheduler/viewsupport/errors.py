@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, Union
+from enum import Enum
 
 class PageError:
     """
@@ -39,3 +40,35 @@ class PageError:
         """
 
         return self._body
+
+
+class LoginError:
+    """
+    Represents an error to be used on the login page,
+    placed with the username or password field depending on the variant
+    """
+
+    class Place(Enum):
+        USERNAME = 0
+        PASSWORD = 1
+
+    def __init__(self, error_text: Union[PageError, str], place: Place):
+        self._place = place
+        if type(error_text) is PageError:
+            self._error = error_text
+        elif type(error_text) is str:
+            self._error = PageError(error_text)
+        else:
+            raise TypeError('LoginError must be of type PageError or str')
+
+    def error(self) -> PageError:
+        """Gets the inner error of this instance of LoginError"""
+        return self._error
+
+    def place_username(self):
+        """Returns true iff this login error is associated with the login field"""
+        return self._place == LoginError.Place.USERNAME
+
+    def place_password(self):
+        """Returns true iff this login error is associated with the password field"""
+        return self._place == LoginError.Place.PASSWORD
