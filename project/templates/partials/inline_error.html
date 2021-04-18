@@ -4,7 +4,7 @@ Render a single error, see TAScheduler.viewsupport.errors for the construction o
 
 {% if error.has_headline %}
 
-<div class="panel panel-danger">
+<div class="panel panel-danger form-control" style="margin-top: 1em">
     <div class="panel-heading">
         {{ error.headline }}
     </div>
@@ -15,8 +15,8 @@ Render a single error, see TAScheduler.viewsupport.errors for the construction o
 
 {% else %}
 
-<div class="alert alert-danger">
-    <em>{{ error.body }}</em>
+<div class="alert alert-danger" style="margin-top: 1em">
+    {{ error.body }}
 </div>
 
 {% endif %}
