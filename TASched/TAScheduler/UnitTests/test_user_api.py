@@ -1,4 +1,4 @@
-from project.TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
+from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from django.test import TestCase
 
 

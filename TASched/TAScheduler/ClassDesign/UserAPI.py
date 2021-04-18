@@ -1,4 +1,4 @@
-from project.TAScheduler.models import User, UserType
+from TAScheduler.models import User, UserType
 
 
 class UserAPI():
