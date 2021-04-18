@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% comment %}
+This template is intended to be extended by each individual page which in the application.
+
+Includes a sidebar for navigation, see documentation on paritals/sidebar.html for usage information.
+You will need to define the following blocks in the extension:
+- application_pane (wrapped in a container_fluid already)
+
+and the following variables in the context
+- user_name (will be changed to user once we have IAccount done
+- navbar_items: Iterable[NavbarItem] (see TAScheduler.viewsupport.navbar)
+
+{% endcomment %}
+
+{% block content %}
+<div id="application" class="row">
+    <div class="col-xs-12 col-sm-3 col-sm-push-9">
+        {% include 'partials/sidebar.html' %}
+    </div>
+    <div class="col-xs-12 col-sm-9 col-sm-pull-3">
+        <div id="application-content" class="content-fluid">
+            {% block application_pane %}
+                <h1>app_base is not intended to be rendered directly</h1>
+                <p>In the extension template you must define the block <code>application_pane</code></p>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
