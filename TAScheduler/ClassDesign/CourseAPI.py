@@ -21,4 +21,8 @@ class CourseAPI:
 
     @staticmethod
     def get_course_by_course_id(id: int) -> Optional[Course]:
-        pass
+        try:
+            course = Course.objects.get(course_id=id)
+            return course
+        except Course.DoesNotExist:
+            return None
