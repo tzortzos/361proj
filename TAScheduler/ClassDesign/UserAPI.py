@@ -1,16 +1,16 @@
 from TAScheduler.models import User, UserType
 from typing import Optional
 
+
 class UserAPI:
 
     @staticmethod
     ##should admin only enter this info or can admin add other info (lname, fname, phone) of user
     def create_user(type: UserType, univ_id: str, password: str, lname: str='', fname: str='',
                     phone: str='') -> int:
-        new_user = User(type=type, univ_id=univ_id, password=password, l_name=lname, f_name=fname, phone=phone)
-        new_user.save(),
+        new_user = User.objects.create(type=type, univ_id=univ_id, password=password, l_name=lname, f_name=fname, phone=phone)
+        # new_user.save(),
         return new_user.user_id
-
 
     @staticmethod
     def get_user_by_user_id(user_id) -> Optional[User]:
@@ -39,30 +39,12 @@ class UserAPI:
         user.phone = phone
         user.save()
 
-
-
     @staticmethod
     def update_password(user: User, password: str):
-        pass
+        user.password = password
+        user.tmp_password = False
+        user.save()
 
     @staticmethod
-    def change_password(self):
-        pass
-
-    @staticmethod
-    def checck_user_type(user: User):
-        pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def check_user_type(user: User):
+        return user.type
