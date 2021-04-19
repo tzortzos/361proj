@@ -1,0 +1,22 @@
+{% comment %}
+Render a single error, see TAScheduler.viewsupport.errors for the construction of the error.
+{% endcomment %}
+
+{% if error.has_headline %}
+
+<div class="panel panel-danger form-control" style="margin-top: 1em">
+    <div class="panel-heading">
+        {{ error.headline }}
+    </div>
+    <div class="panel-body">
+        {{ error.body }}
+    </div>
+</div>
+
+{% else %}
+
+<div class="alert alert-danger" style="margin-top: 1em">
+    {{ error.body }}
+</div>
+
+{% endif %}
