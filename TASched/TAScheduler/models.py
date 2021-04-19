@@ -2,9 +2,9 @@ from django.db import models
 
 
 class UserType(models.TextChoices):
-    ADMIN = "A", ("Administrator")
-    PROF = "P", ("Professor")
-    TA = "T", ("TA")
+    ADMIN = "A", "Administrator"
+    PROF = "P", "Professor"
+    TA = "T", "TA"
 
 class User(models.Model):
     """
