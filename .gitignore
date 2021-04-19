@@ -16,7 +16,7 @@ media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
-# <django-TASched-name>/staticfiles/
+# <django-project-name>/staticfiles/
 
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -130,11 +130,11 @@ env.bak/
 venv.bak/
 pythonenv*
 
-# Spyder TASched settings
+# Spyder project settings
 .spyderproject
 .spyproject
 
-# Rope TASched settings
+# Rope project settings
 .ropeproject
 
 # mkdocs documentation
