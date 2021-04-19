@@ -26,3 +26,9 @@ class Login(View):
         print('User Tried to log in')
         print(request)
         pass
+
+class CourseEdit(View):
+    def get(self, request):
+        return render(request, 'pages/create_course.html', {
+            'navbar_items': AdminItems.items_iterable(),
+        })
