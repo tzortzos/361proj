@@ -30,7 +30,7 @@ class User(models.Model):
 
 
     def __str__(self):
-        return f'{self.f_name} {self.l_name} ({self.univ_id}@umw.edu) [{self.get_type_display()}]'
+        return f'{self.f_name} {self.l_name} {self.phone} ({self.univ_id}@umw.edu) [{self.get_type_display()}]'
 
 
 class Course(models.Model):
