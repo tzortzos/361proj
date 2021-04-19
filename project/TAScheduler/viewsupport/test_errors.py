@@ -13,7 +13,7 @@ class TestBasicErrors(unittest.TestCase):
         self.assertEqual(self.error.has_headline(), False, 'Does not correctly indicate no error')
 
     def test_get_headline_raises(self):
-        with self.assertRaises(TypeError, 'Did not raise correct exception in case where tried to access nonexistant headline'):
+        with self.assertRaises(TypeError, msg='Did not raise correct exception in case where tried to access nonexistant headline'):
             self.error.headline()
 
 class TestHeadlineErrors(unittest.TestCase):
