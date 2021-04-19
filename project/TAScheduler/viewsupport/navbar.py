@@ -28,6 +28,10 @@ class AdminItems(Enum):
         """
         return map(self.map_disable(), iter(AdminItems))
 
+    @classmethod
+    def items_iterable(cls):
+        return map(lambda a : a.get_item(), iter(cls))
+
 class NavbarItem:
     """
     Represents a single item in the application navbar. See templates/partials/sidebar.html for how it is used.
