@@ -27,6 +27,7 @@ class TestLoginView(TestCase):
         self.short_user = short_user
 
     def test_rejects_empty_username(self):
+        
         pass
 
     def test_rejects_long_username(self):
