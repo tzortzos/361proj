@@ -36,8 +36,14 @@ This page can be rendered with the context variables as follows:
 
             <div class="mb-3">
                 <label for="password" class="form-label">password</label>
-                <input type="password" name="password" class="form-control" required minlength="8">
-                <div class="invalid-feedback">You must input your password<br /><small>It must be at least 8 characters</small></div>
+                <input type="password" name="password" class="form-control {% if error and error.place_password %} is-invalid {% endif %}" required minlength="8">
+                <div class="invalid-feedback">
+                    {% if error and error.place_password %}
+                        {{ error.error.body }}
+                    {% else %}
+                        You must input your password<br /><small>It must be at least 8 characters</small>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="mb-3 justify-content-center">
