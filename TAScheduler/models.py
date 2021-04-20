@@ -59,6 +59,8 @@ class CourseSection(models.Model):
     instructor_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
                                       help_text="Instructor ID")
 
+    ta_ids = models.ManyToManyField(User, help_text='Tas Assigned to this Course Section')
+
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['course_section_code', 'course_id']
@@ -82,26 +84,3 @@ class LabSection(models.Model):
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['lab_section_code', 'course_section_id']
-
-class TACourseSectionAssign(models.Model):
-    """
-    Represents a bridge Entity for the Many to Many relationship between Course Section and TA
-    """
-
-    course_section_id = models.ForeignKey('CourseSection', primary_key=True, on_delete=models.CASCADE, blank=False,
-                                          help_text="Course Section ID")
-    ta_id = models.ForeignKey('User', on_delete=models.CASCADE, blank=False,
-                              help_text="TA ID")
-
-    class Meta:
-        # Adds a unique constraint combination on the two fields
-        unique_together = ['course_section_id', 'ta_id']
-
-
-
-
-
-
-
-
-
