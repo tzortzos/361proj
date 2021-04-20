@@ -51,6 +51,7 @@ class CourseSection(models.Model):
     associated to it.
     """
 
+    #change these names by deleteing prefix course
     course_section_id = models.AutoField ('Course Section ID', primary_key=True)
     course_section_code = models.CharField('Course Section Code', blank=False, max_length=3)
     lecture_days = models.CharField('Lecture Day(s)', blank=True, max_length=6)
@@ -76,26 +77,26 @@ class LabSection(models.Model):
     lab_time = models.TextField('Lab Time', blank=True, max_length=12)
     course_section_id = models.ForeignKey('CourseSection', on_delete=models.CASCADE, blank=False,
                                           help_text="Course Section ID")
-    ta_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
-                              help_text="TA ID")
+    ta_id = models.ManyToManyField('User',on_delete=models.SET_NULL, blank=True, null=True,
+                                   help_text="TA ID")
 
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['lab_section_code', 'course_section_id']
 
-class TACourseSectionAssign(models.Model):
-    """
-    Represents a bridge Entity for the Many to Many relationship between Course Section and TA
-    """
-
-    course_section_id = models.ForeignKey('CourseSection', primary_key=True, on_delete=models.CASCADE, blank=False,
-                                          help_text="Course Section ID")
-    ta_id = models.ForeignKey('User', on_delete=models.CASCADE, blank=False,
-                              help_text="TA ID")
-
-    class Meta:
-        # Adds a unique constraint combination on the two fields
-        unique_together = ['course_section_id', 'ta_id']
+# class TACourseSectionAssign(models.Model):
+#     """
+#     Represents a bridge Entity for the Many to Many relationship between Course Section and TA
+#     """
+#
+#     course_section_id = models.ForeignKey('CourseSection', primary_key=True, on_delete=models.CASCADE, blank=False,
+#                                           help_text="Course Section ID")
+#     ta_id = models.ForeignKey('User', on_delete=models.CASCADE, blank=False,
+#                               help_text="TA ID")
+#
+#     class Meta:
+#         # Adds a unique constraint combination on the two fields
+#         unique_together = ['course_section_id', 'ta_id']
 
 
 

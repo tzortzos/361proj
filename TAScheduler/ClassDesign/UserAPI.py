@@ -1,6 +1,7 @@
 from TAScheduler.models import User, UserType
 from typing import Optional
 
+
 class UserAPI:
 
     @staticmethod
