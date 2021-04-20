@@ -117,7 +117,10 @@ class TestLoginView(TestCase):
             'password': self.check_pass,
         })
 
-        user_id = self.client.session['user_id']
+        try:
+            user_id = self.client.session['user_id']
+        except KeyError:
+            self.assertTrue(False, 'Did not set user_id on successful login')
 
         self.assertIsNotNone(user_id, 'Did not set user_id on login')
         self.assertEqual(user_id, self.long_user, 'Did not set correct key with valid login')
