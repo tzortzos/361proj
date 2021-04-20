@@ -1,12 +1,30 @@
 from django.test import Client, TestCase
+from TAScheduler.models import User, UserType
 
 
 class TestLoginView(TestCase):
 
     def setUp(self):
         self.client = Client()
-        # Add user to test for non-first-time log in
-        # Add user to test for first-time log in
+        self.check_pass = 'password1'
+        long_user = User.objects.create(
+            type=UserType.ADMIN,
+            univ_id='josiahth',
+            password=self.check_pass,
+            l_name='hilden',
+            f_name='josiah',
+            tmp_password=False
+        )
+
+        self.long_user = long_user.user_id
+
+        short_user = User.objects.create(
+            type=UserType.PROF,
+            univ_id='nleverence',
+            password=self.check_pass,
+        )
+
+        self.short_user = short_user
 
     def test_rejects_empty_username(self):
         pass
