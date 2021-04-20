@@ -62,7 +62,7 @@ class CourseSection(models.Model):
     instructor_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
                                       help_text="Instructor ID")
 
-    ta_ids = models.ManyToManyField(User, help_text='Tas Assigned to this Course Section')
+    ta_ids = models.ManyToManyField(User, related_name='section_assign', help_text='Tas Assigned to this Course Section')
 
     class Meta:
         # Adds a unique constraint combination on the two fields
