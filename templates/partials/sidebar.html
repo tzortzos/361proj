@@ -2,43 +2,43 @@
 Navbar is a convenience template which takes a list or iterator of NavbarItem objects and creates a sidebar from it.
 See documentation for the TAScheduler.viewsupport.navbar for more information
 {% endcomment %}
-<div class="container-fluid px-0">
-
-    <div class="row" id="nav-header">
-        <div style="display: flex">
-            <div style="margin-right: auto; flex-basis: min-content; align-items: center">
-                <a href="/user/{{ user_name }}"><h2>{{ user_name }}</h2></a>
-            </div>
-            <div style="flex-basis: min-content; display: flex; align-items: center">
-                <button class="btn btn-default" data-toggle="collapse" href="#sidebar-nav">collapse</button>
-                <form method="post" action="/logout" style="display: inline-block">
-                    {% csrf_token %}
-                    <input type="submit" class="btn btn-default" value="logout">
-                </form>
-            </div>
-        </div>
-    </div>
-
+<div class="container-fluid px-0 py-2">
     <div class="row">
-        <div class="container-fluid">
+        <div class="navbar navbar-expand-lg px-0 py-0" id="nav-links">
+            <div class="container-fluid flex-column">
 
-            <ul class="nav nav-fill flex-column nav-pills w-100" role="navigation">
-                {% for item in navbar_items %}
-                    <li class="nav-item">
-                        {% if item.has_icons %}
-                            {# Add support for new bootstrap icons here #}
-                        {% endif %}
+                <div class="w-100 d-flex">
+                    <a class="navbar-brand" href="/user/{{ user_name }}" style="margin-right: auto">{{ user_name }}</a>
 
-                        {% if not item.get_enabled %}
-                            <a class="nav-link active disabled" aria-current="page" aria-disabled="true">{{ item.get_name }}</a>
-                        {% else %}
-                            <a class="nav-link" href="{{ item.get_url }}">{{ item.get_name }}</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+                    <button class="navbar-toggler h1" type="button" data-bs-toggle="collapse" data-bs-target="#nav-collapse-section">
+                        <i class="bi bi-list"></i>
+                    </button>
 
+                    <a class="btn btn-primary rounded-circle h1" href="/logout"><i class="bi bi-box-arrow-left"></i></a>
+                </div>
+
+                <div class="collapse navbar-collapse w-100" id="nav-collapse-section">
+                    <ul class="navbar-nav flex-column nav-pills w-100" role="navigation">
+                        {% for item in navbar_items %}
+                            <li class="nav-item">
+
+                                {% if not item.get_enabled %}
+                                    <a class="nav-link active disabled" aria-current="page" aria-disabled="true">
+                                {% else %}
+                                    <a class="nav-link" href="{{ item.get_url }}">
+                                {% endif %}
+
+                                {% if item.has_icons %}
+                                    <i class="{{ item.get_icon_classes }} px-1"></i>
+                                {% endif %}
+                                {{ item.get_name }}</a>
+
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
         </div>
     </div>
-
 </div>
