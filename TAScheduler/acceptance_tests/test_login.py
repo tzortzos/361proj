@@ -1,5 +1,7 @@
 from django.test import Client, TestCase
 from TAScheduler.models import User, UserType
+from django.urls import reverse
+from TAScheduler.viewsupport.errors import PageError, LoginError
 
 
 class TestLoginView(TestCase):
@@ -27,17 +29,44 @@ class TestLoginView(TestCase):
         self.short_user = short_user
 
     def test_rejects_empty_username(self):
-        
-        pass
+        resp = self.client.post(reverse('login'), {
+            'username': '',
+            'password': 'verysecurepassword'
+        })
+
+        error: LoginError= resp.context['error']
+
+        self.assertIsNotNone(error, 'Did not return error message')
+        self.assertTrue(error.place_username(), 'Did not return error with username')
+        self.assertEqual(error.error().body(), 'You must provide a username')
 
     def test_rejects_long_username(self):
         # Usernames may not be longer than 20 characters,
         # does not even ask the database
-        pass
+
+        resp = self.client.post(reverse('login'), {
+            'username': 'very_long_username_username_that_the_database_cannot_hold',
+            'password': 'verysecurepassword',
+        })
+
+        error: LoginError = resp.context['error']
+
+        self.assertIsNotNone(error, 'Did not return error for too long username')
+        self.assertTrue(error.place_username(), 'Did not return error for username')
+        self.assertEqual(error.error().body(), 'That Username is too Long')
 
     def test_rejects_no_such_username(self):
         # Username does not exist in the database
-        pass
+        resp = self.client.post(reverse('login'), {
+            'username': 'jschiltz19',
+            'password': 'password1',
+        })
+
+        error = resp.context['error']
+
+        self.assertIsNotNone(error, 'Did not return error for nonexistent user')
+        self.assertTrue(error.place_username(), 'Did not return error for non-existence username.')
+        self.assertEqual(error.error().body, 'That username is not a valid one.')
 
     def test_rejects_empty_password(self):
         pass
