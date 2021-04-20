@@ -30,7 +30,7 @@ class User(models.Model):
 
 
     def __str__(self):
-        return f'{self.f_name} {self.l_name} {self.phone} ({self.univ_id}@umw.edu) [{self.get_type_display()}]'
+        return f'{self.f_name} {self.l_name} ({self.univ_id}@umw.edu) [{self.get_type_display()}]'
 
 
 class Course(models.Model):
@@ -43,6 +43,9 @@ class Course(models.Model):
     course_code = models.CharField('Course Code', max_length=4, blank=False)
     course_name = models.TextField('Course Name', max_length=40, blank=False)
     admin_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True)
+
+    def __str__(self):
+        return f'({self.course_code}) {self.course_name}'
 
 
 class CourseSection(models.Model):
@@ -59,10 +62,14 @@ class CourseSection(models.Model):
     instructor_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
                                       help_text="Instructor ID")
 
+    ta_ids = models.ManyToManyField(User, related_name='section_assign', blank=True, help_text='Tas Assigned to this Course Section')
+
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['course_section_code', 'course_id']
 
+    def __str__(self):
+        return f'{self.course_id.course_code} section {self.course_section_code} [{self.instructor_id}]'
 
 
 class LabSection(models.Model):
@@ -83,25 +90,5 @@ class LabSection(models.Model):
         # Adds a unique constraint combination on the two fields
         unique_together = ['lab_section_code', 'course_section_id']
 
-class TACourseSectionAssign(models.Model):
-    """
-    Represents a bridge Entity for the Many to Many relationship between Course Section and TA
-    """
-
-    course_section_id = models.ForeignKey('CourseSection', primary_key=True, on_delete=models.CASCADE, blank=False,
-                                          help_text="Course Section ID")
-    ta_id = models.ForeignKey('User', on_delete=models.CASCADE, blank=False,
-                              help_text="TA ID")
-
-    class Meta:
-        # Adds a unique constraint combination on the two fields
-        unique_together = ['course_section_id', 'ta_id']
-
-
-
-
-
-
-
-
-
+    def __str__(self):
+        return f'{self.course_section_id.course_id.course_code} section {self.course_section_id.course_section_code} lab {self.lab_section_code}'
