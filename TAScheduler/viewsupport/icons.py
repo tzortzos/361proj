@@ -11,4 +11,4 @@ class IconItem:
         return self.name
 
     def classes(self) -> str:
-        return f'glyphicon glyphicon-{self.name}'
+        return f'bi bi-{self.name}'

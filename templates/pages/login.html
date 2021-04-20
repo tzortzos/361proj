@@ -1,42 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-sm-4"></div>
-    <div class="col-xs-12 col-sm-4">
+<div class="row align-items-center h-100">
+    <div class="col-sm-8 offset-sm-2 col-md-6 offset-md-3">
 
         <!-- Login Form with Home button -->
-        <form class="form" method="post">
+        <form class="form needs-validation" method="post" novalidate>
             {% csrf_token %}
 
             <h1>Log in</h1>
 
-            <div class="form-group">
-                <label for="username">username</label>
-                <div class="input-group">
-                    <input type="email" name="username" class="form-control"/>
-                    <div class="input-group-addon">@uwm.edu</div>
+            <div class="mb-3">
+                <label for="username" class="form-label">username</label>
+                <div class="input-group has-validation">
+
+                    <input type="text" name="username" class="form-control"
+                           required pattern="[^@\s]+"
+                           value="{{ prev_username }}">
+                    <div class="input-group-text">@uwm.edu</div>
+
+                    <div class="invalid-feedback">You must input only the leading portion of your <em>school</em> email</div>
                 </div>
-                {% if error is not None and error.place_username %}
-                    {% include 'partials/inline_error.html' with error=error.error only %}
-                {% endif %}
             </div>
 
-            <div class="form-group">
-                <label for="password">password</label>
-                <input type="password" name="password" class="form-control" />
-                {% if error is not None and error.place_password %}
-                    {% include 'partials/inline_error.html' with error=error.error only %}
-                {% endif %}
+            <div class="mb-3">
+                <label for="password" class="form-label">password</label>
+                <input type="password" name="password" class="form-control" required minlength="8">
+                <div class="invalid-feedback">You must input your password<br /><small>It must be at least 8 characters</small></div>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3 justify-content-center">
                 <div class="btn-group">
-                    <input class="btn btn-primary" type="submit" value="login" />
-                    <a class="btn btn-default" href="/">home</a>
+                    <input class="btn btn-large btn-primary" type="submit" value="login" />
+                    <a class="btn btn-large btn-default" href="/">home</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+{% include 'partials/validate.html' %}
 {% endblock %}

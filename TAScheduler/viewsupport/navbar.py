@@ -10,9 +10,9 @@ class AdminItems(Enum):
 
     def get_item(self):
         if self == AdminItems.HOME:
-            return NavbarItem('home', '/admin', icon='home')
+            return NavbarItem('home', '/admin', icon='house-door-fill')
         elif self == AdminItems.USERS:
-            return NavbarItem('users directory', '/users', icon='user')
+            return NavbarItem('users directory', '/users', icon='people-fill')
 
     def map_disable(self):
         """

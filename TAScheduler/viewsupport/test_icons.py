@@ -13,7 +13,7 @@ class TestIcons(unittest.TestCase):
 
     def test_returns_classes(self):
         icon = IconItem('home')
-        self.assertEqual(icon.classes(), 'glyphicon glyphicon-home')
+        self.assertEqual(icon.classes(), 'bi bi-home')
 
 
 if __name__ == '__main__':
