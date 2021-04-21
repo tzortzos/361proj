@@ -3,6 +3,7 @@ from django.views import View
 
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import PageError, LoginError
+from TAScheduler.models import User, UserType
 
 # Create your views here.
 class Index(View):
@@ -31,4 +32,22 @@ class CourseEdit(View):
     def get(self, request):
         return render(request, 'pages/create_course.html', {
             'navbar_items': AdminItems.items_iterable(),
+        })
+
+
+class CreateUser(View):
+    def get(self, request):
+        self = User.objects.get(user_id=3)
+        return render(request, 'pages/create_user.html', {
+            'navbar_items': AdminItems.items_iterable(),
+            'self': self,
+        })
+
+class EditUser(View):
+    def get(self, request, user_id: int):
+        self = User.objects.get(user_id=3)
+        return render(request, 'pages/create_user.html', {
+            'navbar_items': AdminItems.items_iterable(),
+            'self': self,
+            'edit': self,
         })
