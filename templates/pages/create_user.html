@@ -1,0 +1,133 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+This page allows one to create a User object in the databse, and thus should only be shown to admins.
+
+
+{% endcomment %}
+
+{% block application_pane %}
+    <form class="form needs-validation" method="post" novalidate>
+        {% csrf_token %}
+
+        {# uwm student id / username (required) #}
+
+        {# type (required) #}
+
+        {# first / last name #}
+
+        {# phone #}
+
+        {# password (can only be changed by self, seen by admin if new user) #}
+        <div class="mb-3">
+            <h4>change password</h4>
+            {% if edit and edit.user_id == self.user_id %}
+
+                {# In the case that a user is editing self #}
+                <label for="old_password">current password</label>
+                <input class="form-control" id="old_password">
+
+                <div class="input-group has-validation">
+                    <label for="n_password_c">new password</label>
+                    <input type="text" id="n_password_c">
+                </div>
+
+                <label for="new_password">confirm password</label>
+                <input class="form-control" id="new_password">
+            {% elif new_user_pass %}
+
+                {# In the case that an admin is creating a user #}
+                <label for="new_password">new password</label>
+                <input type="text" class="form-control disabled" value="{{ new_user_pass }}">
+                <p class="small">
+                    You will not be able to retrieve this once you leave this page.<br />
+                    The user will be forced to change this on first successful log-in.
+                </p>
+
+            {% else %}
+
+                {# In the case that an admin is editing an existing user #}
+                <p class="small">You cannot see passwords for existing users.</p>
+
+                {# We may want to add a password reset option eventually #}
+            {% endif %}
+        </div>
+
+        <div class="mb-3 justify-content-center">
+            <div class="btn-group">
+                <input class="btn btn-large btn-primary"
+                       type="submit"
+                       value="{% if edit %}edit{% else %}create{% endif %}">
+
+                <a class="btn btn-large btn-dark" href="{% url 'user-directory' %}">cancel</a>
+
+                {% if self.get_type == TAScheduler.models.UserType.ADMIN and user %}
+                <a href="{% url 'user-edit' user.user_id %}"
+                   class="btn btn-large btn-danger">
+                    <i class="bi bi-trash-fill"></i>
+                </a>
+
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+    {% include 'partials/validate.html' %}
+
+    {% if edit and edit.user_id == self.user_id %}
+    <script>
+        // Run the following on page load
+        // Attaches new password match validator to new_password
+        (function () {
+            let passwords_match_validator = function () {
+                let new_password = document.getElementById('new_password')
+                let confirm = document.getElementById('n_password_c');
+
+                // If the passwords do not match then highlight the field
+                if (new_password.value !== confirm.value) {
+                    new_password.setCustomValidity('invalid');
+                } else {
+                    new_password.setCustomValidity('');
+                }
+            };
+
+            let change_password_len_validator = function () {
+                let confirm = document.getElementById('n_password_c');
+
+                // The field must be at least 8 characters in length iff it has anything at all
+                if (confirm.value.length < 8 && confirm.value.length > 0) {
+                    confirm.setCustomValidity('invalid');
+                } else {
+                    confirm.setCustomValidity('');
+                }
+            };
+
+            let old_password_required_if = function () {
+                let confirm = document.getElementById('n_password_c');
+                let old_password = document.getElementById('old_password');
+
+                // The old password field must be filled out iff the user is trying to change their password
+                if (confirm.value.length > 0 && old_password.value.length === 0) {
+                    old_password.setCustomValidity('invalid');
+                } else {
+                    old_password.setCustomValidity('');
+                }
+            };
+
+            // Attach custom validator to element on change
+            document.getElementById('new_password').addEventListener(
+                'change',
+                passwords_match_validator,
+                false
+            );
+
+            // Attach custom validator to new password field's unfocus
+            document.getElementById('n_password_c').addEventListener(
+                'focusout',
+                passwords_match_validator,
+                false
+            )
+        })()
+    </script>
+    {% endif %}
+{% endblock application_pane %}
