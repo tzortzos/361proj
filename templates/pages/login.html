@@ -3,6 +3,7 @@
 {% comment %}
 This page can be rendered with the context variables as follows:
 - error: Optional[PageError] (either place USERNAME or PASSWORD) which will make the form highlight the incorrect field
+- user_name: Optional[str] which will re-fill the username field for you
 {% endcomment %}
 
 {% block content %}
@@ -21,7 +22,7 @@ This page can be rendered with the context variables as follows:
 
                     <input type="text" name="username" class="form-control {% if error and error.place_username %} is-invalid {% endif %}"
                            required pattern="[^@\s]+"
-                           value="{{ prev_username }}">
+                           value="{{ user_name }}">
                     <div class="input-group-text">@uwm.edu</div>
 
                     <div class="invalid-feedback">
