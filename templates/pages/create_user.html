@@ -10,7 +10,23 @@ This page allows one to create a User object in the databse, and thus should onl
     <form class="form needs-validation" method="post" novalidate>
         {% csrf_token %}
 
+        <h1 class="mb-3">
+            {% if edit is not None %}
+            Edit {{ edit.univ_id }}
+            {% else %}
+            Create User
+            {% endif %}
+        </h1>
+
         {# uwm student id / username (required) #}
+        <div class="mb-3">
+            <label for="univ_id">university id</label>
+            <div class="input-group has-validation">
+                <input type="text" class="form-control" id="univ_id" required pattern="[^@\s]+">
+                <div class="input-group-text">@uwm.edu</div>
+                <div class="invalid-feedback">The first portion of the users school email is required</div>
+            </div>
+        </div>
 
         {# type (required) #}
 
@@ -19,9 +35,9 @@ This page allows one to create a User object in the databse, and thus should onl
         {# phone #}
 
         {# password (can only be changed by self, seen by admin if new user) #}
-        <div class="mb-3">
+        <div class="mb-3 mt-5">
             <h4>change password</h4>
-            {% if edit and edit.user_id == self.user_id %}
+            {% if edit is not None and edit.user_id == self.user_id %}
 
                 {# In the case that a user is editing self #}
                 <label for="old_password">current password</label>
@@ -75,7 +91,7 @@ This page allows one to create a User object in the databse, and thus should onl
                 {# TODO should be users-directory #}
                 <a class="btn btn-large btn-dark" href="{% url 'users-create' %}">cancel</a>
 
-                {% if self.get_type == TAScheduler.models.UserType.ADMIN and user %}
+                {% if self.get_type == TAScheduler.models.UserType.ADMIN and edit is not None %}
                 <a href="{% url 'users-delete' edit.user_id %}"
                    class="btn btn-large btn-danger">
                     <i class="bi bi-trash-fill"></i>
