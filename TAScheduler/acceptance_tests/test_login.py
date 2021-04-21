@@ -69,7 +69,7 @@ class TestLoginView(TestCase):
 
         self.assertIsNotNone(error, 'Did not return error for nonexistent user')
         self.assertTrue(error.place_username(), 'Did not return error for non-existence username.')
-        self.assertEqual(error.error().body, 'That username is not a valid one.')
+        self.assertEqual(error.error().body(), 'No such user')
 
     def test_rejects_empty_password(self):
         resp = self.client.post(reverse('login'), {
@@ -77,7 +77,7 @@ class TestLoginView(TestCase):
             'password': ''
         })
 
-        error: LoginError= resp.context['error']
+        error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
         self.assertTrue(error.place_password(), 'Did not return error with password')
@@ -129,7 +129,7 @@ class TestLoginView(TestCase):
         # Successful login redirects the user to their homepage
         resp = self.client.post(reverse('login'), {
             'username': self.long_user_username,
-            'paassword': self.check_pass,
+            'password': self.check_pass,
         }, follow=True)
 
         redirects = resp.redirect_chain
@@ -142,10 +142,10 @@ class TestLoginView(TestCase):
         # redirects them to the password change form
         resp = self.client.post(reverse('login'), {
             'username': self.short_user_username,
-            'paassword': self.check_pass,
+            'password': self.check_pass,
         }, follow=True)
 
         redirects = resp.redirect_chain
 
         self.assertEqual(len(redirects), 1, 'Redirected too many times')
-        self.assertEqual(redirects[0][0], reverse('user-edit', args=(self.short_user,)), 'Did not redirect new user to password edit page')
+        self.assertEqual(redirects[0][0], reverse('user-edit', args=(self.short_user.user_id,)), 'Did not redirect new user to password edit page')

@@ -20,6 +20,10 @@ from TAScheduler.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index.as_view(), name='index'),
+
     path('login/', Login.as_view(), name='login'),
-    path('courses/create/', CourseEdit.as_view(), name="create_course")
+
+    path('courses/create/', CourseEdit.as_view(), name="create-course"),
+
+    path('users/<int:user_id>', UserEdit.as_view(), name="user-edit"),
 ]
