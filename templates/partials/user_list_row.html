@@ -18,13 +18,19 @@ Takes the following context:
     {# Right #}
     <div class="d-flex justify-content-center mt-3 mt-sm-0 mb-3 mb-sm-0">
         <div class="btn-group">
+            {# Information #}
+            <a class="btn btn-dark" href="{% url 'user-info' user.user_id %}"><i class="bi bi-info-circle-fill"></i></a>
+
+            {# Edit #}
             {% if admin or self %}
-            <a class="btn btn-primary" href="{% url 'user-edit' user.user_id %}"><i class="bi bi-gear-fill"></i></a>
+                <a class="btn btn-dark" href="{% url 'user-edit' user.user_id %}"><i class="bi bi-pencil-fill"></i></a>
             {% endif %}
 
+            {# Delete #}
             {% if admin %}
-                <a class="btn btn-danger" href="{% url 'user-delete' user.user_id %}"><i class="bi bi-x"></i></a>
+                <a class="btn btn-danger" href="{% url 'user-delete' user.user_id %}"><i class="bi bi-trash-fill"></i></a>
             {% endif %}
         </div>
     </div>
+
 </div>
