@@ -25,15 +25,28 @@ This page allows one to create a User object in the databse, and thus should onl
 
                 {# In the case that a user is editing self #}
                 <label for="old_password">current password</label>
-                <input class="form-control" id="old_password">
-
                 <div class="input-group has-validation">
-                    <label for="n_password_c">new password</label>
-                    <input type="text" id="n_password_c">
+                    <input class="form-control" id="old_password">
+                    <div class="invalid-feedback">
+                        You must provide your current password in order to change it.
+                    </div>
+                </div>
+
+                <label for="n_password_c">new password</label>
+                <div class="input-group has-validation">
+                    <input class="form-control" type="text" id="n_password_c">
+                    <div class="invalid-feedback">
+                        A password must be at least 8 characters in length.
+                    </div>
                 </div>
 
                 <label for="new_password">confirm password</label>
-                <input class="form-control" id="new_password">
+                <div class="input-group has-validation">
+                    <input class="form-control" id="new_password">
+                    <div class="invalid-feedback">
+                        Passwords do not match
+                    </div>
+                </div>
             {% elif new_user_pass %}
 
                 {# In the case that an admin is creating a user #}
@@ -59,10 +72,11 @@ This page allows one to create a User object in the databse, and thus should onl
                        type="submit"
                        value="{% if edit %}edit{% else %}create{% endif %}">
 
-                <a class="btn btn-large btn-dark" href="{% url 'user-directory' %}">cancel</a>
+                {# TODO should be users-directory #}
+                <a class="btn btn-large btn-dark" href="{% url 'users-create' %}">cancel</a>
 
                 {% if self.get_type == TAScheduler.models.UserType.ADMIN and user %}
-                <a href="{% url 'user-edit' user.user_id %}"
+                <a href="{% url 'users-delete' edit.user_id %}"
                    class="btn btn-large btn-danger">
                     <i class="bi bi-trash-fill"></i>
                 </a>
@@ -77,34 +91,34 @@ This page allows one to create a User object in the databse, and thus should onl
     {% if edit and edit.user_id == self.user_id %}
     <script>
         // Run the following on page load
-        // Attaches new password match validator to new_password
+        // Attaches new password validator
         (function () {
-
             let old_password = document.getElementById('old_password');
             let confirm = document.getElementById('n_password_c');
             let new_password = document.getElementById('new_password')
 
-            let passwords_match_validator = function () {
-                // If the passwords do not match then highlight the field
+            let password_change_validator = function () {
+
+                // If the new passwords do not match then highlight the second field
                 if (new_password.value !== confirm.value) {
                     new_password.setCustomValidity('invalid');
                 } else {
                     new_password.setCustomValidity('');
                 }
-            };
 
-            let change_password_len_validator = function () {
-                // The field must be at least 8 characters in length iff it has anything at all
+                // The new password field must be at least 8 characters in length
+                //   iff it has anything at all
                 if (confirm.value.length < 8 && confirm.value.length > 0) {
                     confirm.setCustomValidity('invalid');
                 } else {
                     confirm.setCustomValidity('');
                 }
-            };
 
-            let old_password_required_if = function () {
-                // The old password field must be filled out iff the user is trying to change their password
-                if (confirm.value.length > 0 && old_password.value.length === 0) {
+                // The old password field must be filled out iff the user is
+                //   trying to change their password
+                if ((new_password.value.length > 0 ||
+                    confirm.value.length > 0)
+                    && old_password.value.length === 0) {
                     old_password.setCustomValidity('invalid');
                 } else {
                     old_password.setCustomValidity('');
@@ -112,25 +126,11 @@ This page allows one to create a User object in the databse, and thus should onl
             };
 
             // Attach custom validator to element on change
-            new_password.addEventListener(
-                'change',
-                passwords_match_validator,
-                false
-            );
-
-            // Attach custom validator to new password field's unfocus
-            confirm.addEventListener(
-                'focusout',
-                passwords_match_validator,
-                false
-            );
-
-            // Attach old password requirement
-            new_password.addEventListener(
-                'change',
-                old_password_required_if,
-                false,
-            );
+            let forms = document.querySelector('.needs-validation');
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('keyup', password_change_validator, false);
+                })
         })()
     </script>
     {% endif %}
