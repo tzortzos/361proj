@@ -5,16 +5,6 @@ from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import PageError, LoginError
 
 # Create your views here.
-class Index(View):
-
-    def get(self, request):
-        return render(request, 'pages/example.html', context={
-            'navbar_items': AdminItems.HOME.items_iterable_except(),
-            'user_name': 'Josiah Hilden'
-        })
-
-    def post(self, request):
-        return render(request, 'pages/index.html')
 
 class Login(View):
     def get(self, request):
@@ -27,8 +17,3 @@ class Login(View):
         print(request)
         pass
 
-class CourseEdit(View):
-    def get(self, request):
-        return render(request, 'pages/create_course.html', {
-            'navbar_items': AdminItems.items_iterable(),
-        })
