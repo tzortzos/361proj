@@ -19,7 +19,7 @@ Takes the following context:
     <div class="d-flex justify-content-center mt-3 mt-sm-0 mb-3 mb-sm-0">
         <div class="btn-group">
             {# Information #}
-            <a class="btn btn-dark" href="{% url 'user-info' user.user_id %}"><i class="bi bi-info-circle-fill"></i></a>
+            <a class="btn btn-dark" href="{% url 'user-edit' user.user_id %}"><i class="bi bi-info-circle-fill"></i></a>
 
             {# Edit #}
             {% if admin or self %}
