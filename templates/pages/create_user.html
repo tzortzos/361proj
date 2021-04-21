@@ -79,10 +79,12 @@ This page allows one to create a User object in the databse, and thus should onl
         // Run the following on page load
         // Attaches new password match validator to new_password
         (function () {
-            let passwords_match_validator = function () {
-                let new_password = document.getElementById('new_password')
-                let confirm = document.getElementById('n_password_c');
 
+            let old_password = document.getElementById('old_password');
+            let confirm = document.getElementById('n_password_c');
+            let new_password = document.getElementById('new_password')
+
+            let passwords_match_validator = function () {
                 // If the passwords do not match then highlight the field
                 if (new_password.value !== confirm.value) {
                     new_password.setCustomValidity('invalid');
@@ -92,8 +94,6 @@ This page allows one to create a User object in the databse, and thus should onl
             };
 
             let change_password_len_validator = function () {
-                let confirm = document.getElementById('n_password_c');
-
                 // The field must be at least 8 characters in length iff it has anything at all
                 if (confirm.value.length < 8 && confirm.value.length > 0) {
                     confirm.setCustomValidity('invalid');
@@ -103,9 +103,6 @@ This page allows one to create a User object in the databse, and thus should onl
             };
 
             let old_password_required_if = function () {
-                let confirm = document.getElementById('n_password_c');
-                let old_password = document.getElementById('old_password');
-
                 // The old password field must be filled out iff the user is trying to change their password
                 if (confirm.value.length > 0 && old_password.value.length === 0) {
                     old_password.setCustomValidity('invalid');
@@ -115,18 +112,25 @@ This page allows one to create a User object in the databse, and thus should onl
             };
 
             // Attach custom validator to element on change
-            document.getElementById('new_password').addEventListener(
+            new_password.addEventListener(
                 'change',
                 passwords_match_validator,
                 false
             );
 
             // Attach custom validator to new password field's unfocus
-            document.getElementById('n_password_c').addEventListener(
+            confirm.addEventListener(
                 'focusout',
                 passwords_match_validator,
                 false
-            )
+            );
+
+            // Attach old password requirement
+            new_password.addEventListener(
+                'change',
+                old_password_required_if,
+                false,
+            );
         })()
     </script>
     {% endif %}
