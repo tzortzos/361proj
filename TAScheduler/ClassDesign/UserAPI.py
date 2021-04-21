@@ -1,5 +1,8 @@
 from TAScheduler.models import User, UserType
+from typing import Union
+from django.http import HttpResponseRedirect
 from typing import Optional
+from django.shortcuts import redirect,reverse
 
 
 class UserAPI:
@@ -21,7 +24,7 @@ class UserAPI:
             return None
 
     @staticmethod
-    def get_user_by_univ_id(univ_id) -> Optional[User]:
+    def get_user_by_univ_id(univ_id: str) -> Optional[User]:
         query_set = User.objects.filter(univ_id = univ_id)
         if len(query_set) > 0:
             return query_set[0]
@@ -33,18 +36,19 @@ class UserAPI:
         user.delete()
 
     @staticmethod
+    def check_user_type(user: User):
+        return user.type
+
+    @staticmethod
     def update_user(user: User, lname: Optional[str], fname: str, phone: str):
         user.l_name = lname
         user.f_name = fname
         user.phone = phone
         user.save()
 
-    @staticmethod
-    def update_password(user: User, password: str):
-        user.password = password
-        user.tmp_password = False
-        user.save()
 
-    @staticmethod
-    def check_user_type(user: User):
-        return user.type
+
+
+
+
+

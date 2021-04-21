@@ -26,3 +26,7 @@ class CourseAPI:
             return course
         except Course.DoesNotExist:
             return None
+
+    @staticmethod
+    def delete_course(course: Course) -> None:
+        course.delete()

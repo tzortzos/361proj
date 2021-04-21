@@ -1,13 +1,15 @@
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.models import UserType,User,Course
 from django.test import TestCase
+from django.core.exceptions import ObjectDoesNotExist
+import uuid
 
 
 class TestCourse(TestCase):
 
     def setUp(self):
-        self.course_code1 = '123'
-        self.course_code2 = '456'
+        self.course_code1 = str(uuid.uuid4())[:3]
+        self.course_code2 = str(uuid.uuid4())[:3]
         self.course_name1 = 'TestCourse'
         self.user1 = User.objects.create(type=UserType.ADMIN, univ_id='bsmith', password='password123')
         self.course1 = Course.objects.create(course_code=self.course_code1,course_name=self.course_name1,admin_id=self.user1)
@@ -28,3 +30,9 @@ class TestCourse(TestCase):
         course_id = self.course1.course_id
         course = CourseAPI.get_course_by_course_id(course_id)
         self.assertEqual(course, self.course1, msg="Expected course1 when using its course id to retrieve.")
+
+    def test_delete_course(self):
+        CourseAPI.delete_course(self.course1)
+        with self.assertRaises(ObjectDoesNotExist, msg="Expected the Course to be deleted from database."):
+            Course.objects.get(course_code=self.course1.course_code)
+
