@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% comment %}
+This page can be rendered with the context variables as follows:
+- error: Optional[PageError] (either place USERNAME or PASSWORD) which will make the form highlight the incorrect field
+{% endcomment %}
+
 {% block content %}
 <div class="row align-items-center h-100">
     <div class="col-sm-8 offset-sm-2 col-md-6 offset-md-3">
@@ -14,19 +19,31 @@
                 <label for="username" class="form-label">username</label>
                 <div class="input-group has-validation">
 
-                    <input type="text" name="username" class="form-control"
+                    <input type="text" name="username" class="form-control {% if error and error.place_username %} is-invalid {% endif %}"
                            required pattern="[^@\s]+"
                            value="{{ prev_username }}">
                     <div class="input-group-text">@uwm.edu</div>
 
-                    <div class="invalid-feedback">You must input only the leading portion of your <em>school</em> email</div>
+                    <div class="invalid-feedback">
+                        {% if error and error.place_username %}
+                        {{ error.error.body }}
+                        {% else %}
+                        You must input only the leading portion of your <em>school</em> email
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">password</label>
-                <input type="password" name="password" class="form-control" required minlength="8">
-                <div class="invalid-feedback">You must input your password<br /><small>It must be at least 8 characters</small></div>
+                <input type="password" name="password" class="form-control {% if error and error.place_password %} is-invalid {% endif %}" required minlength="8">
+                <div class="invalid-feedback">
+                    {% if error and error.place_password %}
+                        {{ error.error.body }}
+                    {% else %}
+                        You must input your password<br /><small>It must be at least 8 characters</small>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="mb-3 justify-content-center">
