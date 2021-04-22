@@ -45,21 +45,21 @@ This page allows one to create a User object in the databse, and thus should onl
             <div class="input-group d-flex flex-column">
                 <p class="mb-1">user type</p>
                 <div class="form-check btn-group px-0" id="user_type">
-                    <input type="radio" class="btn-check" name="user_type" id="type_ta" value="t"
+                    <input type="radio" class="btn-check" name="user_type" id="type_ta" value="P"
                     {% if edit is not None %}
                         {% if edit.type == 'T' %} checked {% endif %}
                     {% else %} checked {% endif %}
                     >
                     <label class="btn btn-outline-dark flex-fill" for="type_ta">TA</label>
 
-                    <input type="radio" class="btn-check" name="user_type" id="type_prof" value="p"
+                    <input type="radio" class="btn-check" name="user_type" id="type_prof" value="P"
                     {% if edit is not None %}
                         {% if edit.type == 'P' %} checked {% endif %}
                     {% endif %}
                     >
                     <label class="btn btn-outline-dark flex-fill" for="type_prof">Professor</label>
 
-                    <input type="radio" class="btn-check" name="user_type" id="type_admin" value="a"
+                    <input type="radio" class="btn-check" name="user_type" id="type_admin" value="A"
                     {% if edit is not None %}
                         {% if edit.type == 'A' %} checked {% endif %}
                     {% endif %}
