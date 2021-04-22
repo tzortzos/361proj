@@ -9,7 +9,7 @@ class TestAdminItemsEnum(unittest.TestCase):
         self.assertEqual(navbar_item.name, 'home', 'did not set correct home message')
         self.assertEqual(navbar_item.enabled, True, 'did not default enabled correctly')
         self.assertEqual(navbar_item.url, '/admin', 'did not default url to admin home')
-        self.assertEqual(navbar_item.icon.name, 'home')
+        self.assertEqual(navbar_item.icon.name, 'house-door-fill')
 
     def test_map_disable(self):
         map_fn = AdminItems.USERS.map_disable()
