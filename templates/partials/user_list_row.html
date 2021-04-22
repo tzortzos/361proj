@@ -1,0 +1,36 @@
+{% comment %}
+user listing row
+Takes the following context:
+- user: TAScheduler.models.User     The user for which this row will be rendered
+- admin: bool                       Whether the user this is being rendered for is an admin
+- self: bool                        Whether this user is the user that is logged in
+{% endcomment %}
+
+<div class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center">
+    {# Left #}
+    <div class="me-sm-auto d-flex flex-row flex-sm-column align-items-center align-items-sm-start justify-content-between justify-content-sm-start">
+        <h4 class="mb-0">{{ user.univ_id }}</h4>
+        <!-- <hr class="mb-0 d-none d-sm-inline "/> -->
+        <p class="mb-0">{{ user.f_name }} {{ user.l_name }} </p>
+        <em>{{ user.get_type_display }}</em>
+    </div>
+
+    {# Right #}
+    <div class="d-flex justify-content-center mt-3 mt-sm-0 mb-3 mb-sm-0">
+        <div class="btn-group">
+            {# Information #}
+            <a class="btn btn-dark" href="{% url 'user-edit' user.user_id %}"><i class="bi bi-info-circle-fill"></i></a>
+
+            {# Edit #}
+            {% if admin or self %}
+                <a class="btn btn-dark" href="{% url 'user-edit' user.user_id %}"><i class="bi bi-pencil-fill"></i></a>
+            {% endif %}
+
+            {# Delete #}
+            {% if admin %}
+                <a class="btn btn-danger" href="{% url 'user-delete' user.user_id %}"><i class="bi bi-trash-fill"></i></a>
+            {% endif %}
+        </div>
+    </div>
+
+</div>

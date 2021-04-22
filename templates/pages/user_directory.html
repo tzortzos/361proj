@@ -1,0 +1,16 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+Takes the following context variables on top of app_base vars:
+- users: List[(User, bool)]     A list of user objects and whether they represent the currently logged in user
+- admin: bool                   Whether the currently logged in user is an admin
+{% endcomment %}
+
+{% block application_pane %}
+<h1>Users</h1>
+<div class="list-group">
+    {% for user_info in users %}
+        {% include 'partials/user_list_row.html' with user=user_info.0 self=user_info.1 admin=admin only %}
+    {% endfor %}
+</div>
+{% endblock application_pane %}
