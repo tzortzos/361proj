@@ -66,7 +66,9 @@ This page allows one to create a User object in the databse, and thus should onl
                     >
                     <label class="btn btn-outline-danger flex-fill" for="type_admin">Admin</label>
                 </div>
-                <p class="text-danger align-self-end">warning: if you change your own type you will not be able to change it back yourself</p>
+                {% if edit is not None and self.user_id == edit.user_id %}
+                    <p class="text-danger align-self-end">warning: if you change your own type you will not be able to change it back yourself</p>
+                {% endif %}
             </div>
         </div>
         {% endif %}
@@ -112,8 +114,8 @@ This page allows one to create a User object in the databse, and thus should onl
 
         {# password (can only be changed by self, seen by admin if new user) #}
         <div class="mb-3 mt-5">
-            <h4>change password</h4>
             {% if edit is not None and edit.user_id == self.user_id %}
+                <h4>change password</h4>
 
                 {# In the case that a user is editing self #}
                 <label for="old_password" class="form-label">current password</label>
@@ -149,10 +151,10 @@ This page allows one to create a User object in the databse, and thus should onl
                     </div>
                 </div>
             {% elif new_user_pass %}
-
+                <h4>password</h4>
                 {# In the case that an admin is creating a user #}
-                <label for="new_password" class="form-label">new password</label>
-                <input type="text" class="form-control disabled" value="{{ new_user_pass }}">
+                <label for="new_password" class="form-label">temporary password</label>
+                <input type="text" class="form-control disabled" value="{{ new_user_pass }}" disabled>
                 <p class="small">
                     You will not be able to retrieve this once you leave this page.<br />
                     The user will be forced to change this on first successful log-in.
