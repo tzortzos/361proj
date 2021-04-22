@@ -154,7 +154,7 @@ This page allows one to create a User object in the databse, and thus should onl
                 <h4>password</h4>
                 {# In the case that an admin is creating a user #}
                 <label for="new_password" class="form-label">temporary password</label>
-                <input type="text" class="form-control disabled" value="{{ new_user_pass }}" disabled>
+                <input type="text" name="new_password" class="form-control disabled" value="{{ new_user_pass }}" disabled>
                 <p class="small">
                     You will not be able to retrieve this once you leave this page.<br />
                     The user will be forced to change this on first successful log-in.
