@@ -40,7 +40,9 @@ class UserAPI:
         return user.type
 
     @staticmethod
-    def update_user(user: User, lname: Optional[str], fname: str, phone: str):
+    def update_user(user: User, lname: Optional[str] = None, fname: Optional[str] = None, phone: Optional[str] = None):
+        # if attribute is none don't update database
+        # for example, if lname passed is not none, the execute that
         user.l_name = lname
         user.f_name = fname
         user.phone = phone

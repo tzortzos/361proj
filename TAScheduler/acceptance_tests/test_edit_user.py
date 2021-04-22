@@ -58,7 +58,7 @@ class TestEditUser(TestCase):
     def assertContainsMessage(self, resp, message: Message, msg: str = 'Message object was not in context'):
         self.assertTrue(message in resp.context['messages'], msg)
 
-    def assertUserEditError(self, resp: HttpResponse) -> UserEditError:
+    def assertUserEditError(self, resp) -> UserEditError:
         """Assert that a UserEditError was returned in the context and return it"""
         context = resp.context
 
@@ -70,6 +70,7 @@ class TestEditUser(TestCase):
     def test_edit_self_contact(self):
         self.set_admin_session()
         resp = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
             'phone': '4253084859'
         }, follow=True)
 
@@ -83,6 +84,7 @@ class TestEditUser(TestCase):
     def test_edit_self_password(self):
         self.set_admin_session()
         resp = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
             'old_password': self.old_password,
             'new_password': self.new_password,
         }, follow=True)
@@ -98,6 +100,7 @@ class TestEditUser(TestCase):
         # This test uses the professor to update self instead of admin, to cover more use cases
         self.set_prof_session()
         resp = self.client.post(self.prof_edit_url, {
+            'username': self.prof_username,
             'phone': self.new_phone,
         }, follow=True)
 
@@ -109,6 +112,7 @@ class TestEditUser(TestCase):
     def test_admin_edit_other_updates_database(self):
         self.set_admin_session()
         resp = self.client.post(self.prof_edit_url, {
+            'username': self.prof_username,
             'phone': self.new_phone,
         }, follow=True)
 
@@ -120,6 +124,7 @@ class TestEditUser(TestCase):
     def test_rejects_admin_edit_other_password(self):
         self.set_admin_session()
         resp = self.client.post(self.prof_edit_url, {
+            'username': self.prof_username,
             'old_password': self.old_password,
             'new_password': self.new_password,
         }, follow=True)
@@ -131,6 +136,7 @@ class TestEditUser(TestCase):
     def test_admin_edit_other_type(self):
         self.set_admin_session()
         resp = self.client.post(self.prof_edit_url, {
+            'username': self.prof_username,
             'user_type': 'A'
         }, follow=True)
 
@@ -145,22 +151,109 @@ class TestEditUser(TestCase):
         )
 
     def test_rejects_empty_username(self):
-        pass
+        self.set_admin_session()
+        resp = self.client.post(self.prof_edit_url, {
+            'username': ''
+
+        }, follow=True)
+
+        self.assertDoesNotRedirect()
+
+        error = self.assertUserEditError(resp)
+        self.assertTrue(error.place() is UserEditError.Place.USERNAME,
+                        msg='Didn\'t return username error when attempting to remove username.')
+        self.assertEqual(error.error().body(), 'You can\'t remove a user\'s username.')
 
     def test_rejects_too_long_username(self):
-        pass
+        self.set_admin_session()
+        resp = self.client.post(self.prof_edit_url, {
+            'username': 'a-very-long-username-that-the-database-could-not-hold'
+
+        }, follow=True)
+
+        self.assertDoesNotRedirect()
+
+        error = self.assertUserEditError(resp)
+        self.assertTrue(error.place() is UserEditError.Place.USERNAME,
+                        msg='Should have received an error about an username that was too long.')
+        self.assertEqual(error.error().body(), 'A username may not be longer than 20 characters.')
+
 
     def test_rejects_incorrect_password_change(self):
-        pass
+        self.set_admin_session()
+        resp = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
+            'old_password': 'a password that is definitely correct',
+            'new_password': self.new_password,
+        }, follow=True)
+
+        self.assertDoesNotRedirect()
+
+        error = self.assertUserEditError(resp)
+        self.assertTrue(error.place() is UserEditError.Place.PASSWORD,
+                    msg='Should have received an error about incorrect password.')
+        self.assertEqual(error.error().body(), 'Incorrect password')
+
+
 
     def test_rejects_empty_password_change(self):
-        pass
+        self.set_admin_session()
+        resp = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
+            'old_password': self.old_password,
+            'new_password': '',
+        }, follow=True)
+
+        self.assertDoesNotRedirect()
+
+        error = self.assertUserEditError(resp)
+        self.assertTrue(error.place() is UserEditError.Place.PASSWORD,
+                        msg='Should have recieved an error about empty new password.')
+        self.assertEqual(error.error().body(), 'New Password can\'t be empty.')
+
 
     def test_rejects_too_short_password_change(self):
-        pass
+        self.set_admin_session()
+        resp = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
+            'old_password': self.old_password,
+            'new_password': '1234',
+        }, follow=True)
+
+        self.assertDoesNotRedirect()
+
+        error = self.assertUserEditError(resp)
+        self.assertTrue(error.place() is UserEditError.Place.PASSWORD,
+                        msg='Should have received an error about new password being too short.')
+        self.assertEqual(error.error().body(), 'New Password needs to be 8 or more characters.')
 
     def test_rejects_invalid_phone(self):
-        pass
+        self.set_admin_session()
+        resp = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
+            'phone': '123456'
+        }, follow=True)
+
+        self.assertDoesNotRedirect()
+
+        error = self.assertUserEditError(resp)
+        self.assertTrue(error.place() is UserEditError.Place.PHONE,
+                        msg='Should have received an error about incorrect phone edit.')
+        self.assertEqual(error.error().body(), 'Phone number needs to be exactly 10 digits long.')
 
     def test_rejects_non_admin_edit_other(self):
-        pass
+        self.set_prof_session()
+        resp_post = self.client.post(self.admin_edit_url, {
+            'username': self.admin_username,
+            'phone': '123456'
+        }, follow=True)
+
+        self.assertRedirects(reverse('index'))
+
+        self.assertContainsMessage(resp_post, Message('You are not allowed to edit other users.', Message.Type.ERROR))
+
+        resp_get = self.client.get(self.admin_edit_url, {}, follow=True)
+
+        self.assertRedirects(reverse('index'))
+
+        self.assertContainsMessage(resp_get, Message('You are not allowed to edit other users.', Message.Type.ERROR))
