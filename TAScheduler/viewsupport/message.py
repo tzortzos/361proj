@@ -9,9 +9,9 @@ class Message:
         ERROR = auto(),
         REGULAR = auto(),
 
-    def __init__(self, messsage: str, type: Type = Type.REGULAR):
+    def __init__(self, messsage: str, ty: Type = Type.REGULAR):
         self._message = messsage
-        self._type = type
+        self._ty = ty
 
     def message(self) -> str:
         """Get the value of this popover message"""
@@ -19,4 +19,9 @@ class Message:
 
     def type(self) -> Type:
         """Get the type of this popover message"""
-        return self._type
+        return self._ty
+
+    def __eq__(self, other) -> bool:
+        if type(other) is not Message:
+            return False
+        return self._ty.value == other._ty.value and self._message == other._message
