@@ -20,19 +20,95 @@ This page allows one to create a User object in the databse, and thus should onl
 
         {# uwm student id / username (required) #}
         <div class="mb-3">
-            <label for="univ_id">university id</label>
+            <label for="univ_id" class="form-label">university id</label>
             <div class="input-group has-validation">
-                <input type="text" class="form-control" id="univ_id" required pattern="[^@\s]+">
+                <input type="text" class="form-control" id="univ_id" required pattern="[^@\s]+"
+                {# In the case that we are editing show the old value #}
+                {% if edit is not None %}
+                        value="{{ edit.univ_id }}"
+                {% endif %}
+
+                {# The general user is not allowed to edit their own username #}
+                {% if self.type != 'A' %}
+                    disabled
+                {% endif %}
+                >
+
                 <div class="input-group-text">@uwm.edu</div>
-                <div class="invalid-feedback">The first portion of the users school email is required</div>
+                <div class="invalid-feedback"><em>Only</em> the first portion of the users school email is required</div>
             </div>
         </div>
 
-        {# type (required) #}
+        {# type (required, only edited by admins) #}
+        {% if self.type == 'A' %}
+        <div class="mb-3">
+            <div class="input-group d-flex flex-column">
+                <p class="mb-1">user type</p>
+                <div class="form-check btn-group px-0" id="user_type">
+                    <input type="radio" class="btn-check" name="user_type" id="type_ta" value="t"
+                    {% if edit is not None %}
+                        {% if edit.type == 'T' %} checked {% endif %}
+                    {% else %} checked {% endif %}
+                    >
+                    <label class="btn btn-outline-dark flex-fill" for="type_ta">TA</label>
+
+                    <input type="radio" class="btn-check" name="user_type" id="type_prof" value="p"
+                    {% if edit is not None %}
+                        {% if edit.type == 'P' %} checked {% endif %}
+                    {% endif %}
+                    >
+                    <label class="btn btn-outline-dark flex-fill" for="type_prof">Professor</label>
+
+                    <input type="radio" class="btn-check" name="user_type" id="type_admin" value="a"
+                    {% if edit is not None %}
+                        {% if edit.type == 'A' %} checked {% endif %}
+                    {% endif %}
+                    >
+                    <label class="btn btn-outline-danger flex-fill" for="type_admin">Admin</label>
+                </div>
+                <p class="text-danger align-self-end">warning: if you change your own type you will not be able to change it back yourself</p>
+            </div>
+        </div>
+        {% endif %}
 
         {# first / last name #}
+        <div class="mb-3 row">
+
+            {# first name #}
+            <div class="col-12 col-sm-6">
+                <label for="f_name" class="form-label">first name</label>
+                <input type="text" class="form-control" name="f_name"
+                {% if edit is not None %}
+                        value="{{ edit.f_name }}"
+                {% endif %}
+                >
+            </div>
+
+            {# last name #}
+            <div class="col-12 col-sm-6">
+                <label for="l_name" class="form-label">last name</label>
+                <input type="text" class="form-control" name="l_name"
+                        {% if edit is not None %}
+                       value="{{ edit.l_name }}"
+                        {% endif %}
+                >
+            </div>
+        </div>
 
         {# phone #}
+        <div class="mb-3">
+            <label for="phone" class="form-label">phone number</label>
+            <div class="input-group has-validation">
+                <div class="input-group-text">+1 </div>
+                <input type="text" pattern="[0-9]{10}"
+                       class="form-control"
+                {% if edit is not None %}
+                    value=""{{ edit.phone }}
+                {% endif %}
+                >
+                <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
+            </div>
+        </div>
 
         {# password (can only be changed by self, seen by admin if new user) #}
         <div class="mb-3 mt-5">
@@ -40,33 +116,42 @@ This page allows one to create a User object in the databse, and thus should onl
             {% if edit is not None and edit.user_id == self.user_id %}
 
                 {# In the case that a user is editing self #}
-                <label for="old_password">current password</label>
-                <div class="input-group has-validation">
+                <label for="old_password" class="form-label">current password</label>
+                <div class="input-group has-validation mb-3">
                     <input class="form-control" id="old_password">
                     <div class="invalid-feedback">
                         You must provide your current password in order to change it.
                     </div>
                 </div>
 
-                <label for="n_password_c">new password</label>
-                <div class="input-group has-validation">
-                    <input class="form-control" type="text" id="n_password_c">
-                    <div class="invalid-feedback">
-                        A password must be at least 8 characters in length.
-                    </div>
-                </div>
+                <div class="row">
 
-                <label for="new_password">confirm password</label>
-                <div class="input-group has-validation">
-                    <input class="form-control" id="new_password">
-                    <div class="invalid-feedback">
-                        Passwords do not match
+                    {# new password #}
+                    <div class="col-sm">
+                        <label for="n_password_c" class="form-label">new password</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" type="text" id="n_password_c">
+                            <div class="invalid-feedback">
+                                A password must be at least 8 characters in length.
+                            </div>
+                        </div>
+                    </div>
+
+                    {# confirm password #}
+                    <div class="col-sm">
+                        <label for="new_password" class="form-label">confirm password</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="new_password">
+                            <div class="invalid-feedback">
+                                Passwords do not match
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% elif new_user_pass %}
 
                 {# In the case that an admin is creating a user #}
-                <label for="new_password">new password</label>
+                <label for="new_password" class="form-label">new password</label>
                 <input type="text" class="form-control disabled" value="{{ new_user_pass }}">
                 <p class="small">
                     You will not be able to retrieve this once you leave this page.<br />
@@ -104,7 +189,7 @@ This page allows one to create a User object in the databse, and thus should onl
 
     {% include 'partials/validate.html' %}
 
-    {% if edit and edit.user_id == self.user_id %}
+    {% if edit is not None and edit.user_id == self.user_id %}
     <script>
         // Run the following on page load
         // Attaches new password validator
