@@ -3,6 +3,7 @@ from django.views import View
 
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import PageError, LoginError
+from TAScheduler.models import User, UserType
 
 # Create your views here.
 
@@ -16,4 +17,3 @@ class Login(View):
         print('User Tried to log in')
         print(request)
         pass
-

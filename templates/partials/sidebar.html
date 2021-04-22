@@ -8,7 +8,12 @@ See documentation for the TAScheduler.viewsupport.navbar for more information
             <div class="container-fluid flex-column">
 
                 <div class="w-100 d-flex">
-                    <a class="navbar-brand" href="/user/{{ user_name }}" style="margin-right: auto">{{ user_name }}</a>
+                    <a class="navbar-brand" href="/user/{{ self.user_id }}" style="margin-right: auto">
+                        {{ self.f_name }} {{ self.l_name }}
+                        {% if self.f_name == '' and self.l_name == '' %}
+                        {{ page_name|default:'TAScheduler' }}
+                        {% endif %}
+                    </a>
 
                     <button class="navbar-toggler h1" type="button" data-bs-toggle="collapse" data-bs-target="#nav-collapse-section">
                         <i class="bi bi-list"></i>

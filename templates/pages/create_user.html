@@ -1,0 +1,240 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+This page allows one to create a User object in the databse, and thus should only be shown to admins.
+
+
+{% endcomment %}
+
+{% block application_pane %}
+    <form class="form needs-validation" method="post" novalidate>
+        {% csrf_token %}
+
+        <h1 class="mb-3">
+            {% if edit is not None %}
+            Edit {{ edit.univ_id }}
+            {% else %}
+            Create User
+            {% endif %}
+        </h1>
+
+        {# uwm student id / username (required) #}
+        <div class="mb-3">
+            <label for="univ_id" class="form-label">university id</label>
+            <div class="input-group has-validation">
+                <input type="text" class="form-control" id="univ_id" required pattern="[^@\s]+"
+                {# In the case that we are editing show the old value #}
+                {% if edit is not None %}
+                        value="{{ edit.univ_id }}"
+                {% endif %}
+
+                {# The general user is not allowed to edit their own username #}
+                {% if self.type != 'A' %}
+                    disabled
+                {% endif %}
+                >
+
+                <div class="input-group-text">@uwm.edu</div>
+                <div class="invalid-feedback"><em>Only</em> the first portion of the users school email is required</div>
+            </div>
+        </div>
+
+        {# type (required, only edited by admins) #}
+        {% if self.type == 'A' %}
+        <div class="mb-3">
+            <div class="input-group d-flex flex-column">
+                <p class="mb-1">user type</p>
+                <div class="form-check btn-group px-0" id="user_type">
+                    <input type="radio" class="btn-check" name="user_type" id="type_ta" value="t"
+                    {% if edit is not None %}
+                        {% if edit.type == 'T' %} checked {% endif %}
+                    {% else %} checked {% endif %}
+                    >
+                    <label class="btn btn-outline-dark flex-fill" for="type_ta">TA</label>
+
+                    <input type="radio" class="btn-check" name="user_type" id="type_prof" value="p"
+                    {% if edit is not None %}
+                        {% if edit.type == 'P' %} checked {% endif %}
+                    {% endif %}
+                    >
+                    <label class="btn btn-outline-dark flex-fill" for="type_prof">Professor</label>
+
+                    <input type="radio" class="btn-check" name="user_type" id="type_admin" value="a"
+                    {% if edit is not None %}
+                        {% if edit.type == 'A' %} checked {% endif %}
+                    {% endif %}
+                    >
+                    <label class="btn btn-outline-danger flex-fill" for="type_admin">Admin</label>
+                </div>
+                {% if edit is not None and self.user_id == edit.user_id %}
+                    <p class="text-danger align-self-end">warning: if you change your own type you will not be able to change it back yourself</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# first / last name #}
+        <div class="mb-3 row">
+
+            {# first name #}
+            <div class="col-12 col-sm-6">
+                <label for="f_name" class="form-label">first name</label>
+                <input type="text" class="form-control" name="f_name"
+                {% if edit is not None %}
+                        value="{{ edit.f_name }}"
+                {% endif %}
+                >
+            </div>
+
+            {# last name #}
+            <div class="col-12 col-sm-6">
+                <label for="l_name" class="form-label">last name</label>
+                <input type="text" class="form-control" name="l_name"
+                        {% if edit is not None %}
+                       value="{{ edit.l_name }}"
+                        {% endif %}
+                >
+            </div>
+        </div>
+
+        {# phone #}
+        <div class="mb-3">
+            <label for="phone" class="form-label">phone number</label>
+            <div class="input-group has-validation">
+                <div class="input-group-text">+1 </div>
+                <input type="text" pattern="[0-9]{10}"
+                       class="form-control"
+                {% if edit is not None %}
+                    value=""{{ edit.phone }}
+                {% endif %}
+                >
+                <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
+            </div>
+        </div>
+
+        {# password (can only be changed by self, seen by admin if new user) #}
+        <div class="mb-3 mt-5">
+            {% if edit is not None and edit.user_id == self.user_id %}
+                <h4>change password</h4>
+
+                {# In the case that a user is editing self #}
+                <label for="old_password" class="form-label">current password</label>
+                <div class="input-group has-validation mb-3">
+                    <input class="form-control" id="old_password">
+                    <div class="invalid-feedback">
+                        You must provide your current password in order to change it.
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    {# new password #}
+                    <div class="col-sm">
+                        <label for="n_password_c" class="form-label">new password</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" type="text" id="n_password_c">
+                            <div class="invalid-feedback">
+                                A password must be at least 8 characters in length.
+                            </div>
+                        </div>
+                    </div>
+
+                    {# confirm password #}
+                    <div class="col-sm">
+                        <label for="new_password" class="form-label">confirm password</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="new_password">
+                            <div class="invalid-feedback">
+                                Passwords do not match
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif new_user_pass %}
+                <h4>password</h4>
+                {# In the case that an admin is creating a user #}
+                <label for="new_password" class="form-label">temporary password</label>
+                <input type="text" class="form-control disabled" value="{{ new_user_pass }}" disabled>
+                <p class="small">
+                    You will not be able to retrieve this once you leave this page.<br />
+                    The user will be forced to change this on first successful log-in.
+                </p>
+
+            {% else %}
+
+                {# In the case that an admin is editing an existing user #}
+                <p class="small">You cannot see passwords for existing users.</p>
+
+                {# We may want to add a password reset option eventually #}
+            {% endif %}
+        </div>
+
+        <div class="mb-3 justify-content-center">
+            <div class="btn-group">
+                <input class="btn btn-large btn-primary"
+                       type="submit"
+                       value="{% if edit %}edit{% else %}create{% endif %}">
+
+                {# TODO should be users-directory #}
+                <a class="btn btn-large btn-dark" href="{% url 'users-create' %}">cancel</a>
+
+                {% if self.get_type == TAScheduler.models.UserType.ADMIN and edit is not None %}
+                <a href="{% url 'users-delete' edit.user_id %}"
+                   class="btn btn-large btn-danger">
+                    <i class="bi bi-trash-fill"></i>
+                </a>
+
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+    {% include 'partials/validate.html' %}
+
+    {% if edit is not None and edit.user_id == self.user_id %}
+    <script>
+        // Run the following on page load
+        // Attaches new password validator
+        (function () {
+            let old_password = document.getElementById('old_password');
+            let confirm = document.getElementById('n_password_c');
+            let new_password = document.getElementById('new_password')
+
+            let password_change_validator = function () {
+
+                // If the new passwords do not match then highlight the second field
+                if (new_password.value !== confirm.value) {
+                    new_password.setCustomValidity('invalid');
+                } else {
+                    new_password.setCustomValidity('');
+                }
+
+                // The new password field must be at least 8 characters in length
+                //   iff it has anything at all
+                if (confirm.value.length < 8 && confirm.value.length > 0) {
+                    confirm.setCustomValidity('invalid');
+                } else {
+                    confirm.setCustomValidity('');
+                }
+
+                // The old password field must be filled out iff the user is
+                //   trying to change their password
+                if ((new_password.value.length > 0 ||
+                    confirm.value.length > 0)
+                    && old_password.value.length === 0) {
+                    old_password.setCustomValidity('invalid');
+                } else {
+                    old_password.setCustomValidity('');
+                }
+            };
+
+            // Attach custom validator to element on change
+            let forms = document.querySelector('.needs-validation');
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('keyup', password_change_validator, false);
+                })
+        })()
+    </script>
+    {% endif %}
+{% endblock application_pane %}
