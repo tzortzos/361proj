@@ -37,7 +37,7 @@ class TestCreateUserView(TestCase):
         return resp_context['error']
 
     def test_rejects_empty_password(self):
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'nleverence',
             # 'new_password': '',
             'user_type': 'T',
@@ -53,7 +53,7 @@ class TestCreateUserView(TestCase):
         self.assertEqual(ret_error.error().body(), 'You must provide a password to create a user')
 
     def test_rejects_short_password(self):
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'nleverence',
             'new_password': '1234567',  # Short password
             'user_type': 'T',
@@ -69,7 +69,7 @@ class TestCreateUserView(TestCase):
         self.assertEqual(ret_error.error().body(), 'Password must be at least 8 characters in length')
 
     def test_rejects_empty_username(self):
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             # 'univ_id': '',
             'new_password': 'a-very-good-password',  # Short password
             'user_type': 'T',
@@ -85,7 +85,7 @@ class TestCreateUserView(TestCase):
         self.assertEqual(ret_error.error().body(), 'You must provide a university id')
 
     def test_rejects_long_username(self):
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'a-very-long-username-that-would-never-fit-in-the-database',
             'new_password': 'a-very-good-password',
             'user_type': 'T',
@@ -101,7 +101,7 @@ class TestCreateUserView(TestCase):
         self.assertEqual(ret_error.error().body(), 'The username may not be longer than 20 characters')
 
     def test_rejects_username_with_at_sign(self):
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'areasonableusername@uwm.edu',
             'new_password': 'a-very-good-password',
             'user_type': 'T',
@@ -117,7 +117,7 @@ class TestCreateUserView(TestCase):
         self.assertEqual(ret_error.error().body(), 'You only need to put in the first part of a university email')
 
     def test_rejects_username_with_spaces(self):
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'areasonableusername uwm edu',
             'new_password': 'a-very-good-password',
             'user_type': 'T',
@@ -134,7 +134,7 @@ class TestCreateUserView(TestCase):
 
     def test_rejects_non_admin(self):
         self.client.session['user_id'] = self.professor.user_id
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'nleverence',
             'new_password': 'a-very-good-password',
             'user_type': 'T',
@@ -155,7 +155,7 @@ class TestCreateUserView(TestCase):
 
     def test_rejects_missing_session(self):
         del self.client.session['user_id']
-        resp = self.client.post(reverse('create-user'), {
+        resp = self.client.post(reverse('users-create'), {
             'univ_id': 'nleverence',
             'new_password': 'a-very-good-password',
             'user_type': 'T',

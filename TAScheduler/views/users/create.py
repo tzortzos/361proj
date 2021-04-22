@@ -22,7 +22,7 @@ class UserCreate(View):
         if UserAPI.check_user_type(user) is not UserType.ADMIN:
             return redirect('index')
 
-        tmp_pass = uuid.uuid4[:8]
+        tmp_pass = str(uuid.uuid4())[:8]
 
         return render(request, 'pages/create_user.html', {
             'self': user,

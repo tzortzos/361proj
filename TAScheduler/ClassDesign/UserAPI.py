@@ -37,7 +37,12 @@ class UserAPI:
 
     @staticmethod
     def check_user_type(user: User):
-        return user.type
+        if user.type == UserType.ADMIN.value[0]:
+            return UserType.ADMIN
+        elif user.type == UserType.PROF.value[0]:
+            return UserType.PROF
+        else:
+            return UserType.TA
 
     @staticmethod
     def update_user(user: User, lname: Optional[str] = None, fname: Optional[str] = None, phone: Optional[str] = None):
