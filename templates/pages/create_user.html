@@ -1,9 +1,20 @@
 {% extends 'app_base.html' %}
 
 {% comment %}
-This page allows one to create a User object in the databse, and thus should only be shown to admins.
+Template for all user edit functions: edit self, admin edit other, admin edit self, admin create new user.
+Does as much client side validation as is reasonable for password changes and user creation, but should be repeated in
+the view.
 
+Context Variables:
+- self: User                        The User object that is viewing the page
+- edit: Optional[User]              the existing user
+- new_user_pass: Optional[str]      the new password to be used when creating a user (does nothing if edit is not None)
+- error: Optional[UserEditError]:   Used on post request failure to indicate server side validation failed
 
+To use in the following configurations set these variables:
+- self & edit to same: user edits self
+- self is Admin and edit is not None: admin editing other user (cannot change password)
+- self is Admin and new_user_pass is not None: admin creating new user (cannot change generated password)
 {% endcomment %}
 
 {% block application_pane %}
@@ -14,7 +25,7 @@ This page allows one to create a User object in the databse, and thus should onl
             {% if edit is not None %}
             Edit {{ edit.univ_id }}
             {% else %}
-            Create User
+            Create Account
             {% endif %}
         </h1>
 
