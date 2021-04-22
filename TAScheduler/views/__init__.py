@@ -5,7 +5,8 @@ from TAScheduler.viewsupport.navbar import AdminItems
 
 # Reexport Views from Submodules
 from TAScheduler.views.login import Login
-from TAScheduler.views.user_edit import UserEdit
+from TAScheduler.views.users.edit import UserEdit
+from TAScheduler.views.users.create import UserCreate
 
 
 class Index(View):

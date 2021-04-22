@@ -23,7 +23,8 @@ urlpatterns = [
 
     path('login/', Login.as_view(), name='login'),
 
-    path('courses/create/', CourseEdit.as_view(), name="create-course"),
+    path('courses/create/', CourseEdit.as_view(), name='create-course'),
 
-    path('users/<int:user_id>', UserEdit.as_view(), name="user-edit"),
+    path('users/<int:user_id>', UserEdit.as_view(), name='users-edit'),
+    path('users/create', UserCreate.as_view(), name='users-create'),
 ]
