@@ -3,6 +3,8 @@ from django.test import TestCase, Client
 from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
 
+from typing import List
+
 from TAScheduler.models import User, UserType
 from TAScheduler.viewsupport.message import Message
 
@@ -34,10 +36,12 @@ class TestDeleteUser(TestCase):
         self.client.session['user_id'] = self.prof.user_id
 
     def get_first_message(self, resp) -> Message:
-        self.assertIsNotNone(resp.context['messages'], 'Did not send success message to user')
-        self.assertTrue(len(resp.context['messages']) == 1, 'Did not send any success messages to user')
-
-        return resp.context['messages'][0]
+        try:
+            messages: List[Message] = resp.session['messages']
+            resp.session['messages'] = messages[1:]
+            return messages[0]
+        except KeyError:
+            self.assertTrue(False, 'Session does not contain any messages')
 
     def test_admin_can_delete_existing(self):
         resp = self.client.post(self.valid_delete_url, {}, follow=True)
