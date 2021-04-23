@@ -8,7 +8,7 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import PageError, UserEditError
-from TAScheduler.viewsupport.message import Message
+from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
 class UserCreate(View):
@@ -17,7 +17,7 @@ class UserCreate(View):
     Uses the create_user page template in the create configuration.
     """
 
-    def get(self, request: HttpRequest, messages: List[Message] = []) -> Union[HttpResponse, HttpResponseRedirect]:
+    def get(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
@@ -31,7 +31,7 @@ class UserCreate(View):
             'self': maybe_user,
             'navbar_items': AdminItems.items_iterable(),
             'new_user_pass': tmp_pass,
-            'messages': messages,
+            'messages': MessageQueue.drain(request.session),
         })
 
     def post(self, request: HttpRequest):

@@ -154,9 +154,11 @@ Post returns the following variables:
                 {# In the case that a user is editing self #}
                 <label for="old_password" class="form-label">current password</label>
                 <div class="input-group has-validation mb-3">
-                    <input class="form-control" id="old_password">
+                    <input class="form-control
+                    {% if error is not None and error.place_password %}is-invalid{% endif %}
+                    " id="old_password" name="old_password">
 
-                    {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.PASSWORD %}
+                    {% if error is not None and error.place_password %}
                         <div class="invalid-feedback is-invalid">{{ error.error.body }}</div>
                     {% else %}
                         <div class="invalid-feedback">
@@ -182,7 +184,7 @@ Post returns the following variables:
                     <div class="col-sm">
                         <label for="new_password" class="form-label">confirm password</label>
                         <div class="input-group has-validation">
-                            <input class="form-control" id="new_password">
+                            <input class="form-control" id="new_password" name="new_password">
                             <div class="invalid-feedback">
                                 Passwords do not match
                             </div>
@@ -190,9 +192,6 @@ Post returns the following variables:
                     </div>
                 </div>
 
-                {% if error is not None and error.place_password %}
-                    <p class="text-danger">{{ error.error.body }}</p>
-                {% endif %}
             {% elif new_user_pass %}
                 <h4>password</h4>
                 {# In the case that an admin is creating a user #}

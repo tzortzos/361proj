@@ -17,7 +17,7 @@ class UserEdit(View):
     """
 
     def get(self, request: HttpRequest, user_id: int):
-        user = LoginUtility.get_user_and_validate_by_user_id(request.session)
+        user = LoginUtility.get_user_and_validate_by_user_id(request.session, password_change_redirect=False)
 
         if type(user) is HttpResponseRedirect:
             return user
@@ -39,7 +39,7 @@ class UserEdit(View):
         })
 
     def post(self, request: HttpRequest, user_id: int):
-        user = LoginUtility.get_user_and_validate_by_user_id(request.session)
+        user = LoginUtility.get_user_and_validate_by_user_id(request.session, password_change_redirect=False)
 
         if type(user) is HttpResponseRedirect:
             return user
@@ -121,7 +121,6 @@ class UserEdit(View):
                     'edit': to_edit,
                     'error': UserEditError('New Password needs to be 8 or more characters.', UserEditError.Place.PASSWORD),
                 })
-
 
             LoginUtility.update_password(to_edit, fields['new_password'])
             MessageQueue.push(request.session, Message('Password Updated'))
