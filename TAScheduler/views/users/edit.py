@@ -1,7 +1,7 @@
 from django.views import View
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, reverse
-from typing import Dict
+from typing import Dict, Optional
 
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.errors import UserEditError, PageError
@@ -29,7 +29,7 @@ class UserEdit(View):
             return redirect(reverse('users-directory'))
 
         if to_edit.user_id != user.user_id and UserAPI.check_user_type(user) != UserType.ADMIN:
-            MessageQueue.push(request.session, Message(f'You are not allowed to edit other users.', Message.Type.ERROR))
+            MessageQueue.push(request.session, Message('You are not allowed to edit other users.', Message.Type.ERROR))
             return redirect(reverse('index'))
 
         return render(request, 'pages/create_user.html', {
@@ -51,11 +51,11 @@ class UserEdit(View):
             return redirect(reverse('users-directory'))
 
         if to_edit.user_id != user.user_id and UserAPI.check_user_type(user) != UserType.ADMIN:
-            MessageQueue.push(request.session, Message(f'You are not allowed to edit other users.', Message.Type.ERROR))
+            MessageQueue.push(request.session, Message('You are not allowed to edit other users.', Message.Type.ERROR))
             return redirect(reverse('index'))
 
         # Get all the possible values from the context
-        fields: Dict[str, str] = {}
+        fields: Dict[str, Optional[str]] = {}
         try:
             fields['univ_id'] = str(request.POST['univ_id'])
         except KeyError:
@@ -92,13 +92,13 @@ class UserEdit(View):
             fields['new_password'] = None
 
         # Check error cases
-        if fields['new_password'] is not None and len(fields['new_password']) >= 8:
+        if fields['new_password'] is not None and len(fields['new_password']) > 0:
             # Attempting to change password
             if user.user_id != to_edit.user_id:
                 # Admins may not change others' passwords
                 MessageQueue.push(
                     request.session,
-                    Message('You may not change other users password', Message.Type.ERROR)
+                    Message('You may not change another users password', Message.Type.ERROR)
                 )
                 return render(request, 'pages/create_user.html', {
                     'navbar_items': AdminItems.items_iterable(),
@@ -114,8 +114,26 @@ class UserEdit(View):
                     'error': UserEditError('Incorrect password', UserEditError.Place.PASSWORD),
                 })
 
+            if len(fields['new_password']) < 8:
+                return render(request, 'pages/create_user.html', {
+                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                    'self': user,
+                    'edit': to_edit,
+                    'error': UserEditError('New Password needs to be 8 or more characters.', UserEditError.Place.PASSWORD),
+                })
+
+
             LoginUtility.update_password(to_edit, fields['new_password'])
+            MessageQueue.push(request.session, Message('Password Updated'))
             # Done changing password
+
+        if fields['old_password'] is not None and (fields['new_password'] is None or len(fields['new_password']) == 0):
+            return render(request, 'pages/create_user.html', {
+                'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                'self': user,
+                'edit': to_edit,
+                'error': UserEditError('New password can\'t be empty.', UserEditError.Place.PASSWORD),
+            })
 
         if fields['univ_id'] is None or len(fields['univ_id']) == 0:
             return render(request, 'pages/create_user.html', {
@@ -125,7 +143,7 @@ class UserEdit(View):
                 'error': UserEditError('You can\'t remove a user\'s username.', UserEditError.Place.USERNAME),
             })
 
-        if fields['univ_id'] != to_edit.user_id:
+        if fields['univ_id'] != to_edit.univ_id:
             if UserAPI.check_user_type(user) != UserType.ADMIN:
                 return render(request, 'pages/create_user.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
@@ -134,10 +152,58 @@ class UserEdit(View):
                     'error': UserEditError('You cannot change your own username', UserEditError.Place.USERNAME),
                 })
 
+            if len(fields['univ_id']) > 20:
+                return render(request, 'pages/create_user.html', {
+                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                    'self': user,
+                    'edit': to_edit,
+                    'error': UserEditError(
+                        'A username may not be longer than 20 characters.',
+                        UserEditError.Place.USERNAME
+                    ),
+                })
+
             to_edit.univ_id = fields['univ_id']
             to_edit.save()
 
+        if fields['phone'] is not None:
+            # Extract only the digits from the supplied phone number
+            fields['phone'] = ''.join(filter(lambda a: a.isdigit(), fields['phone']))
+
+            print(f'Phone number extracted: ' + fields['phone'])
+
+            if len(fields['phone']) != 10:
+                return render(request, 'pages/create_user.html', {
+                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                    'self': user,
+                    'edit': to_edit,
+                    'error': UserEditError(
+                        'Phone number needs to be exactly 10 digits long.',
+                        UserEditError.Place.PHONE
+                    ),
+                })
+
         UserAPI.update_user(to_edit, fields['l_name'], fields['f_name'], fields['phone'])
+
+        if fields['l_name'] is not None or fields['f_name'] is not None or fields['phone'] is not None:
+            MessageQueue.push(request.session, Message('Contact Information Updated'))
+
+        if fields['user_type'] is not None:
+            # Chane user type
+            if UserAPI.check_user_type(user) != UserType.ADMIN:
+                return render(request, 'pages/create_user.html', {
+                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                    'self': user,
+                    'edit': to_edit,
+                    'error': UserEditError(
+                        'Only admins may change user types',
+                        UserEditError.Place.TYPE
+                    ),
+                })
+
+            to_edit.type = fields['user_type']
+            to_edit.save()
+            MessageQueue.push(request.session, Message(f'User {to_edit.univ_id} is now a {to_edit.get_type_display()}'))
 
         return redirect(reverse('users-view', args=(to_edit.user_id,)))
 
