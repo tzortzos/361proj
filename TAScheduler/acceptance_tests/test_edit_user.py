@@ -6,7 +6,7 @@ from typing import Optional
 
 from TAScheduler.models import User, UserType
 from TAScheduler.viewsupport.errors import UserEditError, PageError
-from TAScheduler.viewsupport.message import Message
+from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
 class TestEditUser(TestCase):
@@ -56,7 +56,7 @@ class TestEditUser(TestCase):
         return resp.context['messages'][nth]
 
     def assertContainsMessage(self, resp, message: Message, msg: str = 'Message object was not in context'):
-        self.assertTrue(message in resp.context['messages'], msg)
+        self.assertTrue(message in MessageQueue.get(resp.client.session), msg=msg)
 
     def assertUserEditError(self, resp) -> UserEditError:
         """Assert that a UserEditError was returned in the context and return it"""
