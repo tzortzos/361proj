@@ -1,5 +1,5 @@
 import uuid
-from typing import Union, Optional
+from typing import Union, Optional, List
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 
@@ -11,7 +11,7 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 class LoginUtility:
 
     @staticmethod
-    def update_password(user: User, password: str) -> str:
+    def update_password(user: User, password: str):
         user.password = password
         user.tmp_password = False
         user.save()
@@ -23,8 +23,8 @@ class LoginUtility:
     @staticmethod
     def get_user_and_validate_by_user_id(
             session,
-            types: list[UserType] = [],
-            redirect_to : HttpResponseRedirect = redirect(reverse('index')),
+            types: Optional[List[UserType]] = None,
+            redirect_to: HttpResponseRedirect = redirect(reverse('index')),
             redirect_message: Optional[Message] = None,
     ) -> Union[User, HttpResponseRedirect]:
         """
@@ -53,7 +53,7 @@ class LoginUtility:
 
         user_type = UserAPI.check_user_type(user)
 
-        if len(types) > 0 and user_type not in types:
+        if types is not None and len(types) > 0 and user_type not in types:
 
             if redirect_message is not None:
                 MessageQueue.push(session, redirect_message)
