@@ -18,7 +18,7 @@ class UserDelete(View):
         user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
-            redirect(reverse('index')),
+            redirect(reverse('users-directory')),
             Message('You do not have permission to delete users', Message.Type.ERROR),
         )
 

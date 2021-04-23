@@ -2,11 +2,12 @@ from django.shortcuts import reverse
 from django.test import TestCase, Client
 from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
+from django.contrib.sessions.backends.base import SessionBase
 
 from typing import List
 
 from TAScheduler.models import User, UserType
-from TAScheduler.viewsupport.message import Message
+from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
 class TestDeleteUser(TestCase):
@@ -29,25 +30,32 @@ class TestDeleteUser(TestCase):
             type=UserType.PROF
         )
 
-        self.valid_delete_url = reverse('users-delete', self.prof.user_id)
-        self.valid_delete_self = reverse('users-delete', self.admin.user_id)
-        self.invalid_delete_url = reverse('users-delete', 340000)  # Only two users were created so the max valid id is 2
+        self.valid_delete_url = reverse('users-delete', args=(self.prof.user_id,))
+        self.valid_delete_self = reverse('users-delete', args=(self.admin.user_id,))
+        self.invalid_delete_url = reverse('users-delete', args=(340000,))  # Only two users were created so the max valid id is 2
 
-        self.client.session['user_id'] = self.prof.user_id
+        self.session = self.client.session
+        self.session['user_id'] = self.prof.user_id
+        self.session.save()
+
 
     def get_first_message(self, resp) -> Message:
+        self.assertTrue('messages' in self.session, msg='Session does not contain any message')
         try:
-            messages: List[Message] = resp.session['messages']
-            resp.session['messages'] = messages[1:]
+            messages = MessageQueue.get(self.session)
             return messages[0]
         except KeyError:
             self.assertTrue(False, 'Session does not contain any messages')
 
     def test_admin_can_delete_existing(self):
-        resp = self.client.post(self.valid_delete_url, {}, follow=True)
+        print('session' + str(self.session._session))
+        resp = self.client.post(self.valid_delete_url, {})
+        print('session' + str(self.session._session))
+
+        # TODO session does not seem to be saving when set before redirect in post for some reason
 
         self.assertIsNotNone(resp, 'Post did not return value')
-        self.assertRedirects(resp, reverse('users-directory'), 'Did not redirect after deletion')
+        self.assertRedirects(resp, reverse('users-directory'))
 
         message: Message = self.get_first_message(resp)
 
@@ -58,7 +66,8 @@ class TestDeleteUser(TestCase):
         resp = self.client.post(self.invalid_delete_url, {}, follow=True)
 
         self.assertIsNotNone(resp, 'Post did not return value')
-        self.assertRedirects(resp, reverse('users-directory'), 'Did not redirect after deletion')
+        self.assertRedirects(resp, reverse('users-directory'))
+
 
         message: Message = self.get_first_message(resp)
 
@@ -66,10 +75,10 @@ class TestDeleteUser(TestCase):
         self.assertEqual(message.message(), f'No user with id {340000} exists', 'Did not return correct message')
 
     def test_prof_cannot_delete_anyone(self):
-        self.client.session['user-id'] = self.prof.user_id
+        self.session['user_id'] = self.prof.user_id
 
-        resp_post = self.client.post(reverse('users-delete', self.admin.user_id), {}, follow=True)
-        resp_get = self.client.get(reverse('users-delete', self.admin.user_id), {}, follow=True)
+        resp_post = self.client.post(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=True)
+        resp_get = self.client.get(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=True)
 
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
@@ -87,7 +96,7 @@ class TestDeleteUser(TestCase):
         self.assertEqual(message_get.message(), f'You do not have permission to delete users', 'Did not return correct message')
 
     def test_no_session(self):
-        del self.client.session['user-id']
+        del self.session['user_id']
         resp_post = self.client.post(self.valid_delete_url, {}, follow=True)
         resp_get = self.client.get(self.valid_delete_url, {}, follow=True)
 

@@ -28,4 +28,5 @@ urlpatterns = [
     path('users/<int:user_id>/edit', UserEdit.as_view(), name='users-edit'),
     path('users/<int:user_id>/delete', UserDelete.as_view(), name='users-delete'),
     path('users/create', UserCreate.as_view(), name='users-create'),
+    path('users/', UserDirectory.as_view(), name='users-directory'),
 ]

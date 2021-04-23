@@ -1,6 +1,8 @@
 from enum import Enum, auto
 from typing import Iterable, List, Union, Dict
 
+from django.contrib.sessions.models import Session
+from django.contrib.sessions.backends.base import SessionBase
 
 class Message:
     """
@@ -28,6 +30,9 @@ class Message:
             return False
         return self._ty.value == other._ty.value and self._message == other._message
 
+    def __str__(self) -> str:
+        return f'{self._ty}: {self._message}'
+
 
 class MessageQueue:
     """
@@ -36,7 +41,7 @@ class MessageQueue:
     """
 
     @staticmethod
-    def drain(session) -> Iterable[Message]:
+    def drain(session: SessionBase) -> Iterable[Message]:
         """Take all messages from the message queue"""
         try:
             messages = MessageQueue.get(session)
@@ -49,7 +54,7 @@ class MessageQueue:
             return iter([])
 
     @staticmethod
-    def drain_n(session, n: int) -> Iterable[Message]:
+    def drain_n(session: SessionBase, n: int) -> Iterable[Message]:
         """Take up to n messages from the message queue"""
         try:
             messages = MessageQueue.get(session)
@@ -58,6 +63,7 @@ class MessageQueue:
             # Take n from message queue, or remainder if there are fewer than n left
             if m_len < n:
                 del session['messages']
+                session.save()
                 return iter(messages)
             else:
                 MessageQueue.put(messages[n:])
@@ -67,7 +73,7 @@ class MessageQueue:
             return iter([])
 
     @staticmethod
-    def push(session, messages: Union[List[Message], Message]):
+    def push(session: SessionBase, messages: Union[List[Message], Message]):
         """Add a message to the message queue for the next page render"""
         current = MessageQueue.get(session)
 
@@ -80,7 +86,7 @@ class MessageQueue:
     def __to_serializable__(message: Message) -> Dict:
         return {
             'message': message.message(),
-            'type': message.type().value,
+            'type': message.type().value[0],
         }
 
     @staticmethod
@@ -88,17 +94,29 @@ class MessageQueue:
         m = message['message']
         t = int(message['type'])
 
-        t = Message.Type.enum_member[t]
+        if t == Message.Type.REGULAR.value[0]:
+            t = Message.Type.REGULAR
+        elif t == Message.Type.ERROR.value[0]:
+            t = Message.Type.ERROR
+        else:
+            raise KeyError(f'Could not deserialize message object due to type {t} being out of range.\nHad message {m}')
 
-        return Message(m, t)
+        message = Message(m, t)
+
+        print(message)
+
+        return message
 
     @staticmethod
-    def get(session) -> List[Message]:
+    def get(session: SessionBase) -> List[Message]:
         try:
             return list(map(MessageQueue.__from_serialized__, session['messages']))
-        except:
+        except KeyError as e:
+            print('got keyerror ' + str(e))
+            print('had session: ' + str(session._session))
             return []
 
     @staticmethod
-    def put(session, messages: List[Message]):
-        session['message'] = list(map(MessageQueue.__to_serializable__, messages))
+    def put(session: SessionBase, messages: List[Message]):
+        session['messages'] = list(map(MessageQueue.__to_serializable__, messages))
+        session.save()

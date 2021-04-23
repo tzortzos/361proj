@@ -1,11 +1,12 @@
 import uuid
 from typing import Union, Optional, List
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, reverse
 
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.models import User
 from TAScheduler.viewsupport.message import Message, MessageQueue
+from django.shortcuts import redirect, reverse
+from django.contrib.sessions.backends.base import SessionBase
 
 
 class LoginUtility:
@@ -22,9 +23,9 @@ class LoginUtility:
 
     @staticmethod
     def get_user_and_validate_by_user_id(
-            session,
+            session: SessionBase,
             types: Optional[List[UserType]] = None,
-            redirect_to: HttpResponseRedirect = redirect(reverse('index')),
+            redirect_to: Optional[HttpResponseRedirect] = None,
             redirect_message: Optional[Message] = None,
     ) -> Union[User, HttpResponseRedirect]:
         """
@@ -34,6 +35,7 @@ class LoginUtility:
         """
         try:
             user_id = session['user_id']
+            print('Had user_id')
         except KeyError:
             user_id = None
 
@@ -58,6 +60,8 @@ class LoginUtility:
             if redirect_message is not None:
                 MessageQueue.push(session, redirect_message)
 
+            if redirect_to is None:
+                redirect_to = redirect(reverse('index'))
             return redirect_to
 
         return user
