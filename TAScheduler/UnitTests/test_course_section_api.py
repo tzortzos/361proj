@@ -1,13 +1,11 @@
-import time
-
-import TAScheduler.models
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
-from TAScheduler.ClassDesign.CourseAPI import CourseAPI
-from TAScheduler.models import UserType, User, Course, CourseSection
+import uuid
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
-from typing import Union
-import uuid
+
+from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
+from TAScheduler.ClassDesign.CourseAPI import CourseAPI
+from TAScheduler.models import Course, CourseSection
+
 
 
 class TestCourseSection(TestCase):
