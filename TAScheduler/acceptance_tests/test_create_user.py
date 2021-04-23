@@ -28,7 +28,7 @@ class TestCreateUserView(TestCase):
                                              type=UserType.PROF,
                                              tmp_password=False)
 
-    def get_error(self, resp: HttpResponse) -> UserEditError:
+    def get_error(self, resp) -> UserEditError:
         resp_context = resp.context
 
         self.assertIsNotNone(resp_context['error'], 'Did not return error in context on empty password')
@@ -50,7 +50,7 @@ class TestCreateUserView(TestCase):
         ret_error = self.get_error(resp)
 
         self.assertTrue(ret_error.place() is UserEditError.Place.PASSWORD, 'Did not recognize that password was empty')
-        self.assertEqual(ret_error.error().body(), 'You must provide a password to create a user')
+        self.assertEqual(ret_error.error().body(), 'Password must be at least 8 characters in length')
 
     def test_rejects_short_password(self):
         resp = self.client.post(reverse('users-create'), {
