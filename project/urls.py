@@ -25,6 +25,7 @@ urlpatterns = [
 
     path('courses/create/', CourseEdit.as_view(), name='create-course'),
 
-    path('users/<int:user_id>', UserEdit.as_view(), name='users-edit'),
+    path('users/<int:user_id>/edit', UserEdit.as_view(), name='users-edit'),
+    path('users/<int:user_id>/delete', UserDelete.as_view(), name='users-delete'),
     path('users/create', UserCreate.as_view(), name='users-create'),
 ]
