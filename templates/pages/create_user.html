@@ -56,7 +56,7 @@ Post returns the following variables:
 
                 <div class="input-group-text">@uwm.edu</div>
 
-                {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.USERNAME %}
+                {% if error is not None and error.place_username %}
                     <div class="invalid-feedback is-invalid">{{ error.error.body }}</div>
                 {% else %}
                     <div class="invalid-feedback"><em>Only</em> the first portion of the users school email is required</div>
@@ -96,7 +96,7 @@ Post returns the following variables:
                     <p class="text-danger align-self-end">warning: if you change your own type you will not be able to change it back yourself</p>
                 {% endif %}
 
-                {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.TYPE %}
+                {% if error is not None and error.place_type %}
                     <p class="text-danger">{{ error.error.body }}</p>
                 {% endif %}
             </div>
@@ -138,7 +138,7 @@ Post returns the following variables:
                     value=""{{ edit.phone }}
                 {% endif %}
                 >
-                {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.PHONE %}
+                {% if error is not None and error.place_phone %}
                     <div class="invalid-feedback is-invalid">{{ error.error.body }}</div>
                 {% else %}
                     <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
@@ -189,11 +189,20 @@ Post returns the following variables:
                         </div>
                     </div>
                 </div>
+
+                {% if error is not None and error.place_password %}
+                    <p class="text-danger">{{ error.error.body }}</p>
+                {% endif %}
             {% elif new_user_pass %}
                 <h4>password</h4>
                 {# In the case that an admin is creating a user #}
                 <label for="new_password" class="form-label">temporary password</label>
-                <input type="text" name="new_password" class="form-control disabled" value="{{ new_user_pass }}" disabled>
+                <input type="text" name="new_password" class="form-control disabled" value="{{ new_user_pass }}" readonly>
+
+                {% if error is not None and error.place_password %}
+                    <p class="text-danger">{{ error.error.body }}</p>
+                {% endif %}
+
                 <p class="small">
                     You will not be able to retrieve this once you leave this page.<br />
                     The user will be forced to change this on first successful log-in.
