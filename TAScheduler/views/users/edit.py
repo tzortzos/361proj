@@ -172,7 +172,7 @@ class UserEdit(View):
 
             print(f'Phone number extracted: ' + fields['phone'])
 
-            if len(fields['phone']) != 10:
+            if len(fields['phone']) > 0 and len(fields['phone']) != 10:
                 return render(request, 'pages/create_user.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
@@ -201,7 +201,15 @@ class UserEdit(View):
                     ),
                 })
 
-            to_edit.type = fields['user_type']
+            # to_edit.type = fields['user_type']
+
+            if fields['user_type'] == 'A':
+                to_edit.type = UserType.ADMIN
+            elif fields['user_type'] == 'P':
+                to_edit.type = UserType.PROF
+            else:
+                to_edit.type = UserType.TA
+
             to_edit.save()
             MessageQueue.push(request.session, Message(f'User {to_edit.univ_id} is now a {to_edit.get_type_display()}'))
 
