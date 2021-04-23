@@ -12,6 +12,7 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 class TestEditUser(TestCase):
     def setUp(self):
         self.client = Client()
+        self.session = self.client.session
 
         self.old_password = 'a-very-good-password'
         self.new_password = 'another-lesser-password'
@@ -25,7 +26,7 @@ class TestEditUser(TestCase):
             type=UserType.ADMIN
         )
 
-        self.admin_edit_url = reverse('users-edit', self.admin.user_id)
+        self.admin_edit_url = reverse('users-edit', args=(self.admin.user_id,))
 
         self.prof_username = 'nleverence'
         self.prof = User.objects.create(
@@ -35,13 +36,15 @@ class TestEditUser(TestCase):
             type=UserType.PROF
         )
 
-        self.prof_edit_url = reverse('users-edit', self.prof.user_id)
+        self.prof_edit_url = reverse('users-edit', args=(self.prof.user_id,))
 
     def set_admin_session(self):
-        self.client.session['user_id'] = self.admin.user_id
+        self.session['user_id'] = self.admin.user_id
+        self.session.save()
 
     def set_prof_session(self):
-        self.client.session['user_id'] = self.prof.user_id
+        self.session['user_id'] = self.prof.user_id
+        self.session.save()
 
     def assertDoesNotRedirect(self, resp, msg: Optional[str] = None):
         if msg is None:
@@ -75,7 +78,7 @@ class TestEditUser(TestCase):
         }, follow=True)
 
         self.assertRedirects(
-            reverse('users-view', self.admin.user_id),
+            reverse('users-view', args=(self.admin.user_id,)),
             'Did not redirect to user view page on successful edit'
         )
 
@@ -90,7 +93,7 @@ class TestEditUser(TestCase):
         }, follow=True)
 
         self.assertRedirects(
-            reverse('users-view', self.admin.user_id),
+            reverse('users-view', args=(self.admin.user_id,)),
             'Did not redirect to user view page on successful edit'
         )
 
@@ -141,7 +144,7 @@ class TestEditUser(TestCase):
         }, follow=True)
 
         self.assertRedirects(
-            reverse('users-view', self.prof.user_id),
+            reverse('users-view', args=(self.prof.user_id,)),
             'Did not redirect to user info screen after changing user type'
         )
 
