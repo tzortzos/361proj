@@ -2,9 +2,12 @@ from django.shortcuts import reverse
 from django.test import TestCase, Client
 from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
+from django.contrib.sessions.backends.base import SessionBase
+
+from typing import List
 
 from TAScheduler.models import User, UserType
-from TAScheduler.viewsupport.message import Message
+from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
 class TestDeleteUser(TestCase):
@@ -27,24 +30,33 @@ class TestDeleteUser(TestCase):
             type=UserType.PROF
         )
 
-        self.valid_delete_url = reverse('user-delete', self.prof.user_id)
-        self.valid_delete_self = reverse('user-delete', self.admin.user_id)
-        self.invalid_delete_url = reverse('user-delete', 340000)  # Only two users were created so the max valid id is 2
+        self.valid_delete_url = reverse('users-delete', args=(self.prof.user_id,))
+        self.valid_delete_self = reverse('users-delete', args=(self.admin.user_id,))
+        self.invalid_delete_url = reverse('users-delete', args=(340000,))  # Only two users were created so the max valid id is 2
 
-        self.client.session['user_id'] = self.prof.user_id
+        self.session = self.client.session
+        self.session['user_id'] = self.admin.user_id
+        self.session.save()
+
 
     def get_first_message(self, resp) -> Message:
-        self.assertIsNotNone(resp.context['messages'], 'Did not send success message to user')
-        self.assertTrue(len(resp.context['messages']) == 1, 'Did not send any success messages to user')
-
-        return resp.context['messages'][0]
-
+        session = resp.client.session
+        self.assertTrue('messages' in session, msg='Session does not contain any message')
+        try:
+            messages = MessageQueue.get(session)
+            return messages[0]
+        except KeyError:
+            self.assertTrue(False, 'Session does not contain any messages')
 
     def test_admin_can_delete_existing(self):
-        resp = self.client.post(self.valid_delete_url, {}, follow=True)
+        print('session' + str(self.session._session))
+        resp = self.client.post(self.valid_delete_url, {})
+        print('session' + str(self.session._session))
+
+        # TODO session does not seem to be saving when set before redirect in post for some reason
 
         self.assertIsNotNone(resp, 'Post did not return value')
-        self.assertRedirects(resp, reverse('user-directory'), 'Did not redirect after deletion')
+        self.assertRedirects(resp, reverse('users-directory'))
 
         message: Message = self.get_first_message(resp)
 
@@ -55,24 +67,26 @@ class TestDeleteUser(TestCase):
         resp = self.client.post(self.invalid_delete_url, {}, follow=True)
 
         self.assertIsNotNone(resp, 'Post did not return value')
-        self.assertRedirects(resp, reverse('user-directory'), 'Did not redirect after deletion')
+        self.assertRedirects(resp, reverse('users-directory'))
+
 
         message: Message = self.get_first_message(resp)
 
         self.assertTrue(message.type() is Message.Type.ERROR, 'Did not send correct message type')
-        self.assertEqual(message.message(), f'User with id {340000} does not exist', 'Did not return correct message')
+        self.assertEqual(message.message(), f'No user with id {340000} exists', 'Did not return correct message')
 
     def test_prof_cannot_delete_anyone(self):
-        self.client.session['user-id'] = self.prof.user_id
+        self.session['user_id'] = self.prof.user_id
+        self.session.save()
 
-        resp_post = self.client.post(reverse('user-delete', self.admin.user_id), {}, follow=True)
-        resp_get = self.client.get(reverse('user-delete', self.admin.user_id), {}, follow=True)
+        resp_post = self.client.post(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
+        resp_get = self.client.get(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
 
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
 
-        self.assertRedirects(resp_post, reverse('user-directory'))
-        self.assertRedirects(resp_get, reverse('user-directory'))
+        self.assertRedirects(resp_post, reverse('users-directory'))
+        self.assertRedirects(resp_get, reverse('users-directory'))
 
         message_post = self.get_first_message(resp_post)
         message_get = self.get_first_message(resp_get)
@@ -84,15 +98,16 @@ class TestDeleteUser(TestCase):
         self.assertEqual(message_get.message(), f'You do not have permission to delete users', 'Did not return correct message')
 
     def test_no_session(self):
-        del self.client.session['user-id']
-        resp_post = self.client.post(self.valid_delete_url, {}, follow=True)
-        resp_get = self.client.get(self.valid_delete_url, {}, follow=True)
+        del self.session['user_id']
+        self.session.save()
+        resp_post = self.client.post(self.valid_delete_url, {})
+        resp_get = self.client.get(self.valid_delete_url, {})
 
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
 
-        self.assertRedirects(resp_post, reverse('index'))
-        self.assertRedirects(resp_get, reverse('index'))
+        self.assertRedirects(resp_post, reverse('login'))
+        self.assertRedirects(resp_get, reverse('login'))
 
     def test_delete_removes(self):
         self.client.post(self.valid_delete_url, {}, follow=True)

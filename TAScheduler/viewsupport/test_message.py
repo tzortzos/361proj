@@ -15,3 +15,6 @@ class TestMessage(TestCase):
     def test_override_type(self):
         message = Message('m', Message.Type.ERROR)
         self.assertTrue(message.type() is Message.Type.ERROR, 'Did not override type correctly')
+
+
+# TODO add tests for message queue in sessions
