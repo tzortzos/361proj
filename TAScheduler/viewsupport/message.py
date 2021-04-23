@@ -28,7 +28,7 @@ class Message:
         return self._ty.value == other._ty.value and self._message == other._message
 
 
-class MethodQueue:
+class MessageQueue:
     """
     Methods for sending messages to the user across application pages.
     Should be drained into view on each page load.
