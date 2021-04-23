@@ -9,7 +9,12 @@ from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import PageError, UserEditError
 
+
 class UserCreate(View):
+    """
+    Represents the creation of a new user object in the database.
+    Uses the create_user page template in the create configuration.
+    """
 
     def get(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
