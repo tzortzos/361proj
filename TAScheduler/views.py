@@ -32,3 +32,15 @@ class CourseEdit(View):
         return render(request, 'pages/create_course.html', {
             'navbar_items': AdminItems.items_iterable(),
         })
+
+class AssignInstructors(View):
+    def get(self, request):
+        return render(request, 'pages/create_class.html', {
+            'navbar_items': AdminItems.items_iterable(),
+        })
+
+class AddUser(View):
+    def get(self, request):
+        return render(request, 'pages/create_account.html', {
+            'navbar_items': AdminItems.items_iterable(),
+        })
