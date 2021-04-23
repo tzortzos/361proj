@@ -27,9 +27,9 @@ class TestDeleteUser(TestCase):
             type=UserType.PROF
         )
 
-        self.valid_delete_url = reverse('user-delete', self.prof.user_id)
-        self.valid_delete_self = reverse('user-delete', self.admin.user_id)
-        self.invalid_delete_url = reverse('user-delete', 340000)  # Only two users were created so the max valid id is 2
+        self.valid_delete_url = reverse('users-delete', self.prof.user_id)
+        self.valid_delete_self = reverse('users-delete', self.admin.user_id)
+        self.invalid_delete_url = reverse('users-delete', 340000)  # Only two users were created so the max valid id is 2
 
         self.client.session['user_id'] = self.prof.user_id
 
@@ -39,12 +39,11 @@ class TestDeleteUser(TestCase):
 
         return resp.context['messages'][0]
 
-
     def test_admin_can_delete_existing(self):
         resp = self.client.post(self.valid_delete_url, {}, follow=True)
 
         self.assertIsNotNone(resp, 'Post did not return value')
-        self.assertRedirects(resp, reverse('user-directory'), 'Did not redirect after deletion')
+        self.assertRedirects(resp, reverse('users-directory'), 'Did not redirect after deletion')
 
         message: Message = self.get_first_message(resp)
 
@@ -55,24 +54,24 @@ class TestDeleteUser(TestCase):
         resp = self.client.post(self.invalid_delete_url, {}, follow=True)
 
         self.assertIsNotNone(resp, 'Post did not return value')
-        self.assertRedirects(resp, reverse('user-directory'), 'Did not redirect after deletion')
+        self.assertRedirects(resp, reverse('users-directory'), 'Did not redirect after deletion')
 
         message: Message = self.get_first_message(resp)
 
         self.assertTrue(message.type() is Message.Type.ERROR, 'Did not send correct message type')
-        self.assertEqual(message.message(), f'User with id {340000} does not exist', 'Did not return correct message')
+        self.assertEqual(message.message(), f'No user with id {340000} exists', 'Did not return correct message')
 
     def test_prof_cannot_delete_anyone(self):
         self.client.session['user-id'] = self.prof.user_id
 
-        resp_post = self.client.post(reverse('user-delete', self.admin.user_id), {}, follow=True)
-        resp_get = self.client.get(reverse('user-delete', self.admin.user_id), {}, follow=True)
+        resp_post = self.client.post(reverse('users-delete', self.admin.user_id), {}, follow=True)
+        resp_get = self.client.get(reverse('users-delete', self.admin.user_id), {}, follow=True)
 
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
 
-        self.assertRedirects(resp_post, reverse('user-directory'))
-        self.assertRedirects(resp_get, reverse('user-directory'))
+        self.assertRedirects(resp_post, reverse('users-directory'))
+        self.assertRedirects(resp_get, reverse('users-directory'))
 
         message_post = self.get_first_message(resp_post)
         message_get = self.get_first_message(resp_get)
