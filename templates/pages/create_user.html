@@ -15,6 +15,15 @@ To use in the following configurations set these variables:
 - self & edit to same: user edits self
 - self is Admin and edit is not None: admin editing other user (cannot change password)
 - self is Admin and new_user_pass is not None: admin creating new user (cannot change generated password)
+
+Post returns the following variables:
+- univ_id
+- user_type
+- f_name
+- l_name
+- phone
+- old_password (only on password change attempt when self == edit)
+- new_password (only in same case as old_password or when admin is creating new user)
 {% endcomment %}
 
 {% block application_pane %}
