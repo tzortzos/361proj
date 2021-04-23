@@ -84,6 +84,7 @@ class MessageQueue:
 
     @staticmethod
     def __to_serializable__(message: Message) -> Dict:
+        """Mapping function for putting an individual message into the context, do not user directly"""
         return {
             'message': message.message(),
             'type': message.type().value[0],
@@ -91,6 +92,7 @@ class MessageQueue:
 
     @staticmethod
     def __from_serialized__(message: Dict) -> Message:
+        """Mapping function for getting an individual message from the context, do not user directly"""
         m = message['message']
         t = int(message['type'])
 
@@ -99,24 +101,28 @@ class MessageQueue:
         elif t == Message.Type.ERROR.value[0]:
             t = Message.Type.ERROR
         else:
-            raise KeyError(f'Could not deserialize message object due to type {t} being out of range.\nHad message {m}')
+            raise TypeError(
+                f'Could not deserialize message object due to type {t} being out of range.\nHad message {m}'
+            )
 
-        message = Message(m, t)
-
-        print(message)
-
-        return message
+        return Message(m, t)
 
     @staticmethod
     def get(session: SessionBase) -> List[Message]:
+        """
+        Get all messages currently in the session, without modifying them.
+        Use iterable functions `drain`, `drain_n` instead.
+        """
         try:
             return list(map(MessageQueue.__from_serialized__, session['messages']))
         except KeyError as e:
-            print('got keyerror ' + str(e))
-            print('had session: ' + str(session._session))
             return []
 
     @staticmethod
     def put(session: SessionBase, messages: List[Message]):
+        """
+        Set the messages in the context, overwriting what may have been already there.
+        Use `push` instead.
+        """
         session['messages'] = list(map(MessageQueue.__to_serializable__, messages))
         session.save()
