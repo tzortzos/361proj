@@ -1,5 +1,6 @@
 from enum import Enum, auto
-from typing import Iterable, List, Union
+from typing import Iterable, List, Union, Dict
+
 
 class Message:
     """
@@ -7,8 +8,8 @@ class Message:
     """
 
     class Type(Enum):
-        ERROR = auto(),
-        REGULAR = auto(),
+        ERROR = 0,
+        REGULAR = 1,
 
     def __init__(self, messsage: str, ty: Type = Type.REGULAR):
         self._message = messsage
@@ -38,7 +39,7 @@ class MessageQueue:
     def drain(session) -> Iterable[Message]:
         """Take all messages from the message queue"""
         try:
-            messages: List[Message] = session['messages']
+            messages = MessageQueue.get(session)
 
             # Clear message queue
             del session['messages']
@@ -51,7 +52,7 @@ class MessageQueue:
     def drain_n(session, n: int) -> Iterable[Message]:
         """Take up to n messages from the message queue"""
         try:
-            messages: List[Message] = session['messages']
+            messages = MessageQueue.get(session)
             m_len = len(messages)
 
             # Take n from message queue, or remainder if there are fewer than n left
@@ -59,7 +60,7 @@ class MessageQueue:
                 del session['messages']
                 return iter(messages)
             else:
-                session['messages'] = messages[n:]
+                MessageQueue.put(messages[n:])
                 return iter(messages[:n])
 
         except KeyError:
@@ -68,12 +69,36 @@ class MessageQueue:
     @staticmethod
     def push(session, messages: Union[List[Message], Message]):
         """Add a message to the message queue for the next page render"""
-        try:
-            current: List[Message] = session['messages']
-        except KeyError:
-            current: List[Message] = []
+        current = MessageQueue.get(session)
 
         if type(messages) is Message:
-            session['messages'] = current + [messages]
+            MessageQueue.put(session, current + [messages])
         else:
-            session['messages'] = current + messages
+            MessageQueue.put(session, current + messages)
+
+    @staticmethod
+    def __to_serializable__(message: Message) -> Dict:
+        return {
+            'message': message.message(),
+            'type': message.type().value,
+        }
+
+    @staticmethod
+    def __from_serialized__(message: Dict) -> Message:
+        m = message['message']
+        t = int(message['type'])
+
+        t = Message.Type.enum_member[t]
+
+        return Message(m, t)
+
+    @staticmethod
+    def get(session) -> List[Message]:
+        try:
+            return list(map(MessageQueue.__from_serialized__, session['messages']))
+        except:
+            return []
+
+    @staticmethod
+    def put(session, messages: List[Message]):
+        session['message'] = list(map(MessageQueue.__to_serializable__, messages))
