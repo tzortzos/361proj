@@ -148,4 +148,4 @@ class TestLoginView(TestCase):
         redirects = resp.redirect_chain
 
         self.assertEqual(len(redirects), 1, 'Redirected too many times')
-        self.assertEqual(redirects[0][0], reverse('user-edit', args=(self.short_user.user_id,)), 'Did not redirect new user to password edit page')
+        self.assertEqual(redirects[0][0], reverse('users-edit', args=(self.short_user.user_id,)), 'Did not redirect new user to password edit page')
