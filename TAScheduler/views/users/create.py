@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from typing import Union
-import uuid
+from typing import List
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import PageError, UserEditError
+from TAScheduler.viewsupport.message import Message
 
 
 class UserCreate(View):
@@ -16,7 +17,7 @@ class UserCreate(View):
     Uses the create_user page template in the create configuration.
     """
 
-    def get(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
+    def get(self, request: HttpRequest, messages: List[Message] = []) -> Union[HttpResponse, HttpResponseRedirect]:
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
@@ -29,7 +30,8 @@ class UserCreate(View):
         return render(request, 'pages/create_user.html', {
             'self': maybe_user,
             'navbar_items': AdminItems.items_iterable(),
-            'new_user_pass': tmp_pass
+            'new_user_pass': tmp_pass,
+            'messages': messages,
         })
 
     def post(self, request: HttpRequest):
