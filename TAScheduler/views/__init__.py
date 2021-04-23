@@ -10,6 +10,7 @@ from TAScheduler.viewsupport.message import Message
 from TAScheduler.views.login import Login
 from TAScheduler.views.users.edit import UserEdit
 from TAScheduler.views.users.create import UserCreate
+from TAScheduler.views.users.delete import UserDelete
 
 
 class Index(View):
