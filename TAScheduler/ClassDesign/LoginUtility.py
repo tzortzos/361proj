@@ -51,7 +51,7 @@ class LoginUtility:
 
         if user.tmp_password:
             MessageQueue.push(session, Message('You must change your password before accessing the application'))
-            return redirect(reverse('user-edit', args=(user_id,)))
+            return redirect(reverse('users-edit', args=(user_id,)))
 
         user_type = UserAPI.check_user_type(user)
 
