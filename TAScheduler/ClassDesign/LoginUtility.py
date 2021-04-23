@@ -27,6 +27,7 @@ class LoginUtility:
             types: Optional[List[UserType]] = None,
             redirect_to: Optional[HttpResponseRedirect] = None,
             redirect_message: Optional[Message] = None,
+            password_change_redirect: bool = True,
     ) -> Union[User, HttpResponseRedirect]:
         """
         Get a user from a request context and validate the user's type
@@ -49,7 +50,7 @@ class LoginUtility:
             MessageQueue.push(session, Message('You must log into the application before you can view that page'))
             return redirect(reverse('login'))
 
-        if user.tmp_password:
+        if user.tmp_password and password_change_redirect:
             MessageQueue.push(session, Message('You must change your password before accessing the application'))
             return redirect(reverse('users-edit', args=(user_id,)))
 
