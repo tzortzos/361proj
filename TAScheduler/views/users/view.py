@@ -8,7 +8,7 @@ from TAScheduler.viewsupport.navbar import AdminItems
 
 class UserView(View):
 
-    def get(self, request: HttpRequest):
+    def get(self, request: HttpRequest, user_id: int):
         return render(request, 'pages/example.html', context={
             'navbar_items': AdminItems.HOME.items_iterable_except(),
             'messages': MessageQueue.drain(request.session),
