@@ -12,6 +12,7 @@ from TAScheduler.views.users.edit import UserEdit
 from TAScheduler.views.users.create import UserCreate
 from TAScheduler.views.users.delete import UserDelete
 from TAScheduler.views.users.directory import UserDirectory
+from TAScheduler.views.users.view import UserView
 
 
 class Index(View):
