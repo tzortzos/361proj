@@ -42,7 +42,7 @@ Post returns the following variables:
         <div class="mb-3">
             <label for="univ_id" class="form-label">university id</label>
             <div class="input-group has-validation">
-                <input type="text" class="form-control" id="univ_id" required pattern="[^@\s]+"
+                <input type="text" class="form-control" id="univ_id" name="univ_id" required pattern="[^@\s]+"
                 {# In the case that we are editing show the old value #}
                 {% if edit is not None %}
                         value="{{ edit.univ_id }}"
@@ -133,7 +133,7 @@ Post returns the following variables:
             <div class="input-group has-validation">
                 <div class="input-group-text">+1 </div>
                 <input type="text" pattern="[0-9]{10}"
-                       class="form-control"
+                       class="form-control" id="phone" name="phone"
                 {% if edit is not None %}
                     value=""{{ edit.phone }}
                 {% endif %}
