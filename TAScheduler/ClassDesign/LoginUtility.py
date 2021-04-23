@@ -33,9 +33,9 @@ class LoginUtility:
         To ensure that the user has permission to look at this page at this time.
         If the user is redirected for being the incorrect type then `redirect_message` is added to their message queue.
         """
+
         try:
             user_id = session['user_id']
-            print('Had user_id')
         except KeyError:
             user_id = None
 
