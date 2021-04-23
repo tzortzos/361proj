@@ -16,7 +16,7 @@ class LoginUtility:
         user.save()
 
     @staticmethod
-    def generate_tmp_password(self) -> str:
+    def generate_tmp_password() -> str:
         return str(uuid.uuid4())[:8]
 
     @staticmethod
