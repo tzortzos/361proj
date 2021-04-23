@@ -101,3 +101,15 @@ class UserEditError:
     def place(self):
         """Get the place for this error"""
         return self._place
+
+    def place_username(self) -> bool:
+        return self._place == UserEditError.Place.USERNAME
+
+    def place_password(self) -> bool:
+        return self._place == UserEditError.Place.PASSWORD
+
+    def place_type(self) -> bool:
+        return self._place == UserEditError.Place.TYPE
+
+    def place_phone(self) -> bool:
+        return self._place == UserEditError.Place.PHONE
