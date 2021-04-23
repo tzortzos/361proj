@@ -35,14 +35,15 @@ class TestDeleteUser(TestCase):
         self.invalid_delete_url = reverse('users-delete', args=(340000,))  # Only two users were created so the max valid id is 2
 
         self.session = self.client.session
-        self.session['user_id'] = self.prof.user_id
+        self.session['user_id'] = self.admin.user_id
         self.session.save()
 
 
     def get_first_message(self, resp) -> Message:
-        self.assertTrue('messages' in self.session, msg='Session does not contain any message')
+        session = resp.client.session
+        self.assertTrue('messages' in session, msg='Session does not contain any message')
         try:
-            messages = MessageQueue.get(self.session)
+            messages = MessageQueue.get(session)
             return messages[0]
         except KeyError:
             self.assertTrue(False, 'Session does not contain any messages')
@@ -76,9 +77,10 @@ class TestDeleteUser(TestCase):
 
     def test_prof_cannot_delete_anyone(self):
         self.session['user_id'] = self.prof.user_id
+        self.session.save()
 
-        resp_post = self.client.post(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=True)
-        resp_get = self.client.get(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=True)
+        resp_post = self.client.post(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
+        resp_get = self.client.get(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
 
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
@@ -97,14 +99,15 @@ class TestDeleteUser(TestCase):
 
     def test_no_session(self):
         del self.session['user_id']
-        resp_post = self.client.post(self.valid_delete_url, {}, follow=True)
-        resp_get = self.client.get(self.valid_delete_url, {}, follow=True)
+        self.session.save()
+        resp_post = self.client.post(self.valid_delete_url, {})
+        resp_get = self.client.get(self.valid_delete_url, {})
 
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
 
-        self.assertRedirects(resp_post, reverse('index'))
-        self.assertRedirects(resp_get, reverse('index'))
+        self.assertRedirects(resp_post, reverse('login'))
+        self.assertRedirects(resp_get, reverse('login'))
 
     def test_delete_removes(self):
         self.client.post(self.valid_delete_url, {}, follow=True)
