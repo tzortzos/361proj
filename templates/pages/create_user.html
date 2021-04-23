@@ -46,7 +46,12 @@ To use in the following configurations set these variables:
                 >
 
                 <div class="input-group-text">@uwm.edu</div>
-                <div class="invalid-feedback"><em>Only</em> the first portion of the users school email is required</div>
+
+                {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.USERNAME %}
+                    <div class="invalid-feedback is-invalid">{{ error.error.body }}</div>
+                {% else %}
+                    <div class="invalid-feedback"><em>Only</em> the first portion of the users school email is required</div>
+                {% endif %}
             </div>
         </div>
 
@@ -77,8 +82,13 @@ To use in the following configurations set these variables:
                     >
                     <label class="btn btn-outline-danger flex-fill" for="type_admin">Admin</label>
                 </div>
+
                 {% if edit is not None and self.user_id == edit.user_id %}
                     <p class="text-danger align-self-end">warning: if you change your own type you will not be able to change it back yourself</p>
+                {% endif %}
+
+                {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.TYPE %}
+                    <p class="text-danger">{{ error.error.body }}</p>
                 {% endif %}
             </div>
         </div>
@@ -119,7 +129,11 @@ To use in the following configurations set these variables:
                     value=""{{ edit.phone }}
                 {% endif %}
                 >
-                <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
+                {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.PHONE %}
+                    <div class="invalid-feedback is-invalid">{{ error.error.body }}</div>
+                {% else %}
+                    <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
+                {% endif %}
             </div>
         </div>
 
@@ -132,9 +146,14 @@ To use in the following configurations set these variables:
                 <label for="old_password" class="form-label">current password</label>
                 <div class="input-group has-validation mb-3">
                     <input class="form-control" id="old_password">
-                    <div class="invalid-feedback">
-                        You must provide your current password in order to change it.
-                    </div>
+
+                    {% if error is not None and error.place == TAScheduler.viewsupport.errors.UserEditError.Place.PASSWORD %}
+                        <div class="invalid-feedback is-invalid">{{ error.error.body }}</div>
+                    {% else %}
+                        <div class="invalid-feedback">
+                            You must provide your current password in order to change it.
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="row">
