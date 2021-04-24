@@ -12,6 +12,7 @@ class CourseSectionAPI:
         new_course_section.save()
         return new_course_section.course_section_id
 
+    #Should the get method be simply
     @staticmethod
     def get_course_section_by_course_id(course_section_code: str, course_id: Course) -> CourseSection:
         return CourseSection.objects.get(course_section_code=course_section_code, course_id=course_id)
@@ -20,9 +21,12 @@ class CourseSectionAPI:
     def get_all_course_sections_for_course(course_id: Course) -> list[CourseSection]:
         return CourseSection.objects.filter(course_id=course_id)
 
+    @staticmethod
+    def delete_course_section(course_section: int):
+        pass
 
     @staticmethod
-    def delete_course_section_by_course_id(course_section: CourseSection) -> None:
+    def delete_course_section(course_section: CourseSection) -> None:
         course_section.delete()
         print("Deleted course section" + str(course_section))
 
