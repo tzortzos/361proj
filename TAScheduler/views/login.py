@@ -5,6 +5,7 @@ from django.http import HttpRequest, HttpResponse
 from TAScheduler.ClassDesign.UserAPI import UserType, UserAPI
 
 from TAScheduler.viewsupport.errors import PageError, LoginError
+from TAScheduler.viewsupport.message import MessageQueue
 
 
 class Login(View):
@@ -25,12 +26,14 @@ class Login(View):
 
         except KeyError:
             # Otherwise we render the default login page
-            return render(request, 'pages/login.html')
+            return render(request, 'pages/login.html', {
+                'messages': MessageQueue.drain(request.session),
+            })
 
     def post(self, request: HttpRequest):
 
         try:
-            r_username = request.POST['username']
+            r_username = str(request.POST['username'])
         except KeyError:
             # No Username Provided
             r_username = None
@@ -48,7 +51,7 @@ class Login(View):
             })
 
         try:
-            r_password = request.POST['password']
+            r_password = str(request.POST['password'])
         except KeyError:
             # No Password Provided
             r_password = None
@@ -86,7 +89,6 @@ class Login(View):
             request.session['user_id'] = user.user_id
 
             if user.tmp_password:
-                # This is the first login so the user should be
-                return redirect(reverse('user-edit', args=(user.user_id,)))
-            else:
-                return redirect(reverse('index'))
+                return redirect(reverse('users-edit', args=(user.user_id,)))
+
+            return redirect(reverse('index'))

@@ -1,0 +1,48 @@
+{% comment %}
+
+    Takes a User object and displays it inside of a bootstrap card.
+
+    Take the following context variables:
+    self: User      The user who is seeing this card
+    user: User      The user to be displayed
+    nodelete: bool  Always hide delete option
+
+    If user is self or has UserType admin then an edit button is displayed
+    If self has UserType Admin then a delete button is displayed
+
+{% endcomment %}
+
+<div id="user_card_{{ user.user_id }}"
+     class="card pt-2 pb-2">
+    <div class="card-body">
+
+        {# Header #}
+        <div class="d-flex mb-3">
+            {# Username #}
+            <h5 class="card-title me-1">{{ user.univ_id }}</h5>
+            <span class="me-auto"><em>{{ user.get_type_display }}</em></span>
+
+            {# User Controls #}
+            <div class="btn-group"
+                 id="user_card_{{ user.user_id }}_controls">
+                {# Edit #}
+                {% if self.user_id == user.user_id or self.type == 'A' %}
+                    <a class="btn btn-dark" href="{% url 'users-edit' user.user_id %}"><i class="bi bi-pencil-fill"></i></a>
+                {% endif %}
+
+                {# Delete #}
+                {% if self.type == 'A' and not nodelete %}
+                    <a class="btn btn-danger" href="{% url 'users-delete' user.user_id %}"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Body #}
+        <div>
+            <p class="card-text">
+                {{ user.f_name }} {{ user.l_name }}<br />
+                {{ user.phone }}
+            </p>
+        </div>
+    </div>
+</div>

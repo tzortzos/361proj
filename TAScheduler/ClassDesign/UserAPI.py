@@ -1,18 +1,36 @@
 from TAScheduler.models import User, UserType
 from typing import Union
-from django.http import HttpResponseRedirect
 from typing import Optional
-from django.shortcuts import redirect,reverse
 
 
 class UserAPI:
 
     @staticmethod
     ##should admin only enter this info or can admin add other info (lname, fname, phone) of user
-    def create_user(type: UserType, univ_id: str, password: str, lname: str='', fname: str='',
-                    phone: str='') -> int:
-        new_user = User.objects.create(type=type, univ_id=univ_id, password=password, l_name=lname, f_name=fname, phone=phone)
-        # new_user.save(),
+    def create_user(
+            user_type: Union[UserType,str],
+            univ_id: str, password: str,
+            lname: str='',
+            fname: str='',
+            phone: str=''
+    ) -> int:
+        if type(user_type) is str:
+            if user_type == 'A':
+                user_type = UserType.ADMIN
+            elif user_type == 'P':
+                user_type  = UserType.PROF
+            elif user_type == 'T':
+                user_type = UserType.TA
+            else:
+                raise TypeError(f'user_type {user_type} is non in the set of [A, P, T]')
+        new_user = User.objects.create(
+            type=user_type,
+            univ_id=univ_id,
+            password=password,
+            l_name=lname,
+            f_name=fname,
+            phone=phone
+        )
         return new_user.user_id
 
     @staticmethod
@@ -37,15 +55,26 @@ class UserAPI:
 
     @staticmethod
     def check_user_type(user: User):
-        return user.type
+        if user.type == UserType.ADMIN.value[0]:
+            return UserType.ADMIN
+        elif user.type == UserType.PROF.value[0]:
+            return UserType.PROF
+        else:
+            return UserType.TA
 
     @staticmethod
     def update_user(user: User, lname: Optional[str] = None, fname: Optional[str] = None, phone: Optional[str] = None):
         # if attribute is none don't update database
         # for example, if lname passed is not none, the execute that
-        user.l_name = lname
-        user.f_name = fname
-        user.phone = phone
+        if lname is not None:
+            user.l_name = lname
+
+        if fname is not None:
+            user.f_name = fname
+
+        if phone is not None:
+            user.phone = phone
+
         user.save()
 
 
