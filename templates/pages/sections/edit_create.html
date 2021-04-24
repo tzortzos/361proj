@@ -1,86 +1,202 @@
 {% extends 'app_base.html' %}
 
+{% comment %}
+    This template allows one to create and edit Section objects and their assignments.
+
+    Context Variables:
+    - self: User                        The user viewing this page
+    - section: Optional[Section]        The section to be edited, if not being created from scratch
+    - courses: List[(Course, int)]      All courses and how many sections they currently have
+    - professors: List[User]            A list of User objects that may be assigned to this section as it's professor
+    - tas: List[User]                   A list of User objects that may be assigned to this section as it's tas
+    - error: Optional[SectionError]     Add a server side validation error to this rendering of the template
+
+    POST variables:
+    - section_code: str
+    - course_id: str
+    - lecture_days: List[str] from set [ M, T, W, H, F ]
+    - lecture_time: str
+    - instructor_id: str
+    - ta_ids: List[str]
+{% endcomment %}
+
 {% block application_pane %}
-    <div class="row">
-        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+<div class="row">
+    {# Title #}
+    {% if section %}
+        <h2>Edit Course Section {{ section.course_section_code }} of {{ section.course_id.course_code }}</h2>
+    {% else %}
+        <h2>Create a Course</h2>
+    {% endif %}
 
-            <h2 id="main-header">Add or Remove Course Instructors</h2>
-            <form class="form-horizontal" method="post">
-                {% csrf_token %}
+    {# Main Body #}
+    <form class="form needs-validation" method="post" novalidate>
+        <div class="row">
+            {% csrf_token %}
 
-                <label for="courses">Select a course to assign instructors</label>
-                <select>
-                    <option value="this should pull up all courses">coursename</option>
+            {# General information #}
+            <div class="col-12 mb-3">
+
+                {# Course Selection #}
+                <label class="form-label" for="course_id">Course</label>
+                <select id="course_id" name="course_id" class="form-select" required>
+                    {% if section is None %}
+                    <option selected>Choose</option>
+                    {% endif %}
+
+                    {% for course in courses %}
+                        <option value="{{ course.course_id }}"
+                                {% if section and course.course_id == section.course_id_id %}
+                                selected
+                                {% endif %}
+                        >
+                            {{ course.course_code }} - {{ course.course_name }}
+                        </option>
+                    {% endfor %}
                 </select>
+                <div class="invalid-feedback">
+                    {% if error and error.place_course %}
+                        {{ error.error.body }}
+                    {% else %}
+                        You must select a course
+                    {% endif %}
+                </div>
 
-                <br>
-                <table>
-                    <tr>
-                        <th>Position</th>
-                        <th>Last Name</th>
-                        <th>First Name</th>
-                        <th>Contact</th>
-                        <th>Assign</th>
-                    </tr>
-                    <tr>
-                        <th>Professor</th>
-                        <th>Doe</th>
-                        <th>John</th>
-                        <th>(123)456-7890</th>
-                        <th><label>
-                            <input type="checkbox">
-                        </label></th>
-                    </tr>
-                    <tr>
-                        <th>TA</th>
-                        <th>Doe</th>
-                        <th>Jane</th>
-                        <th>(098)765-4321</th>
-                        <th><label>
-                            <input type="checkbox">
-                        </label></th>
-                    </tr>
-                </table>
-                <br>
-                <div class="form-group">
-                    <div class="btn-group">
-                        <input class="btn btn-primary" type="submit" content="create">
-                        <a class="btn btn-default" href="/courses">cancel</a>
+                {# Section Code #}
+                <label for="section_code" class="form-label">Section Code</label>
+                <input type="text" value="{{ section.section_code }}"
+                       required pattern="[0-9]{3}"
+                       class="form-control {% if error and error.place_code %}is-invalid{% endif %}">
+                <div class="invalid-feedback">
+                    {% if error and error.place_code %}
+                        {{ error.error.body }}
+                    {% else %}
+                        A section code is required, and must be exactly 3 digits
+                    {% endif %}
+                </div>
+
+                {# Days #}
+                <div class="input-group mb-3 has-validation d-flex flex-column">
+
+                    <p class="mb-1">Lecture Days</p>
+                    <div class="form-check btn-group px-0">
+                        {# Monay #}
+                        <input type="checkbox" class="btn-check" id="M" name="lecture_days"
+                                {% if section and 'M' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="M" class="btn btn-outline-primary">Monday</label>
+
+                        {# Tuesday #}
+                        <input type="checkbox" class="btn-check" id="T" name="lecture_days"
+                                {% if section and 'T' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="T" class="btn btn-outline-primary">Tuesday</label>
+
+                        {# Wednesday #}
+                        <input type="checkbox" class="btn-check" id="W" name="lecture_days"
+                                {% if section and 'W' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="W" class="btn btn-outline-primary">Wednesday</label>
+
+                        {# Thursday #}
+                        <input type="checkbox" class="btn-check" id="H" name="lecture_days"
+                                {% if section and 'H' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="H" class="btn btn-outline-primary">Thursday</label>
+
+                        {# Wednesday #}
+                        <input type="checkbox" class="btn-check" id="F" name="lecture_days"
+                                {% if section and 'F' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="F" class="btn btn-outline-primary">Friday</label>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            {# Professor selection #}
+            <div class="col-12 col-md-6 mb-3">
+                <div class="input-group mb-3 d-flex flex-column">
+                    <p class="mb-1">Select Professor</p>
+                    <div class="list-group">
+
+                        {# None selected #}
+                        <label class="list-group-item">
+                            <input type="radio" class="form-check-input me-1"
+                                   name="professor" id="-1"
+                                   {% if section is None or section.instructor_id is None %}checked{% endif %}
+                            >
+                            <strong>None</strong>
+                        </label>
+
+                        {% for professor in professors %}
+                            <label class="list-group-item">
+                                <input type="radio" class="form-check-input me-1"
+                                       name="professor" id="{{ professor.user_id }}"
+                                        {% if section is not None and section.instructor_id == professor %}checked{% endif %}
+                                >
+                                <strong>{{ professor.univ_id }}</strong> {{ professor.f_name }} {{ professor.l_name }}
+                            </label>
+                        {% endfor %}
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-{% endblock %}
+            </div>
 
-    {#    <style>#}
-    {#        table {#}
-    {#            font-family: arial, sans-serif;#}
-    {#            border-collapse: collapse;#}
-    {#            width: 100%;#}
-    {#        }#}
-    {##}
-    {#        td, th {#}
-    {#            border: 2px solid #000000;#}
-    {#            text-align: left;#}
-    {#            padding: 8px;#}
-    {#        }#}
-    {##}
-    {#        tr:nth-child(even) {#}
-    {#            background-color: #dddddd;#}
-    {#        }#}
-    {##}
-    {#        button {#}
-    {#            background-color: #006eff;#}
-    {#            color: white;#}
-    {#            padding: 14px 20px;#}
-    {#            margin: 8px 0;#}
-    {#            border: none;#}
-    {#            cursor: pointer;#}
-    {#            width: auto;#}
-    {#        }#}
-    {##}
-    {#        button:hover {#}
-    {#            opacity: 0.8;#}
-    {#        }#}
-    {#    </style>#}
+            {# TA selection #}
+            <div class="col-12 col-md-6 mb-3">
+                <div class="input-group mb-3 d-flex flex-column">
+                    <p class="mb-1">Select TAs</p>
+                    <div class="list-group">
+                        {% for ta in tas %}
+                            <label class="list-group-item">
+                                <input type="checkbox" class="form-check-input me-1"
+                                       name="tas" id="{{ ta.user_id }}"
+                                        {% if ta in section.ta_ids.all %}
+                                            checked
+                                        {% endif %}
+                                >
+                                <strong>{{ ta.univ_id }}</strong> {{ ta.f_name }} {{ ta.l_name }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {# Submits #}
+            <div class="col-12 mb-3">
+                <div class="btn-group">
+
+                    {# Submit #}
+                    <input class="btn btn-large btn-primary"
+                           type="submit"
+                           value="{% if section %}confirm{% else %}create{% endif %}">
+
+                    {# cancel #}
+                    <a class="btn btn-large btn-dark" href="{% url 'courses-directory' %}">cancel</a>
+
+                    {# delete #}
+                    {% if section %}
+                        <a class="btn btn-large btn-danger" href="{% url 'courses-delete' section.course_section_id %}">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+    {% include 'partials/validate.html' %}
+{% endblock %}
