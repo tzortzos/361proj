@@ -1,0 +1,76 @@
+{% extends 'app_base.html' %}
+
+{% block application_pane %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+
+            <h2 id="main-header">Create a User</h2>
+            <form class="form-horizontal" method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="firstname">First Name:</label>
+                    <input class="form-control" type="text" id="first_name" placeholder="John" autofocus required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastname">Last Name:</label>
+                    <input class="form-control" type="text" id="last_name" placeholder="Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-group">
+                        <input class="form-control"
+                               type="text"
+                               name="email"
+                               placeholder="example"
+                               required>
+                        <div class="input-group-addon">@uwm.edu</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p-num">Phone Number</label>
+                    <input class="form-control" type="text" id="p-num" pattern="\d{10}" placeholder="1234567890"
+                           oninvalid="this.setCustomValidity('Must be 10 digits.')"
+                           oninput="this.setCustomValidity('')" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control" type="text" id="password" readonly>
+                    <div class="btn btn-default" onclick="gen()">Generate New</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="btn-group">
+                        <input class="btn btn-primary" type="submit" content="create">
+                        <a class="btn btn-default" href="/users">cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function generatePassword() {
+            var l = 8,
+                charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+                pass = "";
+            for (var i = 0, n = charset.length; i < l; ++i) {
+                pass += charset.charAt(Math.floor(Math.random() * n));
+            }
+            return pass;
+        }
+
+        function gen() {
+            document.getElementById('password').value = generatePassword()
+        }
+
+        window.onload = function () {
+            gen()
+        }
+    </script>
+
+{% endblock %}

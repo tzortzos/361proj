@@ -1,0 +1,86 @@
+{% extends 'app_base.html' %}
+
+{% block application_pane %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+
+            <h2 id="main-header">Add or Remove Course Instructors</h2>
+            <form class="form-horizontal" method="post">
+                {% csrf_token %}
+
+                <label for="courses">Select a course to assign instructors</label>
+                <select>
+                    <option value="this should pull up all courses">coursename</option>
+                </select>
+
+                <br>
+                <table>
+                    <tr>
+                        <th>Position</th>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Contact</th>
+                        <th>Assign</th>
+                    </tr>
+                    <tr>
+                        <th>Professor</th>
+                        <th>Doe</th>
+                        <th>John</th>
+                        <th>(123)456-7890</th>
+                        <th><label>
+                            <input type="checkbox">
+                        </label></th>
+                    </tr>
+                    <tr>
+                        <th>TA</th>
+                        <th>Doe</th>
+                        <th>Jane</th>
+                        <th>(098)765-4321</th>
+                        <th><label>
+                            <input type="checkbox">
+                        </label></th>
+                    </tr>
+                </table>
+                <br>
+                <div class="form-group">
+                    <div class="btn-group">
+                        <input class="btn btn-primary" type="submit" content="create">
+                        <a class="btn btn-default" href="/courses">cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+    {#    <style>#}
+    {#        table {#}
+    {#            font-family: arial, sans-serif;#}
+    {#            border-collapse: collapse;#}
+    {#            width: 100%;#}
+    {#        }#}
+    {##}
+    {#        td, th {#}
+    {#            border: 2px solid #000000;#}
+    {#            text-align: left;#}
+    {#            padding: 8px;#}
+    {#        }#}
+    {##}
+    {#        tr:nth-child(even) {#}
+    {#            background-color: #dddddd;#}
+    {#        }#}
+    {##}
+    {#        button {#}
+    {#            background-color: #006eff;#}
+    {#            color: white;#}
+    {#            padding: 14px 20px;#}
+    {#            margin: 8px 0;#}
+    {#            border: none;#}
+    {#            cursor: pointer;#}
+    {#            width: auto;#}
+    {#        }#}
+    {##}
+    {#        button:hover {#}
+    {#            opacity: 0.8;#}
+    {#        }#}
+    {#    </style>#}
