@@ -32,7 +32,7 @@ class UserEdit(View):
             MessageQueue.push(request.session, Message('You are not allowed to edit other users.', Message.Type.ERROR))
             return redirect(reverse('index'))
 
-        return render(request, 'pages/create_user.html', {
+        return render(request, 'pages/users/edit_create.html', {
             'navbar_items': AdminItems.items_iterable(),  # TODO Change based on user type later
             'self': user,
             'edit': to_edit,
@@ -100,14 +100,14 @@ class UserEdit(View):
                     request.session,
                     Message('You may not change another users password', Message.Type.ERROR)
                 )
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),
                     'self': user,
                     'edit': to_edit,
                 })
 
             if fields['old_password'] is None or str(to_edit.password) != fields['old_password']:
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
@@ -115,7 +115,7 @@ class UserEdit(View):
                 })
 
             if len(fields['new_password']) < 8:
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
@@ -127,7 +127,7 @@ class UserEdit(View):
             # Done changing password
 
         if fields['old_password'] is not None and len(fields['old_password']) > 0 and (fields['new_password'] is None or len(fields['new_password']) == 0):
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                 'self': user,
                 'edit': to_edit,
@@ -135,7 +135,7 @@ class UserEdit(View):
             })
 
         if fields['univ_id'] is None or len(fields['univ_id']) == 0:
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                 'self': user,
                 'edit': to_edit,
@@ -144,7 +144,7 @@ class UserEdit(View):
 
         if fields['univ_id'] != to_edit.univ_id:
             if UserAPI.check_user_type(user) != UserType.ADMIN:
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
@@ -152,7 +152,7 @@ class UserEdit(View):
                 })
 
             if len(fields['univ_id']) > 20:
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
@@ -172,7 +172,7 @@ class UserEdit(View):
             print(f'Phone number extracted: ' + fields['phone'])
 
             if len(fields['phone']) > 0 and len(fields['phone']) != 10:
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
@@ -190,7 +190,7 @@ class UserEdit(View):
         if fields['user_type'] is not None:
             # Chane user type
             if UserAPI.check_user_type(user) != UserType.ADMIN:
-                return render(request, 'pages/create_user.html', {
+                return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,

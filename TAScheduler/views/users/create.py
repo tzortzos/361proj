@@ -27,7 +27,7 @@ class UserCreate(View):
 
         tmp_pass = LoginUtility.generate_tmp_password()
 
-        return render(request, 'pages/create_user.html', {
+        return render(request, 'pages/users/edit_create.html', {
             'self': maybe_user,
             'navbar_items': AdminItems.items_iterable(),
             'new_user_pass': tmp_pass,
@@ -48,7 +48,7 @@ class UserCreate(View):
             new_pass = None
 
         if new_pass is None or len(new_pass) < 8:
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
                 'error': UserEditError('Password must be at least 8 characters in length', UserEditError.Place.PASSWORD),
                 'new_user_pass': LoginUtility.generate_tmp_password(),
@@ -60,27 +60,27 @@ class UserCreate(View):
             univ_id = None
 
         if univ_id is None or len(univ_id) == 0:
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
                 'error': UserEditError('You must provide a university id', UserEditError.Place.USERNAME),
                 'new_user_pass': new_pass,
             })
         elif len(univ_id) > 20:
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
                 'error': UserEditError('A university id may not be longer than 20 characters', UserEditError.Place.USERNAME),
                 'new_user_pass': new_pass,
             })
         elif len(''.join(filter(lambda c: c == ' ', iter(univ_id)))) > 0:
             print(f'found spaces in "{univ_id}"')
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
                 'error': UserEditError('A username may not have spaces', UserEditError.Place.USERNAME),
                 'new_user_pass': new_pass,
             })
         elif len(''.join(filter(lambda c: c == '@', univ_id))) > 0:
             print(f'found @ sign in in "{univ_id}"')
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
                 'error': UserEditError('You only need to put in the first part of a university email', UserEditError.Place.USERNAME),
                 'new_user_pass': new_pass,
@@ -94,7 +94,7 @@ class UserCreate(View):
             user_type = None
 
         if user_type is None or user_type not in ['A', 'P', 'T']:
-            return render(request, 'pages/create_user.html', {
+            return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
                 'error': UserEditError('You must provide a user type', UserEditError.Place.TYPE),
                 'new_user_pass': new_pass,
