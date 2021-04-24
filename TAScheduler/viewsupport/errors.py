@@ -113,3 +113,44 @@ class UserEditError:
 
     def place_phone(self) -> bool:
         return self._place == UserEditError.Place.PHONE
+
+
+class SectionError:
+    """
+    Represents an error that can be displayed on a course section page.
+    """
+
+    class Place(Enum):
+        CODE = 0
+        COURSE = 1
+        INSTRUCTOR = 2
+        TAS = 3
+
+    def __init__(self, msg: Union[PageError, str], place: Place):
+        if type(msg) is str:
+            self._msg = PageError(msg)
+        elif type(msg) is PageError:
+            self._msg = msg
+        else:
+            raise TypeError('Message must be a str or a PageError')
+
+        self._place = place
+
+    def error(self) -> PageError:
+        return self._msg
+
+    def place(self) -> Place:
+        return self._place
+
+    def place_code(self) -> bool:
+        return self._place is SectionError.Place.CODE
+
+    def place_course(self) -> bool:
+        return self._place is SectionError.Place.COURSE
+
+    def place_instructor(self) -> bool:
+        return self._place is SectionError.Place.INSTRUCTOR
+
+    def place_tas(self) -> bool:
+        return self._place is SectionError.Place.TAS
+
