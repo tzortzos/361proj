@@ -49,28 +49,23 @@ class TestDeleteUser(TestCase):
             self.assertTrue(False, 'Session does not contain any messages')
 
     def test_admin_can_delete_existing(self):
-        print('session' + str(self.session._session))
         resp = self.client.post(self.valid_delete_url, {})
-        print('session' + str(self.session._session))
 
-        # TODO session does not seem to be saving when set before redirect in post for some reason
+        message: Message = self.get_first_message(resp)
 
         self.assertIsNotNone(resp, 'Post did not return value')
         self.assertRedirects(resp, reverse('users-directory'))
-
-        message: Message = self.get_first_message(resp)
 
         self.assertTrue(message.type() is Message.Type.REGULAR, 'Did not send correct message type')
         self.assertEqual(message.message(), f'Successfully deleted user {self.prof_username}', 'Did not return correct message')
 
     def test_delete_nonexistent_redirects_with_error(self):
-        resp = self.client.post(self.invalid_delete_url, {}, follow=True)
+        resp = self.client.post(self.invalid_delete_url, {}, follow=False)
+
+        message: Message = self.get_first_message(resp)
 
         self.assertIsNotNone(resp, 'Post did not return value')
         self.assertRedirects(resp, reverse('users-directory'))
-
-
-        message: Message = self.get_first_message(resp)
 
         self.assertTrue(message.type() is Message.Type.ERROR, 'Did not send correct message type')
         self.assertEqual(message.message(), f'No user with id {340000} exists', 'Did not return correct message')
@@ -82,14 +77,14 @@ class TestDeleteUser(TestCase):
         resp_post = self.client.post(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
         resp_get = self.client.get(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
 
+        message_post = self.get_first_message(resp_post)
+        message_get = self.get_first_message(resp_get)
+
         self.assertIsNotNone(resp_post, 'Post did not return value')
         self.assertIsNotNone(resp_get, 'Get did not return value')
 
         self.assertRedirects(resp_post, reverse('users-directory'))
         self.assertRedirects(resp_get, reverse('users-directory'))
-
-        message_post = self.get_first_message(resp_post)
-        message_get = self.get_first_message(resp_get)
 
         self.assertTrue(message_post.type() is Message.Type.ERROR, 'Did not send correct message type')
         self.assertEqual(message_post.message(), f'You do not have permission to delete users', 'Did not return correct message')
