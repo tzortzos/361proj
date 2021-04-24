@@ -22,5 +22,5 @@ class UserDirectory(View):
             'navbar_items': AdminItems.USERS.items_iterable_except(),  # TODO change for other user types
             'messages': MessageQueue.drain(request.session),
 
-            'users': User.objects.iterator(),
+            'users': User.objects.iterator(),  # TODO change to use new function on UserAPI
         })

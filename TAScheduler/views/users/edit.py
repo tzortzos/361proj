@@ -126,7 +126,7 @@ class UserEdit(View):
             MessageQueue.push(request.session, Message('Password Updated'))
             # Done changing password
 
-        if fields['old_password'] is not None and (fields['new_password'] is None or len(fields['new_password']) == 0):
+        if fields['old_password'] is not None and len(fields['old_password']) > 0 and (fields['new_password'] is None or len(fields['new_password']) == 0):
             return render(request, 'pages/create_user.html', {
                 'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                 'self': user,
