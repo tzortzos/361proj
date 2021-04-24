@@ -50,17 +50,20 @@ class TestLabSection(TestCase):
         self.assertTrue(self.labsection2 in list_of_labs, msg='Expected labs section 1 in the list for course section.')
 
     def test_edit_lab_section(self):
-        new_lab = self.labsection1
+        new_lab = LabSection.objects.create(
+            lab_section_code=str(uuid.uuid4())[:3],
+            course_section_id=self.course_section_id)
+
         ta = User.objects.create(
             type=UserType.TA,
             univ_id='alarry',
             password='Password123',
-            tmp_password=False
         )
-        LabSectionAPI.edit_lab_section(new_lab.lab_section_id, 'MWF', '1-3p',ta)
-        self.assertTrue(new_lab.lab_days is 'MWF', msg='Expected update of lab days to MWF.')
-        self.assertTrue(new_lab.lab_time is '1-3p', msg='Expected update of lab time to 1-3p.')
-        self.assertTrue(new_lab.ta_id is ta, msg='Expected update of assigned ta to ta.')
+        self.lab_days = 'MWF'
+        LabSectionAPI.edit_lab_section(new_lab.lab_section_id, self.lab_days, '1-3p', ta)
+        self.assertEquals(new_lab.lab_days, self.lab_days, msg='Expected update of lab days to MWF.')
+        self.assertEqual(new_lab.lab_time, '1-3p', msg='Expected update of lab time to 1-3p.')
+        self.assertEqual(new_lab.ta_id, ta, msg='Expected update of assigned ta to ta.')
 
     def test_delete_lab_section(self):
         LabSectionAPI.delete_lab_section(self.labsection1.lab_section_id)
