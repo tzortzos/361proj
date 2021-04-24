@@ -1,5 +1,5 @@
 from TAScheduler.models import Course, User, UserType
-from typing import Optional
+from typing import Optional, List, Iterable
 
 
 class CourseAPI:
@@ -26,6 +26,11 @@ class CourseAPI:
             return course
         except Course.DoesNotExist:
             return None
+
+    @staticmethod
+    def get_all_course() -> Iterable[Course]:
+        pass
+
 
     @staticmethod
     def delete_course(course: Course) -> None:
