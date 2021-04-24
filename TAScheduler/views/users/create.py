@@ -44,7 +44,7 @@ class UserCreate(View):
 
         try:
             new_pass = str(request.POST['new_password'])
-        except:
+        except KeyError:
             new_pass = None
 
         if new_pass is None or len(new_pass) < 8:
@@ -53,9 +53,10 @@ class UserCreate(View):
                 'error': UserEditError('Password must be at least 8 characters in length', UserEditError.Place.PASSWORD),
                 'new_user_pass': LoginUtility.generate_tmp_password(),
             })
+
         try:
             univ_id = str(request.POST['univ_id'])
-        except:
+        except KeyError:
             univ_id = None
 
         if univ_id is None or len(univ_id) == 0:
@@ -64,6 +65,27 @@ class UserCreate(View):
                 'error': UserEditError('You must provide a university id', UserEditError.Place.USERNAME),
                 'new_user_pass': new_pass,
             })
+        elif len(univ_id) > 20:
+            return render(request, 'pages/create_user.html', {
+                'self': maybe_user,
+                'error': UserEditError('A university id may not be longer than 20 characters', UserEditError.Place.USERNAME),
+                'new_user_pass': new_pass,
+            })
+        elif len(''.join(filter(lambda c: c == ' ', iter(univ_id)))) > 0:
+            print(f'found spaces in "{univ_id}"')
+            return render(request, 'pages/create_user.html', {
+                'self': maybe_user,
+                'error': UserEditError('A username may not have spaces', UserEditError.Place.USERNAME),
+                'new_user_pass': new_pass,
+            })
+        elif len(''.join(filter(lambda c: c == '@', univ_id))) > 0:
+            print(f'found @ sign in in "{univ_id}"')
+            return render(request, 'pages/create_user.html', {
+                'self': maybe_user,
+                'error': UserEditError('You only need to put in the first part of a university email', UserEditError.Place.USERNAME),
+                'new_user_pass': new_pass,
+            })
+
         # TODO: Check univ id for special characters.
 
         try:
@@ -80,18 +102,18 @@ class UserCreate(View):
 
         try:
             l_name = str(request.POST['l_name'])
-        except TypeError:
+        except KeyError:
             l_name = None
 
         try:
             f_name = request.POST['f_name']
-        except TypeError:
+        except KeyError:
             f_name = None
 
         try:
-            phone  = request.POST['phone']
+            phone = request.POST['phone']
 
-        except TypeError:
+        except KeyError:
             phone = None
 
         user_id = UserAPI.create_user(user_type, univ_id, new_pass)
