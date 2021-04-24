@@ -1,36 +1,8 @@
+from django.shortcuts import reverse
 from TAScheduler.viewsupport.icons import IconItem
-from typing import Union, Optional
+from typing import Union, Optional, Iterable
 from enum import Enum
 
-class AdminItems(Enum):
-    """Represents exactly one of the possible menu items for an admin,
-    intended to be used as an iterable"""
-    HOME = 0
-    USERS = 1
-
-    def get_item(self):
-        if self == AdminItems.HOME:
-            return NavbarItem('home', '/admin', icon='house-door-fill')
-        elif self == AdminItems.USERS:
-            return NavbarItem('users directory', '/users', icon='people-fill')
-
-    def map_disable(self):
-        """
-        returns a function to be used in map which will call get item for each
-        AdminItem passed in, but disable in the case that that item is self
-        """
-        return lambda a : a.get_item() if a != self else a.get_item().disable()
-
-    def items_iterable_except(self):
-        """
-        Iterate over all AdminItems values, with the one equal to self disabled
-        :return: Iter[NavbarItem]
-        """
-        return map(self.map_disable(), iter(AdminItems))
-
-    @classmethod
-    def items_iterable(cls):
-        return map(lambda a : a.get_item(), iter(cls))
 
 class NavbarItem:
     """
@@ -73,3 +45,37 @@ class NavbarItem:
             return None
         else:
             return self.icon.classes()
+
+
+class AdminItems(Enum):
+    """Represents exactly one of the possible menu items for an admin,
+    intended to be used as an iterable"""
+    HOME = 0
+    USERS = 1
+
+    def get_item(self):
+        if self == AdminItems.HOME:
+            return NavbarItem('home', reverse('index'), icon='house-door-fill')
+        elif self == AdminItems.USERS:
+            return NavbarItem('users directory', reverse('users-directory'), icon='people-fill')
+
+    def map_disable(self):
+        """
+        returns a function to be used in map which will call get item for each
+        AdminItem passed in, but disable in the case that that item is self
+        """
+        return lambda a : a.get_item() if a != self else a.get_item().disable()
+
+    def items_iterable_except(self) -> Iterable[NavbarItem]:
+        """
+        Iterate over all AdminItems values, with the one equal to self disabled
+        """
+        return map(self.map_disable(), iter(AdminItems))
+
+    @classmethod
+    def items_iterable(cls) -> Iterable[NavbarItem]:
+        """
+        Iterate over all AdminItems values, with none disabled.
+        """
+        return map(lambda a: a.get_item(), iter(cls))
+
