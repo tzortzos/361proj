@@ -8,6 +8,7 @@ from TAScheduler.viewsupport.message import MessageQueue
 
 # Reexport Views from Submodules
 from TAScheduler.views.login import Login
+from TAScheduler.views.logout import Logout
 from TAScheduler.views.users.edit import UserEdit
 from TAScheduler.views.users.create import UserCreate
 from TAScheduler.views.users.delete import UserDelete
@@ -16,9 +17,8 @@ from TAScheduler.views.users.view import UserView
 
 
 class Index(View):
-
     def get(self, request: HttpRequest):
-        return render(request, 'pages/example.html', context={
+        return render(request, 'pages/index.html', context={
             'navbar_items': AdminItems.HOME.items_iterable_except(),
             'messages': MessageQueue.drain(request.session),
         })
