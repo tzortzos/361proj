@@ -87,4 +87,8 @@ class Login(View):
         else:
             # Login successful
             request.session['user_id'] = user.user_id
+
+            if user.tmp_password:
+                return redirect(reverse('users-edit', args=(user.user_id,)))
+
             return redirect(reverse('index'))
