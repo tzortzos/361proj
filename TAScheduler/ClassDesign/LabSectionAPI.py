@@ -45,9 +45,9 @@ class LabSectionAPI:
     @staticmethod
     def edit_lab_section(
             lab_section: int,
-            lab_days: str,
-            lab_time: str,
-            ta_id: User
+            lab_days: Optional[str]= None,
+            lab_time: Optional[str]=None,
+            ta_id: Optional[User]=None
     ) -> None:
         """
         Using the lab_secton_id primary key of the lab, updates lab_days, lab_time, and ta_id, if it exists
@@ -62,7 +62,7 @@ class LabSectionAPI:
     @staticmethod
     def delete_lab_section(
           lab_section: int
-    ) -> str:
+    ) -> None:
         """
         Using the lab_section id primary key, deletes user if it exists.
         """

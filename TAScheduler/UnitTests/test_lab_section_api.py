@@ -1,11 +1,9 @@
 import uuid
+from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI
-from TAScheduler.ClassDesign.CourseAPI import CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
 from TAScheduler.models import UserType, CourseSection, Course, User, LabSection
-from django.test import TestCase
 
 
 class TestLabSection(TestCase):
@@ -60,37 +58,26 @@ class TestLabSection(TestCase):
             password='Password123',
         )
         self.lab_days = 'MWF'
-        LabSectionAPI.edit_lab_section(new_lab.lab_section_id, self.lab_days, '1-3p', ta)
-        self.assertEquals(new_lab.lab_days, self.lab_days, msg='Expected update of lab days to MWF.')
-        self.assertEqual(new_lab.lab_time, '1-3p', msg='Expected update of lab time to 1-3p.')
-        self.assertEqual(new_lab.ta_id, ta, msg='Expected update of assigned ta to ta.')
+
+        LabSectionAPI.edit_lab_section(
+            new_lab.lab_section_id,
+            lab_days=self.lab_days,
+            lab_time='1-3p',
+            ta_id=ta
+        )
+
+        new_lab = LabSection.objects.get(lab_section_id=new_lab.lab_section_id)
+
+        self.assertEquals(self.lab_days, new_lab.lab_days, msg='Expected update of lab days to MWF.')
+        self.assertEqual('1-3p', new_lab.lab_time, msg='Expected update of lab time to 1-3p.')
+        self.assertEqual(ta, new_lab.ta_id, msg='Expected update of assigned ta to ta.')
 
     def test_delete_lab_section(self):
         LabSectionAPI.delete_lab_section(self.labsection1.lab_section_id)
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the lab section to be deleted."):
             LabSection.objects.get(lab_section_id=self.labsection1.lab_section_id)
 
-    def test_delete_lab_by_deleting_course_section(self):
-        course = Course.objects.create(course_code=str(uuid.uuid4())[:3], course_name='TestCourse')
-        course_section = CourseSection.objects.create(course_section_code=str(uuid.uuid4())[:3],course_id=course)
-        lab_section = LabSection.objects.create(
-            lab_section_code=str(uuid.uuid4())[:3],
-            course_section_id=course_section.course_section_id
-        )
-        CourseSectionAPI.delete_course_section(course_section)
-        with self.assertRaises(ObjectDoesNotExist, msg='Expected the cascade deletion of lab section'):
-            LabSection.objects.get(lab_section_id=lab_section.lab_section_id)
 
-    def test_delete_lab_by_deleting_course(self):
-        course = Course.objects.create(course_code=str(uuid.uuid4())[:3], course_name='TestCourse')
-        course_section = CourseSection.objects.create(course_section_code=str(uuid.uuid4())[:3],course_id=course)
-        lab_section = LabSection.objects.create(
-            lab_section_code=str(uuid.uuid4())[:3],
-            course_section_id=course_section.course_section_id
-        )
-        CourseAPI.delete_course(course)
-        with self.assertRaises(ObjectDoesNotExist, msg='Expected the cascade deletion of lab section'):
-            LabSection.objects.get(lab_section_id=lab_section.lab_section_id)
 
 
 
