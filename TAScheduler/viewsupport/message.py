@@ -25,6 +25,9 @@ class Message:
         """Get the type of this popover message"""
         return self._ty
 
+    def is_error(self) -> bool:
+        return self._ty == Message.Type.ERROR
+
     def __eq__(self, other) -> bool:
         if type(other) is not Message:
             return False
