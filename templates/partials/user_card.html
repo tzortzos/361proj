@@ -5,6 +5,7 @@
     Take the following context variables:
     self: User      The user who is seeing this card
     user: User      The user to be displayed
+    nodelete: bool  Always hide delete option
 
     If user is self or has UserType admin then an edit button is displayed
     If self has UserType Admin then a delete button is displayed
@@ -30,7 +31,7 @@
                 {% endif %}
 
                 {# Delete #}
-                {% if self.type == 'A' %}
+                {% if self.type == 'A' and not nodelete %}
                     <a class="btn btn-danger" href="{% url 'users-delete' user.user_id %}"><i class="bi bi-trash-fill"></i></a>
                 {% endif %}
             </div>
