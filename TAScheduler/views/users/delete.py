@@ -32,7 +32,7 @@ class UserDelete(View):
             MessageQueue.push(request.session, Message(f'No user with id {user_id} exists.', Message.Type.ERROR))
             return redirect(reverse('users-directory'))
 
-        return render(request, 'pages/user_delete.html', {
+        return render(request, 'pages/users/delete.html', {
             'self': user,
             'messages': MessageQueue.drain(request.session),
             'navbar_items': AdminItems.items_iterable(),

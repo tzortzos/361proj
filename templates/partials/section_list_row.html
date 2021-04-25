@@ -1,0 +1,42 @@
+{% comment %}
+Course Section listing row
+takes the following context:
+- self: User                The user for which this row will be rendered
+- section: CourseSection    The course section to be displayed
+- nodelete: bool            Force the delete button to be hidden
+{% endcomment %}
+
+<div class="list-group-item d-flex flex-sm-row align-items-sm-center">
+
+    {# Left #}
+    <div class="me-sm-auto d-flex flex-row flex-sm-column align-items-center align-items-sm-start justify-content-between justify-content-sm-start">
+        <h4 class="mb-0">{{ section.course_id.course_code }} {{ section.course_id.course_name }}</h4>
+        <!-- <hr class="mb-0 d-none d-sm-inline "/> -->
+        <h5 class="mb-0">Section: {{ section.course_section_code }}</h5>
+
+        {% if section.instructor_id %}
+        <p class="mb-0">Professor: {{ section.instructor_id.univ_id }}</p>
+        {% endif %}
+    </div>
+
+    {# Right #}
+    <div class="d-flex justify-content-center mt-3 mt-sm-0 mb-3 mb-sm-0">
+        <div class="btn-group">
+            {# Information #}
+            <a class="btn btn-dark" href="{% url 'sections-view' section.course_section_id %}"><i class="bi bi-info-circle-fill"></i></a>
+
+            {% if self.type == 'A' %}
+
+                {# Edit #}
+                <a class="btn btn-dark" href="{% url 'sections-edit' section.course_section_id %}"><i class="bi bi-pencil-fill"></i></a>
+
+                {% if not nodelete %}
+                    {# Delete #}
+                    <a class="btn btn-danger" href="{% url 'sections-delete' section.course_section_id %}"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+
+</div>

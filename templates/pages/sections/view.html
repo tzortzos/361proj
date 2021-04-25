@@ -1,0 +1,20 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Displays a single course section information card.
+
+Takes the following context variables on top of those required by app_base:
+- section: CourseSection    The course section to be displayed
+
+{% endcomment %}
+
+{% block application_pane %}
+<div class="row justify-content-center p-3">
+    <div class="col-12">
+        {% include 'partials/section_card.html' with section=section self=self only %}
+    </div>
+
+    {# Should eventually include cards for all the lab sections associated with this course section as well #}
+</div>
+{% endblock %}

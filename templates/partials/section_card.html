@@ -1,0 +1,133 @@
+{% comment %}
+
+Course Section Card for displaying a single course section
+Takes the following context:
+- self: User                The user for which this card will be displayed
+- section: CourseSection    The course section to be displayed
+- nodelete: bool            Force the delete button to be hidden
+- noassignments: bool       Hide the assignments to this course section
+- noextrainfo: bool         Hide all extraneous information on the card
+
+{% endcomment %}
+
+<div class="card p-3" id="course_section_card_{{ section.course_section_id }}">
+    <div class="card-body">
+
+        {# Header #}
+        <div class="d-flex mb-3 align-items-center">
+            {# Section Title #}
+            <div class="me-auto">
+                <h4 class="card-title me-1">{{ section.course_id.course_code }} {{ section.course_id.course_name }}</h4>
+                <h5 class="card-title me-1">Section: {{ section.course_section_code }}</h5>
+            </div>
+
+            {# Controls #}
+            <div>
+                <div class="btn-group">
+                    {% if self.type == 'A' %}
+
+                        {# Edit #}
+                        <a class="btn btn-dark" href="{% url 'sections-edit' section.course_section_id %}">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+
+                        {% if not nodelete %}
+                            {# Delete #}
+                            <a class="btn btn-danger"
+                               href="{% url 'sections-delete' section.course_section_id %}">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        {% endif %}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# body #}
+        <div class="row">
+            {% if not noextrainfo %}
+            <div class="col-12 mb-3 d-flex flex-column">
+
+                {# Days #}
+                <div class="d-flex align-items-center mb-3">
+                    <h6 class="mb-0 me-3 text-nowrap">Lecture days:</h6>
+                    <div class="btn-group px-0">
+                        {# Monay #}
+                        <input type="checkbox" class="btn-check pe-none" id="M"
+                                {% if section and 'M' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="M" class="btn btn-outline-dark pe-none">Monday</label>
+
+                        {# Tuesday #}
+                        <input type="checkbox" class="btn-check pe-none" id="T"
+                                {% if section and 'T' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="T" class="btn btn-outline-dark pe-none">Tuesday</label>
+
+                        {# Wednesday #}
+                        <input type="checkbox" class="btn-check pe-none" id="W"
+                                {% if section and 'W' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="W" class="btn btn-outline-dark pe-none">Wednesday</label>
+
+                        {# Thursday #}
+                        <input type="checkbox" class="btn-check pe-none" id="H"
+                                {% if section and 'H' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="H" class="btn btn-outline-dark pe-none">Thursday</label>
+
+                        {# Wednesday #}
+                        <input type="checkbox" class="btn-check pe-none" id="F"
+                                {% if section and 'F' in section.lecture_days %}
+                               checked
+                                {% endif %}
+                        >
+                        <label for="F" class="btn btn-outline-dark pe-none">Friday</label>
+                    </div>
+                </div>
+
+                {# Times #}
+                {% if section.lecture_time != '' %}
+                    <div class="d-flex align-items-center">
+                        <h6 class="mb-0 me-3">Lecture Times:</h6>
+                        <p class="card-text">{{ section.lecture_time }}</p>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            {# Assignment information / links to info pages #}
+            {% if not noassignments %}
+                <div class="col-12 col-md-6 mb-3">
+                    {% if section.instructor_id %}
+                        <h6 class="card-title">Professor</h6>
+                        <a href="{% url 'users-view' section.instructor_id.user_id %}">
+                            {{ section.instructor_id.univ_id }}
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="col-12 col-md-6 mb-3">
+                    <h6 class="card-title">TAs</h6>
+                    {% for ta in section.ta_ids.all %}
+                        <a href="{% url 'users-view' ta.user_id %}">
+                            {{ ta.univ_id }}
+                        </a>
+
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+</div>

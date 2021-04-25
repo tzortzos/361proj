@@ -23,7 +23,7 @@ class UserView(View):
             MessageQueue.push(request.session, Message(f'No user with id {user_id} exists', Message.Type.ERROR))
             return redirect(reverse('index'))
 
-        return render(request, 'pages/user_information.html', context={
+        return render(request, 'pages/users/view.html', context={
             'navbar_items': AdminItems.items_iterable(),
             'messages': MessageQueue.drain(request.session),
             'self': user,

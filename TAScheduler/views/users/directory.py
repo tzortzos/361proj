@@ -17,7 +17,7 @@ class UserDirectory(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        return render(request, 'pages/user_directory.html', {
+        return render(request, 'pages/users/directory.html', {
             'self': user,
             'navbar_items': AdminItems.USERS.items_iterable_except(),  # TODO change for other user types
             'messages': MessageQueue.drain(request.session),
