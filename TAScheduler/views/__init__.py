@@ -16,6 +16,7 @@ from TAScheduler.views.users.delete import UserDelete
 from TAScheduler.views.users.directory import UserDirectory
 from TAScheduler.views.users.view import UserView
 
+from TAScheduler.views.section.directory import SectionsDirectory
 from TAScheduler.views.section.create import SectionsCreate
 from TAScheduler.views.section.edit import SectionsEdit
 

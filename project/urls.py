@@ -28,7 +28,7 @@ urlpatterns = [
     path('sections/<int:section_id>/delete/', SectionsEdit.as_view(), name='sections-delete'),  # TODO replace with stub
     path('sections/<int:section_id>', SectionsEdit.as_view(), name='sections-view'),  # TODO replace with stub or actual view
     path('sections/create/', SectionsCreate.as_view(), name='sections-create'),
-    path('sections/', SectionsCreate.as_view(), name='sections-directory'),  # TODO replace with stub
+    path('sections/', SectionsDirectory.as_view(), name='sections-directory'),  # TODO replace with stub
 
     path('users/<int:user_id>/edit/', UserEdit.as_view(), name='users-edit'),
     path('users/<int:user_id>/delete/', UserDelete.as_view(), name='users-delete'),
