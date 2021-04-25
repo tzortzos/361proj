@@ -1,16 +1,12 @@
-from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views import View
-from django.shortcuts import render, redirect, reverse
-from typing import List, Union
+from django.shortcuts import render
+from typing import Union
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
-from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSection, CourseSectionAPI
-from TAScheduler.viewsupport.message import Message, MessageQueue
+from TAScheduler.ClassDesign.CourseSectionAPI import CourseSection
+from TAScheduler.viewsupport.message import MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import SectionError
-from TAScheduler.models import User, UserType, Course
 
 
 class SectionsDirectory(View):

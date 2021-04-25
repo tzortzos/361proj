@@ -30,8 +30,10 @@ takes the following context:
                 {# Edit #}
                 <a class="btn btn-dark" href="{% url 'sections-edit' section.course_section_id %}"><i class="bi bi-pencil-fill"></i></a>
 
-                {# Delete #}
-                <a class="btn btn-danger" href="{% url 'sections-delete' section.course_section_id %}"><i class="bi bi-trash-fill"></i></a>
+                {% if not nodelete %}
+                    {# Delete #}
+                    <a class="btn btn-danger" href="{% url 'sections-delete' section.course_section_id %}"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
 
             {% endif %}
         </div>
