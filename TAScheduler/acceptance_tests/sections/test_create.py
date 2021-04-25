@@ -77,7 +77,7 @@ class CreateSection(TestCase):
         context_error = self.assertContextError(resp)
 
         self.assertEqual(
-            'You must input a 3 digit course code',
+            'You must input a 3 digit section code',
             context_error.error().body(),
             msg='Did not reject missing section code with correct message'
         )
