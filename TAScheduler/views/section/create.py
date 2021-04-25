@@ -49,10 +49,7 @@ class SectionsCreate(View):
         # TODO create a helper function for views getting a set of variables out of a context
         section_code = request.POST.get('section_code', None)
         course_id = request.POST.get('course_id', -1)
-        lecture_days = ''.join(filter(
-            lambda a: request.POST.get(a, 'off') == 'on',
-            ['M', 'T', 'W', 'H', 'F']
-        ))
+        lecture_days = ''.join(request.POST.getlist('lecture_days', []))
         lecture_time = request.POST.get('lecture_time', None)
         instructor_id = request.POST.get('professor_id', None)
         ta_ids = request.POST.getlist('ta_ids', [])
@@ -128,4 +125,3 @@ class SectionsCreate(View):
         section.save()
 
         return redirect(reverse('sections-view', args=(section_id,)))
-

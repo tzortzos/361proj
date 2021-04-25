@@ -82,7 +82,7 @@
                     <p class="mb-1">Lecture Days</p>
                     <div class="form-check btn-group px-0">
                         {# Monay #}
-                        <input type="checkbox" class="btn-check" id="M" name="M"
+                        <input type="checkbox" class="btn-check" id="M" name="lecture_days" value="M"
                                 {% if section and 'M' in section.lecture_days %}
                                checked
                                 {% endif %}
@@ -90,7 +90,7 @@
                         <label for="M" class="btn btn-outline-primary">Monday</label>
 
                         {# Tuesday #}
-                        <input type="checkbox" class="btn-check" id="T" name="T"
+                        <input type="checkbox" class="btn-check" id="T" name="lecture_days" value="T"
                                 {% if section and 'T' in section.lecture_days %}
                                checked
                                 {% endif %}
@@ -98,7 +98,7 @@
                         <label for="T" class="btn btn-outline-primary">Tuesday</label>
 
                         {# Wednesday #}
-                        <input type="checkbox" class="btn-check" id="W" name="W"
+                        <input type="checkbox" class="btn-check" id="W" name="lecture_days" value="W"
                                 {% if section and 'W' in section.lecture_days %}
                                checked
                                 {% endif %}
@@ -106,7 +106,7 @@
                         <label for="W" class="btn btn-outline-primary">Wednesday</label>
 
                         {# Thursday #}
-                        <input type="checkbox" class="btn-check" id="H" name="H"
+                        <input type="checkbox" class="btn-check" id="H" name="lecture_days" value="H"
                                 {% if section and 'H' in section.lecture_days %}
                                checked
                                 {% endif %}
@@ -114,7 +114,7 @@
                         <label for="H" class="btn btn-outline-primary">Thursday</label>
 
                         {# Wednesday #}
-                        <input type="checkbox" class="btn-check" id="F" name="F"
+                        <input type="checkbox" class="btn-check" id="F" name="lecture_days" value="F"
                                 {% if section and 'F' in section.lecture_days %}
                                checked
                                 {% endif %}
