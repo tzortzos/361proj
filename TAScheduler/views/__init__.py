@@ -20,6 +20,7 @@ from TAScheduler.views.section.directory import SectionsDirectory
 from TAScheduler.views.section.create import SectionsCreate
 from TAScheduler.views.section.edit import SectionsEdit
 from TAScheduler.views.section.view import SectionsView
+from TAScheduler.views.section.delete import SectionsDelete
 
 
 class Index(View):

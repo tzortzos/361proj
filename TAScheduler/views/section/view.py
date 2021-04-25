@@ -27,7 +27,7 @@ class SectionsView(View):
 
         return render(request, 'pages/sections/view.html', {
             'self': user,
-            'navbar_items': AdminItems.SECTIONS.items_iterable_except(),
+            'navbar_items': AdminItems.items_iterable(),
             'messages': MessageQueue.drain(request.session),
 
             'section': section,

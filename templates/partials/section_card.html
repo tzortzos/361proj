@@ -6,6 +6,7 @@ Takes the following context:
 - section: CourseSection    The course section to be displayed
 - nodelete: bool            Force the delete button to be hidden
 - noassignments: bool       Hide the assignments to this course section
+- noextrainfo: bool         Hide all extraneous information on the card
 
 {% endcomment %}
 
@@ -45,6 +46,7 @@ Takes the following context:
 
         {# body #}
         <div class="row">
+            {% if not noextrainfo %}
             <div class="col-12 mb-3 d-flex flex-column">
 
                 {# Days #}
@@ -123,6 +125,8 @@ Takes the following context:
 
                     {% endfor %}
                 </div>
+            {% endif %}
+
             {% endif %}
         </div>
     </div>

@@ -24,12 +24,14 @@ urlpatterns = [
     path('login/', Login.as_view(), name='login'),
     path('logout/', Logout.as_view(), name='logout'),
 
+    # Sections resource management
     path('sections/<int:section_id>/edit/', SectionsEdit.as_view(), name='sections-edit'),
-    path('sections/<int:section_id>/delete/', SectionsEdit.as_view(), name='sections-delete'),  # TODO replace with stub
+    path('sections/<int:section_id>/delete/', SectionsDelete.as_view(), name='sections-delete'),
     path('sections/<int:section_id>', SectionsView.as_view(), name='sections-view'),
     path('sections/create/', SectionsCreate.as_view(), name='sections-create'),
-    path('sections/', SectionsDirectory.as_view(), name='sections-directory'),  # TODO replace with stub
+    path('sections/', SectionsDirectory.as_view(), name='sections-directory'),
 
+    # Users resource management
     path('users/<int:user_id>/edit/', UserEdit.as_view(), name='users-edit'),
     path('users/<int:user_id>/delete/', UserDelete.as_view(), name='users-delete'),
     path('users/<int:user_id>/', UserView.as_view(), name='users-view'),
