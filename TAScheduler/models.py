@@ -54,7 +54,7 @@ class CourseSection(models.Model):
     associated to it.
     """
 
-    #course_id is bad!!
+    #course_id is bad!!List things from need to input to optional/default
     course_section_id = models.AutoField('Course Section ID', primary_key=True)
     course_section_code = models.CharField('Course Section Code', blank=False, max_length=3)
     lecture_days = models.CharField('Lecture Day(s)', blank=True, max_length=6)
@@ -64,7 +64,7 @@ class CourseSection(models.Model):
                                       help_text="Instructor ID")
 
     ta_ids = models.ManyToManyField(User, related_name='section_assign', blank=True,
-                                    help_text='Tas Assigned to this Course Section')
+                                    help_text='Ta\'s Assigned to this Course Section')
 
     class Meta:
         # Adds a unique constraint combination on the two fields

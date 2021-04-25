@@ -1,13 +1,11 @@
-import time
-
-import TAScheduler.models
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
-from TAScheduler.ClassDesign.CourseAPI import CourseAPI
-from TAScheduler.models import UserType, User, Course, CourseSection
+import uuid
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
-from typing import Union
-import uuid
+
+from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
+from TAScheduler.ClassDesign.CourseAPI import CourseAPI
+from TAScheduler.models import Course, CourseSection
+
 
 
 class TestCourseSection(TestCase):
@@ -47,10 +45,10 @@ class TestCourseSection(TestCase):
         self.assertTrue(self.course_section2 in query_set, msg='Expected course_section2 in list of course sections.')
 
     def test_delete_course_section(self):
-        CourseSectionAPI.delete_course_section_by_course_id(self.course_section2)
+        CourseSectionAPI.delete_course_section(self.course_section2)
 
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the course section to be deleted"):
-            CourseSection.objects.get(course_section_code=self.course_section2.course_section_code)
+            CourseSection.objects.get(course_section_id=self.course_section2.course_section_id)
 
 
     def test_delete_course_section_by_deleting_course(self):

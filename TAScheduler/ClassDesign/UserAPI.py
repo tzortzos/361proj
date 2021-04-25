@@ -9,7 +9,8 @@ class UserAPI:
     ##should admin only enter this info or can admin add other info (lname, fname, phone) of user
     def create_user(
             user_type: Union[UserType,str],
-            univ_id: str, password: str,
+            univ_id: str,
+            password: str,
             lname: str='',
             fname: str='',
             phone: str=''
