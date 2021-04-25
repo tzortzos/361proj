@@ -12,12 +12,12 @@
     - error: Optional[SectionError]     Add a server side validation error to this rendering of the template
 
     POST variables:
-    - section_code: str
-    - course_id: str
+    - section_code: str     (should be an int, -1 if not selected)
+    - course_id: int
     - lecture_days: List[str] from set [ M, T, W, H, F ]
     - lecture_time: str
-    - professor_id: str
-    - ta_ids: List[str]
+    - professor_id: int     (-1 if none selected)
+    - ta_ids: List[int]
 {% endcomment %}
 
 {% block application_pane %}
@@ -64,7 +64,7 @@
 
                 {# Section Code #}
                 <label for="section_code" class="form-label">Section Code</label>
-                <input type="text" value="{{ section.section_code }}"
+                <input type="text" value="{{ section.course_section_code }}"
                        id="section_code" name="section_code"
                        required pattern="[0-9]{3}"
                        class="form-control {% if error and error.place_code %}is-invalid{% endif %}">

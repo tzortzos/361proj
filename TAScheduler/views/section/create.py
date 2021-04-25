@@ -65,7 +65,7 @@ class SectionsCreate(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('you must select a course for this section', SectionError.Place.COURSE),
+                'error': SectionError('You must select a course for this section', SectionError.Place.COURSE),
             })
 
         if section_code is None:
