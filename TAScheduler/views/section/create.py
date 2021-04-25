@@ -54,7 +54,7 @@ class SectionsCreate(View):
             ['M', 'T', 'W', 'H', 'F']
         ))
         lecture_time = request.POST.get('lecture_time', None)
-        instructor_id = request.POST.get('instructor_id', None)
+        instructor_id = request.POST.get('professor_id', None)
         ta_ids = request.POST.getlist('ta_ids', [])
 
         course = CourseAPI.get_course_by_course_id(course_id)
@@ -120,9 +120,10 @@ class SectionsCreate(View):
             if instructor is not None:
                 section.instructor_id = instructor
 
-        tas = filter(lambda a: a is not None, map(UserAPI.get_user_by_user_id, ta_ids))
+        tas = list(filter(lambda a: a is not None, map(UserAPI.get_user_by_user_id, ta_ids)))
 
-        section.ta_ids.bulk_create(tas)
+        for ta in tas:
+            section.ta_ids.add(ta)
 
         section.save()
 

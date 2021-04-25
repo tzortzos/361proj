@@ -136,7 +136,7 @@
                         {# None selected #}
                         <label class="list-group-item">
                             <input type="radio" class="form-check-input me-1"
-                                   name="professor_id" id="-1"
+                                   name="professor_id" id="-1" value="-1"
                                    {% if section is None or section.instructor_id is None %}checked{% endif %}
                             >
                             <strong>Unassigned</strong>
@@ -145,7 +145,7 @@
                         {% for professor in professors %}
                             <label class="list-group-item">
                                 <input type="radio" class="form-check-input me-1"
-                                       name="professor_id" id="{{ professor.user_id }}"
+                                       name="professor_id" id="{{ professor.user_id }}" value="{{ professor.user_id }}"
                                         {% if section is not None and section.instructor_id == professor %}checked{% endif %}
                                 >
                                 <strong>{{ professor.univ_id }}</strong> {{ professor.f_name }} {{ professor.l_name }}
@@ -163,7 +163,7 @@
                         {% for ta in tas %}
                             <label class="list-group-item">
                                 <input type="checkbox" class="form-check-input me-1"
-                                       name="tas" id="{{ ta.user_id }}"
+                                       name="ta_ids" id="{{ ta.user_id }}" value="{{ ta.user_id }}"
                                         {% if ta in section.ta_ids.all %}
                                             checked
                                         {% endif %}
