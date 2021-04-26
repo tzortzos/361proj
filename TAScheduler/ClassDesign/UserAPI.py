@@ -15,15 +15,9 @@ class UserAPI:
             fname: str='',
             phone: str=''
     ) -> int:
+        """"""
         if type(user_type) is str:
-            if user_type == 'A':
-                user_type = UserType.ADMIN
-            elif user_type == 'P':
-                user_type  = UserType.PROF
-            elif user_type == 'T':
-                user_type = UserType.TA
-            else:
-                raise TypeError(f'user_type {user_type} is non in the set of [A, P, T]')
+            user_type = UserType.from_str(user_type)
         new_user = User.objects.create(
             type=user_type,
             univ_id=univ_id,
