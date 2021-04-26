@@ -28,7 +28,7 @@ class CoursesView(View):
 
         return render(request, 'pages/courses/view.html', {
             'self': user,
-            'navbar_items': AdminItems.COURSES.items_iterable_except(),
+            'navbar_items': AdminItems.items_iterable(),
             'messages': MessageQueue.drain(request.session),
 
             'course': course,

@@ -12,6 +12,7 @@ POST Vars
 - course_name
 {% endcomment %}
 
+{% block application_pane %}
 <div class="row">
 
     <form class="form needs-validation" method="post" novalidate>
@@ -43,7 +44,7 @@ POST Vars
         </div>
 
         <label for="course_name" class="form-label">Course Name</label>
-        <div class="input-group has-validation">
+        <div class="input-group has-validation mb-3">
 
             <input type="text" name="course_name"
                    value="{{ edit.course_name }}"
@@ -86,3 +87,5 @@ POST Vars
     </form>
 
 </div>
+{% include 'partials/validate.html' %}
+{% endblock application_pane %}
