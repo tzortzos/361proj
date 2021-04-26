@@ -26,7 +26,7 @@ class CoursesView(View):
             ))
             return redirect(reverse('courses-directory'))
 
-        return render(request, 'pages/courses/directory.html', {
+        return render(request, 'pages/courses/view.html', {
             'self': user,
             'navbar_items': AdminItems.COURSES.items_iterable_except(),
             'messages': MessageQueue.drain(request.session),
