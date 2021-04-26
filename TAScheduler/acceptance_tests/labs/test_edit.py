@@ -3,7 +3,7 @@ from TAScheduler.viewsupport.errors import LabError
 from django.test import Client
 
 
-class LabsCreate(TASAcceptanceTestCase[LabError]):
+class LabsEdit(TASAcceptanceTestCase[LabError]):
 
     def setUp(self):
         self.client = Client()
