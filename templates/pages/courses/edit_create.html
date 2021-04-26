@@ -1,0 +1,88 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+Create and edit course objects
+
+Context:
+- self: User
+- edit: Optional[Course]
+
+POST Vars
+- course_code
+- course_name
+{% endcomment %}
+
+<div class="row">
+
+    <form class="form needs-validation" method="post" novalidate>
+        {% csrf_token %}
+
+        {% if edit %}
+            <h2>Edit Course</h2>
+        {% else %}
+            <h2>Create Course</h2>
+        {% endif %}
+
+        <label for="course_code" class="form-label">Course Code</label>
+        <div class="input-group has-validation">
+
+            <input type="text" name="course_code"
+                   value="{{ edit.course_code }}"
+                   {% if error and error.place_code %}
+                       class="form-control is-invalid"
+                   {% else %}
+                       class="form-control"
+                   {% endif %}
+            >
+            {% if error and error.place_code %}
+                <div class="invalid-feedback">{{ error.error }}</div>
+            {% else %}
+                <div class="invalid-feedback">The course code must be exactly 3 digits</div>
+            {% endif %}
+
+        </div>
+
+        <label for="course_name" class="form-label">Course Name</label>
+        <div class="input-group has-validation">
+
+            <input type="text" name="course_name"
+                   value="{{ edit.course_name }}"
+                   required
+                   {% if error and error.place_name %}
+                       class="form-control is-invalid"
+                   {% else %}
+                       class="form-control"
+                   {% endif %}
+            >
+            {% if error and error.place_name %}
+                <div class="invalid-feedback">{{ error.error }}</div>
+            {% else %}
+                <div class="invalid-feedback">You must input a course name.</div>
+            {% endif %}
+
+        </div>
+
+        {# Submits #}
+        <div class="col-12 mb-3">
+            <div class="btn-group">
+
+                {# Submit #}
+                <input class="btn btn-large btn-primary"
+                       type="submit"
+                       value="{% if section %}confirm{% else %}create{% endif %}">
+
+                {# cancel #}
+                <a class="btn btn-large btn-dark" href="{% url 'courses-directory' %}">cancel</a>
+
+                {# delete #}
+                {% if section %}
+                    <a class="btn btn-large btn-danger" href="{% url 'courses-delete' edit.course_id %}">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </form>
+
+</div>
