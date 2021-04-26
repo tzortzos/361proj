@@ -1,0 +1,37 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Displays a list of LabSection objects with links to manage/view them depending on the user
+
+Takes the following context:
+- self: User
+- labs: List[LabSection]
+- nodelete:                 Hide the delete buttons if they would have otherwise been shown
+
+{% endcomment %}
+
+{% block application_pane %}
+
+    <div class="d-flex mb-5 align-items-center">
+        {# Page title #}
+        <h1 class="me-auto">All Labs</h1>
+
+        {# Admin controls #}
+        <div id="admin_controls">
+            {% if self.type == 'A' %}
+                <a class="btn btn-largs btn-dark" href="{% url 'labs-create' %}">
+                    <i class="bi bi-file-earmark-person-fill me-2"></i> Add Lab
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Directory #}
+    <div class="list-group">
+        {% for lab in labs %}
+            {% include 'partials/list_row/lab.html' with lab=lab self=self nodelete=nodelete only %}
+        {% endfor %}
+    </div>
+
+{% endblock application_pane %}
