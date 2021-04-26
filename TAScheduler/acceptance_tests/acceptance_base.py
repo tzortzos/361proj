@@ -4,6 +4,7 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 
 E = TypeVar('E')
 
+
 class TASAcceptanceTestCase(Generic[E], TestCase):
 
     def assertContainsMessage(self, resp, has: Message, msg: Optional[str] = None):
@@ -27,7 +28,5 @@ class TASAcceptanceTestCase(Generic[E], TestCase):
         Assert that the render context contains an error object of the type T and return it.
         """
         error = self.assertContextVar(resp, 'error')
-
-        self.assertTrue(type(error) is E, msg=f'error context variable exists but was not of type {type(E)}')
 
         return error
