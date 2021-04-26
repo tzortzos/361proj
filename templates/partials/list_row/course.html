@@ -1,0 +1,46 @@
+{% comment %}
+Display a single Course object as a list row
+
+Context:
+- course: Course
+- self: User
+- nodelete: bool
+{% endcomment %}
+
+<div class="list-group-item d-flex flex-sm-row align-items-sm-center">
+
+    {# Left #}
+    <div class="me-sm-auto mb-3 mb-sm-0 d-flex
+                flex-row flex-sm-column
+                align-items-center align-items-sm-start
+                justify-content-between justify-content-start">
+
+        <h4 class="mb-0">{{ course.course_code }} {{ course.course_name }}</h4>
+
+    </div>
+
+    {# Right #}
+    <div class="d-flex justify-content-center mb-3 mb-sm-0">
+        <div class="btn-group">
+
+            {# Information #}
+            <a class="btn btn-dark" href="{% url 'courses-view' course.course_id %}"><i class="bi bi-info-circle-fill"></i></a>
+
+            {% if self.type == 'A' %}
+
+                {# Edit #}
+                <a class="btn btn-dark" href="{% url 'courses-edit' course.course_id %}"><i class="bi bi-pencil-fill"></i></a>
+
+                {% if not nodelete %}
+                    {# Delete #}
+                    <a class="btn btn-danger" href="{% url 'courses-delete' course.course_id %}"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
+
+            {% endif %}
+
+
+        </div>
+    </div>
+</div>
+
+

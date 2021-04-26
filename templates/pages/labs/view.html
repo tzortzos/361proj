@@ -1,0 +1,17 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Displays a single lab information card.
+
+Takes the following context:
+- lab: LabSection
+- self: User
+
+{% endcomment %}
+
+{% block application_pane %}
+<div class="row justify-content-center p-3">
+    {% include 'partials/cards/lab.html' with lab=lab self=self only %}
+</div>
+{% endblock application_pane %}

@@ -154,3 +154,50 @@ class SectionError:
     def place_tas(self) -> bool:
         return self._place is SectionError.Place.TAS
 
+
+class LabError:
+    """
+    Represents Errors than can be displayed on the lab section creation and editing pages.
+    """
+
+    class Place(Enum):
+        CODE = 0
+        SECTION = 1
+
+    def __init__(self, msg: str, place: Place):
+        self._msg = msg
+        self._place = place
+
+    def error(self) -> str:
+        return self._msg
+
+    def place(self) -> Place:
+        return self._place
+
+    def place_code(self) -> bool:
+        return self._place is LabError.Place.CODE
+
+    def place_section(self) -> bool:
+        return self._place is LabError.Place.SECTION
+
+
+class CourseError:
+    class Place(Enum):
+        CODE = 0
+        NAME = 1
+
+    def __init__(self, msg: str, place: Place):
+        self._msg = msg
+        self._place = place
+
+    def error(self) -> str:
+        return self._msg
+
+    def place(self) -> Place:
+        return self._place
+
+    def place_code(self) -> bool:
+        return self._place is CourseError.Place.CODE
+
+    def place_name(self) -> bool:
+        return self._place is CourseError.Place.NAME

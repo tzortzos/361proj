@@ -1,0 +1,33 @@
+from django.test import TestCase
+from typing import TypeVar, Generic, Optional
+from TAScheduler.viewsupport.message import Message, MessageQueue
+
+E = TypeVar('E')
+
+class TASAcceptanceTestCase(Generic[E], TestCase):
+
+    def assertContainsMessage(self, resp, has: Message, msg: Optional[str] = None):
+        """
+        Assert that the session contains a message, must be called before redirects are
+        evaluated as most pages drain the message queue.
+        """
+        if msg is None:
+            msg = f'Context did not contain message {has}'
+
+        self.assertTrue(has in MessageQueue.get(resp.client.session), msg=msg)
+
+    def assertContextVar(self, resp, var_name: str) -> object:
+        ret = resp.context.get(var_name)
+
+        self.assertIsNotNone(ret, msg=f'Context did not contain any variable with the name {var_name}')
+        return ret
+
+    def assertContextError(self, resp) -> E:
+        """
+        Assert that the render context contains an error object of the type T and return it.
+        """
+        error = self.assertContextVar(resp, 'error')
+
+        self.assertTrue(type(error) is E, msg=f'error context variable exists but was not of type {type(E)}')
+
+        return error

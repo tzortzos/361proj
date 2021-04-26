@@ -36,7 +36,6 @@ class CourseSectionAPI:
         except ObjectDoesNotExist:
             return None
 
-
     @staticmethod
     def get_all_course_sections_for_course(course_id: Course) -> Optional[Iterable[CourseSection]]:
         """
