@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 import uuid
+import more_itertools
 
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.models import UserType,User,Course
@@ -47,12 +48,19 @@ class TestCourse(TestCase):
     def test_get_all_courses(self):
         course_set = CourseAPI.get_all_courses()
         list_of_courses = list(course_set)
-        self.assertEqual(2, list_of_courses.__len__(), msg='Expected list of courses to be 2.')
+        length = more_itertools.ilen(list_of_courses)
+        self.assertEqual(2, length, msg='Expected list of courses to be 2.')
         self.assertTrue(self.course1 in list_of_courses, msg='Exepect course1 in all courses.')
         self.assertTrue(self.course2 in list_of_courses, msg='Expected course2 in all courses.')
 
-    def test_delete_course(self):
-        CourseAPI.delete_course(self.course1)
-        with self.assertRaises(ObjectDoesNotExist, msg="Expected the Course to be deleted from database."):
-            Course.objects.get(course_code=self.course1.course_code)
+    def test_delete_course_(self):
+        response = CourseAPI.delete_course(self.course1.course_id)
+        self.assertEqual(True, response, msg='Expected a course that exists and was deleted to return true.')
+
+    def test_delete_course_not_in_db(self):
+        response1 = CourseAPI.delete_course(self.course2.course_id)
+        response2 = CourseAPI.delete_course(self.course2.course_id)
+        self.assertEqual(False, response2, msg='Expected a delete call on a course that didn\'t exist tor return true.')
+        # with self.assertRaises(ObjectDoesNotExist, msg="Expected the Course to be deleted from database."):
+        #     Course.objects.get(course_code=self.course1.course_code)
 
