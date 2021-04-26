@@ -1,0 +1,46 @@
+{% comment %}
+Displays a single LabSection object as a list row
+
+Takes the following context variables:
+- lab: LabSection
+- self: User
+- nodelete: bool        Force the delete button to be hidden
+{% endcomment %}
+
+<div class="list-group-item d-flex flex-sm-row align-items-sm-center">
+
+    {# left #}
+    <div class="me-sm-auto mb-3 mb-sm-0 d-flex
+                flex-row flex-sm-column
+                align-items-center align-items-sm-start
+                justify-content-between justify-content-start">
+
+        <h4 class="mb-0">{{ lab.course_section_id.course_id.course_code }} {{ lab.course_section_id.course_id.course_name }}</h4>
+        <h5 class="mb-0">Lab: {{ lab.course_section_id.course_section_code }} - {{ lab.lab_section_code }}</h5>
+
+        {% if lab.ta_id %}
+        <p class="mb-0">TA: {{ lab.ta_id.univ_id }}</p>
+        {% endif %}
+
+    </div>
+
+    {# right #}
+    <div class="d-flex justify-content-center mb-3 mb-sm-0">
+        <div class="btn-group">
+            {# Information #}
+            <a class="btn btn-dark" href="{% url 'labs-view' lab.lab_section_id %}"><i class="bi bi-info-circle-fill"></i></a>
+
+            {% if self.type == 'A' %}
+
+                {# Edit #}
+                <a class="btn btn-dark" href="{% url 'labs-edit' lab.lab_section_id %}"><i class="bi bi-pencil-fill"></i></a>
+
+                {% if not nodelete %}
+                    {# Delete #}
+                    <a class="btn btn-danger" href="{% url 'labs-delete' lab.lab_section_id %}"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+</div>
