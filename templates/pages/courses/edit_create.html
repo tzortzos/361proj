@@ -70,7 +70,7 @@ POST Vars
                 {# Submit #}
                 <input class="btn btn-large btn-primary"
                        type="submit"
-                       value="{% if section %}confirm{% else %}create{% endif %}">
+                       value="{% if edit %}confirm{% else %}create{% endif %}">
 
                 {# cancel #}
                 <a class="btn btn-large btn-dark" href="{% url 'courses-directory' %}">cancel</a>
