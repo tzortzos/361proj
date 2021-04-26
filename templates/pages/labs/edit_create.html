@@ -37,7 +37,44 @@ Post returns the following variables
 
         <div class="col-12 mb-3">
             {# Section Selection #}
+            <label class="form-label" for="course_id">Section</label>
+            <select id="course_id" name="section_id" class="form-select" required>
+                {% if section is None %}
+                    <option value="-1" selected>Choose</option>
+                {% endif %}
+
+                {% for section in sections %}
+                    <option value="{{ section.course_section_id }}"
+                            {% if edit and edit.course_section_id == section %}
+                            selected
+                            {% endif %}
+                    >
+                        {{ section.course_id.course_code }} - {{ section.course_id.course_name }} - Section: {{ section.course_section_code }}
+                    </option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                {% if error and error.place_section %}
+                    {{ error.error}}
+                {% else %}
+                    You must select a Section
+                {% endif %}
+            </div>
             {# Code #}
+
+            <label for="lab_code" class="form-label">Lab Code</label>
+            <input type="text" required pattern="[0-9]{3}"
+                   {% if error and error.place_code %}
+                       class="form-control is-invalid"
+                   {% else %}
+                       class="form-control"
+                   {% endif %}
+            >
+            {% if error and error.place_code %}
+                <div class="invalid-feedback">{{ error.error }}</div>
+            {% else %}
+                <div class="invalid-feedback">A lab must have a 3 digit code</div>
+            {% endif %}
         </div>
 
         <div class="col-12 col-md-6 mb-3">
