@@ -1,12 +1,9 @@
-
+from django.test import TestCase
+from django.core.exceptions import ObjectDoesNotExist
+import uuid
 
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.models import UserType,User,Course
-from django.test import TestCase
-from django.core.exceptions import ObjectDoesNotExist
-from typing import List
-import uuid
-
 
 
 class TestCourse(TestCase):
