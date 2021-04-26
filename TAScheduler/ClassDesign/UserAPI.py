@@ -1,29 +1,26 @@
 from TAScheduler.models import User, UserType
-from typing import Union
-from typing import Optional
+from typing import Union, Iterable, Optional
+from django.core.exceptions import ObjectDoesNotExist
+import more_itertools
 
 
 class UserAPI:
 
     @staticmethod
-    ##should admin only enter this info or can admin add other info (lname, fname, phone) of user
     def create_user(
-            user_type: Union[UserType,str],
+            user_type: Union[UserType, str],
             univ_id: str,
             password: str,
-            lname: str='',
-            fname: str='',
-            phone: str=''
+            lname: str = '',
+            fname: str = '',
+            phone: str = ''
     ) -> int:
+        """
+        Create User with mandatory user type, univ_id(front end email), and password, returns user id
+        """
         if type(user_type) is str:
-            if user_type == 'A':
-                user_type = UserType.ADMIN
-            elif user_type == 'P':
-                user_type  = UserType.PROF
-            elif user_type == 'T':
-                user_type = UserType.TA
-            else:
-                raise TypeError(f'user_type {user_type} is non in the set of [A, P, T]')
+            user_type = UserType.from_str(user_type)
+
         new_user = User.objects.create(
             type=user_type,
             univ_id=univ_id,
@@ -36,23 +33,47 @@ class UserAPI:
 
     @staticmethod
     def get_user_by_user_id(user_id) -> Optional[User]:
-        query_set = User.objects.filter(user_id = user_id)
-        if len(query_set) > 0:
-            return query_set[0]
-        else:
+        """
+        Get user by user id and returns User if it exists, otherwise returns None
+        """
+        try:
+            return User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
             return None
 
     @staticmethod
     def get_user_by_univ_id(univ_id: str) -> Optional[User]:
-        query_set = User.objects.filter(univ_id = univ_id)
-        if len(query_set) > 0:
-            return query_set[0]
-        else:
+        """
+        Get user by university id and returns User if it exists, otherwise returns None
+        """
+        try:
+            return User.objects.get(univ_id=univ_id)
+        except User.DoesNotExist:
             return None
 
     @staticmethod
-    def delete_user(user: User, keep_parents=False):
-        user.delete()
+    def get_all_users() -> Optional[Iterable[User]]:
+        """
+        Get all users if any exist otherwise return None
+        """
+        user_set = User.objects.all()
+        return user_set if more_itertools.ilen(user_set) > 0 else None
+        # try:
+        #     return User.objects.all()
+        # except User.DoesNotExist:
+        #     return None
+
+    @staticmethod
+    def delete_user(id: int, keep_parents=False) -> bool:
+        """
+        Deletes User if it exists using the id and returns a boolean for confirmation
+        """
+        try:
+            user = User.objects.get(user_id=id)
+            user.delete()
+            return True
+        except ObjectDoesNotExist:
+            return False
 
     @staticmethod
     def check_user_type(user: User):
@@ -65,8 +86,9 @@ class UserAPI:
 
     @staticmethod
     def update_user(user: User, lname: Optional[str] = None, fname: Optional[str] = None, phone: Optional[str] = None):
-        # if attribute is none don't update database
-        # for example, if lname passed is not none, the execute that
+        """
+        Updates user for last name, first name, and phone
+        """
         if lname is not None:
             user.l_name = lname
 
@@ -77,10 +99,3 @@ class UserAPI:
             user.phone = phone
 
         user.save()
-
-
-
-
-
-
-
