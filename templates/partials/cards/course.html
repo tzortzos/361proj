@@ -1,0 +1,49 @@
+{% comment %}
+
+Display an information card for a single course.
+
+Takes the following context variables:
+- course: Course
+- self: User
+- nodelete: bool        Always hide the delete button
+
+{% endcomment %}
+
+<div class="card p-3" id="course_card_{{ course.course_id }}">
+    <div class="card-body">
+
+        {# Header #}
+        <div class="d-flex mb-3 align-items-center">
+
+            {# Title #}
+            <div class="me-auto">
+                <h4 class="card-title me-1">{{ course.course_code }} {{ course.course_name }}</h4>
+            </div>
+
+            {# Controls #}
+            <div>
+                <div class="btn-group">
+                    {% if self.type == 'A' %}
+
+                        {# Edit #}
+                        <a class="btn btn-dark" href="{% url 'courses-edit' lab.lab_section_id %}">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+
+                        {% if not nodelete %}
+                            {# Delete #}
+                            <a class="btn btn-danger"
+                               href="{% url 'courses-delete' course.course_id %}">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        {% endif %}
+
+
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
