@@ -1,7 +1,11 @@
+from django.test import Client
+from django.shortcuts import reverse
+
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import LabError
-from django.test import Client
+from TAScheduler.viewsupport.message import Message, MessageQueue
 
+from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
 
 class LabsEdit(TASAcceptanceTestCase[LabError]):
 
@@ -9,28 +13,131 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         self.client = Client()
         self.session = self.client.session
 
-    def test_create_without_days_times(self):
-        pass
+        # Add users
+        self.admin_user = User.objects.create(
+            univ_id='josiahth',
+            password='password',
+            type=UserType.ADMIN,
+            tmp_password=False
+        )
 
-    def test_create_full(self):
-        pass
+        self.ta_user = User.objects.create(
+            univ_id='nleverence',
+            password='password',
+            type=UserType.TA,
+            tmp_password=False
+        )
+
+        self.prof_user = User.objects.create(
+            univ_id='rock',
+            password='password',
+            type=UserType.PROF,
+            tmp_password=False
+        )
+
+        # Add prerequisite objects
+        self.course = Course.objects.create(
+            course_code='361',
+            course_name='Software Engineering',
+            admin_id=self.admin_user,
+        )
+
+        self.section = CourseSection.objects.create(
+            course_section_code='201',
+            course_id=self.course,
+        )
+
+        self.lab_partial = LabSection.objects.create(
+            lab_section_code='901',
+            course_section_id=self.section,
+        )
+
+        self.lab_full = LabSection.objects.create(
+            lab_section_code='901',
+            course_section_id=self.section,
+            lab_days='MWF',
+            lab_time='2-4',
+            ta_id=self.ta_user,
+        )
+
+        # Set current user
+        self.session['user_id'] = self.admin_user.user_id
+        self.session.save()
 
     def test_ta_redirects(self):
-        pass
+        self.session['user_id'] = self.ta_user.user_id
+        self.session.save()
 
-    def test_rejects_missing_code(self):
-        pass
+        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+            'lab_code': '901',
+            'section_id': self.section.course_section_id,
+        })
+
+        self.assertContainsMessage(resp, Message(
+            'You do not have permission to create new lab sections',
+            Message.Type.ERROR,
+        ))
+
+        self.assertRedirects(resp, reverse('labs-directory'))
+
+    # TODO needs the positive cases for updating existing, as well as removing things
+
+    def test_rejects_remove_code(self):
+        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+            # 'lab_code': '901',
+            'section_id': self.section.course_section_id,
+        })
+
+        error = self.assertContextError(resp)
+
+        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
 
     def test_rejects_non_digit_code(self):
-        pass
+        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+            'lab_code': 'abc',
+            'section_id': self.section.course_section_id,
+        })
+
+        error = self.assertContextError(resp)
+
+        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
 
     def test_rejects_mislengthed_code(self):
         # Test that code lengths must be 3
-        pass
+        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+            'lab_code': '90103',
+            'section_id': self.section.course_section_id,
+        })
 
-    def test_rejects_missing_section(self):
-        pass
+        error = self.assertContextError(resp)
+
+        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
+
+        resp = self.client.post(reverse('labs-create'), {
+            'lab_code': '9',
+            'section_id': self.section.course_section_id,
+        })
+
+        error = self.assertContextError(resp)
+
+        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
 
     def test_rejects_professor_change_non_assignments(self):
         # A professor can edit lab sections, but only their assignments
-        pass
+        self.session['user_id'] = self.prof_user.user_id
+        self.session.save()
+
+        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+            'lab_code': self.lab_partial.lab_section_code,
+            'section_id': self.lab_partial.course_section_id.course_section_id,
+            'lab_days': ['M', 'W'],
+        })
+
+        self.assertContainsMessage(resp, Message(
+            'You only have permission to change assignments for labs',
+            Message.Type.ERROR,
+        ))
