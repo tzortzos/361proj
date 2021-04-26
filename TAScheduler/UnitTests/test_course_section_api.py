@@ -45,7 +45,6 @@ class TestCourseSection(TestCase):
 
     def test_delete_course_section(self):
         CourseSectionAPI.delete_course_section(self.course_section2.course_section_id)
-
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the course section to be deleted"):
             CourseSection.objects.get(course_section_id=self.course_section2.course_section_id)
 

@@ -49,6 +49,9 @@ class CourseSectionAPI:
 
     @staticmethod
     def delete_course_section(id: int)-> bool:
+        """
+        Deletes course section if it exists, returns boolean for confirmation
+        """
         try:
             section = CourseSection.objects.get(course_section_id=id)
             section.delete()
