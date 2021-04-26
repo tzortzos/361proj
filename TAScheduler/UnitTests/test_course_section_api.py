@@ -7,7 +7,6 @@ from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.models import Course, CourseSection
 
 
-
 class TestCourseSection(TestCase):
 
     def setUp(self) -> None:
@@ -36,7 +35,7 @@ class TestCourseSection(TestCase):
         self.assertTrue(new_course_section_id > 0, msg='Expecting new id returned confirming saved to database.')
 
     def test_get_course_section_by_course_id(self):
-        course_section3 = CourseSectionAPI.get_course_section_by_course_id(self.course_section_code1, self.course_id1)
+        course_section3 = CourseSectionAPI.get_course_section_by_course_id(self.course_section1.course_section_id)
         self.assertEqual(self.course_section1, course_section3, msg='Expected course1 to be course2 after call to get.')
 
     def test_get_all_course_sections_for_course(self):
@@ -45,24 +44,9 @@ class TestCourseSection(TestCase):
         self.assertTrue(self.course_section2 in query_set, msg='Expected course_section2 in list of course sections.')
 
     def test_delete_course_section(self):
-        CourseSectionAPI.delete_course_section(self.course_section2)
-
+        CourseSectionAPI.delete_course_section(self.course_section2.course_section_id)
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the course section to be deleted"):
             CourseSection.objects.get(course_section_id=self.course_section2.course_section_id)
-
-
-    def test_delete_course_section_by_deleting_course(self):
-        course = Course.objects.create(course_code=str(uuid.uuid4())[:3], course_name='TestCourse')
-        course_section_code = str(uuid.uuid4())[:3]
-        CourseSection.objects.create(
-            course_section_code=course_section_code,
-            course_id=course)
-
-        print(CourseSection.objects.get(course_section_code=course_section_code))
-        CourseAPI.delete_course(course)
-
-        with self.assertRaises(ObjectDoesNotExist, msg='Expected the cascade deletion of course section'):
-            CourseSection.objects.get(course_section_code=course_section_code)
 
 
 

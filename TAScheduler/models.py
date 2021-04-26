@@ -6,6 +6,16 @@ class UserType(models.TextChoices):
     PROF = "P", "Professor"
     TA = "T", "TA"
 
+    @classmethod
+    def from_str(cls, maybe_type: str):
+        if maybe_type == 'A':
+            return UserType.ADMIN
+        elif maybe_type == 'P':
+            return UserType.PROF
+        elif maybe_type == 'T':
+            return UserType.TA
+        else:
+            raise TypeError(f'user_type {maybe_type} is non in the set of [A, P, T]')
 
 class User(models.Model):
     """
