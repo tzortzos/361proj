@@ -29,7 +29,7 @@ class CoursesCreate(View):
         return render(request, 'pages/courses/edit_create.html', {
             'self': user,
             'navbar_items': AdminItems.items_iterable(),
-            'messages': MessageQueue.drain(),
+            'messages': MessageQueue.drain(request.session),
         })
 
     def post(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
@@ -49,7 +49,7 @@ class CoursesCreate(View):
         course_code: Optional[str] = request.POST.get('course_code', None)
         course_name: Optional[str] = request.POST.get('course_name', None)
 
-        if course_code is None or (a not in set(digits) for a in course_code) or len(course_code) != 3:
+        if course_code is None or len(course_code) != 3:
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
                 'navbar_items': AdminItems.items_iterable(),
@@ -68,7 +68,7 @@ class CoursesCreate(View):
                 'messages': MessageQueue.drain(request.session),
 
                 'error': CourseError(
-                    'A course code must be exactly 3 digits',
+                    'You must provide a course name',
                     CourseError.Place.NAME,
                 ),
             })
