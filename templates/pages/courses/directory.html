@@ -1,0 +1,40 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+Display a list of Course objects
+
+Context:
+- self: USer
+- courses: List[Course]
+- nodelete: bool            Hide the delete button when it would have otherwise been shown
+{% endcomment %}
+
+{% block application_pane %}
+
+    {# Header #}
+    <div class="d-flex mb-5 align-items-center">
+
+        {# Title #}
+        <h1 class="me-auto">All Courses</h1>
+
+        {# Admin controls #}
+        <div id="admin_controls">
+            {% if self.type == 'A' %}
+                <a class="btn btn-largs btn-dark" href="{% url 'courses-create' %}">
+                    <i class="bi bi-file-earmark-person-fill me-2"></i> Add Course
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    {# Body #}
+    <div class="list-group">
+        {% for course in courses %}
+            {% include 'partials/list_row/course.html' with course=course self=self nodelete=nodelete only %}
+        {% endfor %}
+    </div>
+
+
+
+{% endblock application_pane %}

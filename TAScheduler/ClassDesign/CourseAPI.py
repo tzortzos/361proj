@@ -57,5 +57,3 @@ class CourseAPI:
             return True
         except course.DoesNotExist:
             return False
-
-

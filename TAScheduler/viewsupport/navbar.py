@@ -52,15 +52,21 @@ class AdminItems(Enum):
     intended to be used as an iterable"""
     HOME = 0
     USERS = 1
+    COURSES = 2
     SECTIONS = 3
+    LABS = 4
 
     def get_item(self):
         if self == AdminItems.HOME:
             return NavbarItem('home', reverse('index'), icon='house-door-fill')
         elif self == AdminItems.USERS:
-            return NavbarItem('users directory', reverse('users-directory'), icon='people-fill')
+            return NavbarItem('user directory', reverse('users-directory'), icon='people-fill')
+        elif self == AdminItems.COURSES:
+            return NavbarItem('courses', reverse('courses-directory'), icon='text-paragraph')
         elif self == AdminItems.SECTIONS:
-            return NavbarItem('Course Sections', reverse('sections-directory'), icon='kanban-fill')
+            return NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')
+        elif self == AdminItems.LABS:
+            return NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')
 
     def map_disable(self):
         """

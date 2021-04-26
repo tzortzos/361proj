@@ -1,0 +1,170 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Edit existing and Create new Lab Sections
+
+Takes the following context variables:
+- self: User
+- edit: Optional[LabSection]
+- sections: List[CourseSection]
+- tas: List[User]
+- error: Optional[LabError]
+
+Post returns the following variables
+- section_id: int
+- lab_code: int
+- ta_id: int
+- lab_days: [str]
+- lab_time: str
+
+{% endcomment %}
+
+{% block application_pane %}
+<div class="row">
+
+    {# Title #}
+    <h1 class="mb-3">
+        {% if edit is not None %}
+            Edit Lab
+        {% else %}
+            Create Lab
+        {% endif %}
+    </h1>
+
+    <form class="form needs-validation" method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="col-12 mb-3">
+            {# Section Selection #}
+            <label class="form-label" for="course_id">Section</label>
+            <select id="course_id" name="section_id" class="form-select" required>
+                {% if section is None %}
+                    <option value="-1" selected>Choose</option>
+                {% endif %}
+
+                {% for section in sections %}
+                    <option value="{{ section.course_section_id }}"
+                            {% if edit and edit.course_section_id == section %}
+                            selected
+                            {% endif %}
+                    >
+                        {{ section.course_id.course_code }} - {{ section.course_id.course_name }} - Section: {{ section.course_section_code }}
+                    </option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                {% if error and error.place_section %}
+                    {{ error.error}}
+                {% else %}
+                    You must select a Section
+                {% endif %}
+            </div>
+            {# Code #}
+
+            <label for="lab_code" class="form-label">Lab Code</label>
+            <input type="text" required pattern="[0-9]{3}"
+                   {% if error and error.place_code %}
+                       class="form-control is-invalid"
+                   {% else %}
+                       class="form-control"
+                   {% endif %}
+            >
+            {% if error and error.place_code %}
+                <div class="invalid-feedback">{{ error.error }}</div>
+            {% else %}
+                <div class="invalid-feedback">A lab must have a 3 digit code</div>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-md-6 mb-3">
+
+            {# Days #}
+            <div class="input-group mb-3 has-validation d-flex flex-column">
+
+                <p class="mb-1">Lab Days</p>
+                <div class="form-check btn-group px-0">
+                    {# Monay #}
+                    <input type="radio" class="btn-check" id="M" name="lab_day" value="M"
+                            {% if edit and 'M' in edit.lab_days %}
+                           checked
+                            {% endif %}
+                    >
+                    <label for="M" class="btn btn-outline-primary">Monday</label>
+
+                    {# Tuesday #}
+                    <input type="radio" class="btn-check" id="T" name="lab_day" value="T"
+                            {% if edit and 'T' in edit.lab_days %}
+                           checked
+                            {% endif %}
+                    >
+                    <label for="T" class="btn btn-outline-primary">Tuesday</label>
+
+                    {# Wednesday #}
+                    <input type="radio" class="btn-check" id="W" name="lab_day" value="W"
+                            {% if edit and 'W' in edit.lab_days %}
+                           checked
+                            {% endif %}
+                    >
+                    <label for="W" class="btn btn-outline-primary">Wednesday</label>
+
+                    {# Thursday #}
+                    <input type="radio" class="btn-check" id="H" name="lab_day" value="H"
+                            {% if edit and 'H' in edit.lab_days %}
+                           checked
+                            {% endif %}
+                    >
+                    <label for="H" class="btn btn-outline-primary">Thursday</label>
+
+                    {# Wednesday #}
+                    <input type="radio" class="btn-check" id="F" name="lab_day" value="F"
+                            {% if edit and 'F' in edit.lab_days %}
+                           checked
+                            {% endif %}
+                    >
+                    <label for="F" class="btn btn-outline-primary">Friday</label>
+                </div>
+            </div>
+
+            {# Time #}
+            <div class="form-group">
+                <label for="lab_times" class="form-label">Lab Time</label>
+                <input type="text" id="lab_times" class="form-control">
+            </div>
+
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+
+            {# Assignment #}
+            <p class="mb-1">Select TA</p>
+            <div class="list-group">
+
+                {# None #}
+                <label class="list-group-item">
+                    <input type="radio" class="form-check-input me-1"
+                           name="ta_id" id="-1" value="-1"
+                           {% if edit is None or edit.ta_id is None %}checked{% endif %}>
+                    <strong>unassigned</strong>
+                </label>
+
+                {# All available TAs #}
+                {% for ta in tas %}
+
+                    <label class="list-group-item">
+                        <input type="radio" class="form-check-input me-1"
+                               name="ta_id" id="{{ ta.user_id }}" value="{{ ta.user_id }}"
+                               {% if edit is not None and edit.ta_id == ta %}checked{% endif %}>
+                        <strong>{{ ta.univ_id }}</strong> {{ ta.f_name }} {{ ta.l_name }}
+                    </label>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+{% include 'partials/validate.html' %}
+{% endblock application_pane %}

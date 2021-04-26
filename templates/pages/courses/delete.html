@@ -1,0 +1,30 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+Display a single course card with confirmation dialouge for deletion.
+
+Context:
+- self: User
+- course: Course
+{% endcomment %}
+
+{% block application_pane %}
+
+    <div class="row justify-content-center p-3">
+        <div class="col-12 col-md-6 order-md-2 mb-3">
+
+            {# Confirmation #}
+            <h2>Are you sure?</h2>
+            <form method="post" class="form">
+                {% csrf_token %}
+                <input type="submit" value="confirm delete"
+                       class="form-control btn btn-large btn-outline-danger">
+            </form>
+
+        </div>
+        <div class="col-12 col-md-6 order-md-1 mb-3">
+            {% include 'partials/cards/course.html' with course=course self=self noextrainfo=True nodelete=True only %}
+        </div>
+    </div>
+
+{% endblock application_pane %}
