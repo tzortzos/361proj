@@ -49,7 +49,7 @@ Post returns the following variables
                 <div class="form-check btn-group px-0">
                     {# Monay #}
                     <input type="radio" class="btn-check" id="M" name="lab_day" value="M"
-                            {% if lab and 'M' in lab.lab_days %}
+                            {% if edit and 'M' in edit.lab_days %}
                            checked
                             {% endif %}
                     >
@@ -57,7 +57,7 @@ Post returns the following variables
 
                     {# Tuesday #}
                     <input type="radio" class="btn-check" id="T" name="lab_day" value="T"
-                            {% if lab and 'T' in lab.lab_days %}
+                            {% if edit and 'T' in edit.lab_days %}
                            checked
                             {% endif %}
                     >
@@ -65,7 +65,7 @@ Post returns the following variables
 
                     {# Wednesday #}
                     <input type="radio" class="btn-check" id="W" name="lab_day" value="W"
-                            {% if lab and 'W' in lab.lab_days %}
+                            {% if edit and 'W' in edit.lab_days %}
                            checked
                             {% endif %}
                     >
@@ -73,7 +73,7 @@ Post returns the following variables
 
                     {# Thursday #}
                     <input type="radio" class="btn-check" id="H" name="lab_day" value="H"
-                            {% if lab and 'H' in lab.lab_days %}
+                            {% if edit and 'H' in edit.lab_days %}
                            checked
                             {% endif %}
                     >
@@ -81,7 +81,7 @@ Post returns the following variables
 
                     {# Wednesday #}
                     <input type="radio" class="btn-check" id="F" name="lab_day" value="F"
-                            {% if lab and 'F' in lab.lab_days %}
+                            {% if edit and 'F' in edit.lab_days %}
                            checked
                             {% endif %}
                     >
@@ -99,6 +99,30 @@ Post returns the following variables
         <div class="col-12 col-md-6 mb-3">
 
             {# Assignment #}
+            <p class="mb-1">Select TA</p>
+            <div class="list-group">
+
+                {# None #}
+                <label class="list-group-item">
+                    <input type="radio" class="form-check-input me-1"
+                           name="ta_id" id="-1" value="-1"
+                           {% if edit is None or edit.ta_id is None %}checked{% endif %}>
+                    <strong>unassigned</strong>
+                </label>
+
+                {# All available TAs #}
+                {% for ta in tas %}
+
+                    <label class="list-group-item">
+                        <input type="radio" class="form-check-input me-1"
+                               name="ta_id" id="{{ ta.user_id }}" value="{{ ta.user_id }}"
+                               {% if edit is not None and edit.ta_id == ta %}checked{% endif %}>
+                        <strong>{{ ta.univ_id }}</strong> {{ ta.f_name }} {{ ta.l_name }}
+                    </label>
+
+                {% endfor %}
+
+            </div>
 
         </div>
 
