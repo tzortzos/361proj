@@ -22,6 +22,12 @@ from TAScheduler.views.section.edit import SectionsEdit
 from TAScheduler.views.section.view import SectionsView
 from TAScheduler.views.section.delete import SectionsDelete
 
+from TAScheduler.views.labs.create import LabsCreate
+from TAScheduler.views.labs.delete import LabsDelete
+from TAScheduler.views.labs.directory import LabsDirectory
+from TAScheduler.views.labs.edit import LabsEdit
+from TAScheduler.views.labs.view import LabsView
+
 
 class Index(View):
     def get(self, request: HttpRequest):

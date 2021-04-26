@@ -37,4 +37,11 @@ urlpatterns = [
     path('users/<int:user_id>/', UserView.as_view(), name='users-view'),
     path('users/create/', UserCreate.as_view(), name='users-create'),
     path('users/', UserDirectory.as_view(), name='users-directory'),
+
+    # Labs resource management
+    path('labs/<int:user_id>/edit/', LabsEdit.as_view(), name='labs-edit'),
+    path('labs/<int:user_id>/delete/', LabsDelete.as_view(), name='labs-delete'),
+    path('labs/<int:user_id>/', LabsView.as_view(), name='labs-view'),
+    path('labs/create/', LabsCreate.as_view(), name='labs-create'),
+    path('labs/', LabsDirectory.as_view(), name='labs-directory'),
 ]
