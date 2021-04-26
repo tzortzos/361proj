@@ -55,12 +55,12 @@ class CourseAPI:
         """
         Deletes course, if it exists, using a course_id value, returns boolean to confirm
         """
-        global course
+
         try:
             course = Course.objects.get(course_id=id)
             course.delete()
             return True
-        except course.DoesNotExist:
+        except Course.DoesNotExist:
             return False
 
 
