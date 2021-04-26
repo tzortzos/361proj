@@ -1,5 +1,5 @@
 from TAScheduler.models import Course, User, UserType, CourseSection
-from typing import Optional, List
+from typing import Optional, List, Iterable
 
 
 class CourseSectionAPI:
@@ -18,7 +18,7 @@ class CourseSectionAPI:
         return CourseSection.objects.get(course_section_code=course_section_code, course_id=course_id)
 
     @staticmethod
-    def get_all_course_sections_for_course(course_id: Course) -> List[CourseSection]:
+    def get_all_course_sections_for_course(course_id: int) -> Iterable[CourseSection]:
         return CourseSection.objects.filter(course_id=course_id)
 
     @staticmethod
