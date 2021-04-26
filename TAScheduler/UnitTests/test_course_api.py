@@ -53,7 +53,7 @@ class TestCourse(TestCase):
         self.assertTrue(self.course1 in list_of_courses, msg='Exepect course1 in all courses.')
         self.assertTrue(self.course2 in list_of_courses, msg='Expected course2 in all courses.')
 
-    def test_delete_course_(self):
+    def test_delete_course(self):
         response = CourseAPI.delete_course(self.course1.course_id)
         self.assertEqual(True, response, msg='Expected a course that exists and was deleted to return true.')
 
