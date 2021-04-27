@@ -2,6 +2,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.shortcuts import render, redirect, reverse
 from typing import List, Union
+from string import digits
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
@@ -12,6 +13,8 @@ from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, LabSection
 from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
 
+from more_itertools import ilen
+
 class LabsCreate(View):
 
     def get(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
@@ -20,7 +23,7 @@ class LabsCreate(View):
             [UserType.ADMIN],
             redirect(reverse('labs-directory')),
             Message(
-                'You do not have permission to create lab sections',
+                'You do not have permission to create new lab sections',
                 Message.Type.ERROR,
             )
         )
@@ -43,7 +46,7 @@ class LabsCreate(View):
             [UserType.ADMIN],
             redirect(reverse('labs-directory')),
             Message(
-                'You do not have permission to create lab sections',
+                'You do not have permission to create new lab sections',
                 Message.Type.ERROR,
             )
         )
@@ -52,9 +55,9 @@ class LabsCreate(View):
             return user
 
         section_id = request.POST.get('section_id', None)
-        lab_code = request.POST.get('lab_code', None)
+        lab_code = request.POST.get('lab_code', '')
         ta_id = request.POST.get('ta_id', None)
-        lab_day = request.POST.get('lab_days', '')
+        lab_day = request.POST.get('lab_day', '')
         lab_time = request.POST.get('lab_time', '')
 
         if section_id is None:
@@ -69,7 +72,9 @@ class LabsCreate(View):
                 'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),
             })
 
-        if lab_code is None or len(lab_code) != 3:
+        non_digits = ilen((a for a in lab_code if a not in set(digits)))
+
+        if lab_code is None or len(lab_code) != 3 or non_digits > 0:
             return render(request, 'pages/labs/edit_create.html', {
                 'self': user,
                 'navbar_items': AdminItems.items_iterable(),

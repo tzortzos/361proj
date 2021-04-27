@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from TAScheduler.models import User, CourseSection
 from TAScheduler.models import LabSection
@@ -35,7 +35,7 @@ class LabSectionAPI:
         return LabSection.objects.get(lab_section_id=lab)
 
     @staticmethod
-    def get_all_lab_sections_from_course_section_and_course(course_section_id: int) -> list[LabSection]:
+    def get_all_lab_sections_from_course_section_and_course(course_section_id: int) -> List[LabSection]:
         """
         Returns all LabSection objects associated with a specific course section id, if any exist
         """

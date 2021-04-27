@@ -64,6 +64,7 @@ Post returns the following variables
 
             <label for="lab_code" class="form-label">Lab Code</label>
             <input type="text" required pattern="[0-9]{3}"
+                   name="lab_code"
                    {% if error and error.place_code %}
                        class="form-control is-invalid"
                    {% else %}
@@ -161,6 +162,28 @@ Post returns the following variables
 
             </div>
 
+        </div>
+
+
+        {# Submits #}
+        <div class="col-12 mb-3">
+            <div class="btn-group">
+
+                {# Submit #}
+                <input class="btn btn-large btn-primary"
+                       type="submit"
+                       value="{% if section %}confirm{% else %}create{% endif %}">
+
+                {# cancel #}
+                <a class="btn btn-large btn-dark" href="{% url 'labs-directory' %}">cancel</a>
+
+                {# delete #}
+                {% if edit %}
+                    <a class="btn btn-large btn-danger" href="{% url 'labs-delete' edit.lab_section_id %}">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
     </form>
