@@ -64,7 +64,7 @@ class CoursesDelete(View):
                 f'No such course with id {course_id} exists'
             ))
 
-        CourseAPI.delete_course(course)
+        CourseAPI.delete_course(course.course_id)
 
         MessageQueue.push(request.session, Message(f'Course {course.course_code} {course.course_name} deleted successfully'))
         return redirect(reverse('courses-directory'))
