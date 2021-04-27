@@ -19,7 +19,9 @@ class TestCourseSection(TestCase):
         self.lecture_time2 = '3-5p'
 
         self.course_code = str(uuid.uuid4())[:3]
+        self.course_code2 = str(uuid.uuid4())[:3]
         self.course_id1 = Course.objects.create(course_code=self.course_code, course_name='TestCourse')
+        self.course_id2 = Course.objects.create(course_code=self.course_code2, course_name='TestCourse2')
 
         self.course_section1 = CourseSection.objects.create(
             course_section_code=self.course_section_code1,
@@ -48,6 +50,14 @@ class TestCourseSection(TestCase):
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the course section to be deleted"):
             CourseSection.objects.get(course_section_id=self.course_section2.course_section_id)
 
+    def test_get_course_section_by_course_id_not_in_database(self):
+        response = CourseSectionAPI.get_course_section_by_course_id(self.course_code2)
+        self.assertEqual(None, response, msg="Expected None when course does not exist in database.")
 
+    def test_rejects_empty_course_section_code(self):
+        with self.assertRaises(TypeError, msg='Course section code should not be blank.'):
+            CourseSectionAPI.create_course_section('', self.course_id1, self.user1)
 
-
+    def test_rejects_empty_course_section_id(self):
+        with self.assertRaises(TypeError, msg='Course section id should not be blank.'):
+            CourseSectionAPI.create_course_section(self.course_code, None)

@@ -77,8 +77,13 @@ class TestLabSection(TestCase):
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the lab section to be deleted."):
             LabSection.objects.get(lab_section_id=self.labsection1.lab_section_id)
 
+    def test_rejects_edit_empty_lab_section(self):
+        with self.assertRaises(TypeError, msg='lab section should not be blank.'):
+            LabSectionAPI.edit_lab_section(None)
 
-
+    def test_rejects_empty_lab_section_code(self):
+        with self.assertRaises(TypeError, msg='Course section code should not be blank.'):
+            LabSectionAPI.create_lab_section('', self.course_section_id)
 
 
 

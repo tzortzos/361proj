@@ -68,3 +68,15 @@ class TestUser(TestCase):
     def test_check_user_type(self):
         user = UserAPI.get_user_by_user_id(self.user_id1.user_id)
         self.assertEqual('A', user.type, msg="Expected Admin as type for user1")
+
+    def test_empty_user_type(self):
+        user = self.UserAPI.create_user(None, 'asmith', 'password456')
+        self.assertRaises(ValueError, user, msg='Usertype can not be blank!')
+
+    def test_empty_univ_id(self):
+        UserAPI.create_user(UserType.ADMIN, self.univ_id2, self.password1)
+        self.assertTrue(self.univ_id2, msg='University ID can not be empty')
+
+    def test_empty_password(self):
+        UserAPI.create_user(UserType.ADMIN, self.user_id1, self.password2)
+        self.assertTrue(self.password2, msg='Password can not be empty')

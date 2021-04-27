@@ -15,7 +15,6 @@ class TestLoginUtility(TestCase):
         self.assertEqual(new_pass, self.user1.password, msg='Expected the password to have been updated.')
         self.assertEqual(False, self.user1.tmp_password, msg='Expected tmp password boolean to change to False.')
 
-
     def test_get_user_and_validate_by_user_id(self):
         new_pass = str(uuid.uuid4())[:8]
         LoginUtility.update_password(self.user1,new_pass)
