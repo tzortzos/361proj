@@ -69,7 +69,21 @@ class CoursesEdit(View):
         course_code: Optional[str] = request.POST.get('course_code', None)
         course_name: Optional[str] = request.POST.get('course_name', None)
 
-        if course_code is None or len(course_code) != 3:
+        if course_code is None:
+            return render(request, 'pages/courses/edit_create.html', {
+                'self': user,
+                'navbar_items': AdminItems.items_iterable(),
+                'messages': MessageQueue.drain(request.session),
+
+                'edit': course,
+
+                'error': CourseError(
+                    'You cannot remove a course code',
+                    CourseError.Place.CODE
+                ),
+            })
+
+        if len(course_code) != 3:
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
                 'navbar_items': AdminItems.items_iterable(),
@@ -92,7 +106,7 @@ class CoursesEdit(View):
                 'edit': course,
 
                 'error': CourseError(
-                    'You must provide a course name',
+                    'You cannot remove the course name',
                     CourseError.Place.NAME,
                 ),
             })
