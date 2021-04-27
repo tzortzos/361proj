@@ -1,14 +1,14 @@
-import unittest
+from django.test import TestCase
 from TAScheduler.viewsupport.navbar import *
 
 
-class TestAdminItemsEnum(unittest.TestCase):
+class TestAdminItemsEnum(TestCase):
     def test_returns_correct_item(self):
         item = AdminItems.HOME
         navbar_item = item.get_item()
         self.assertEqual(navbar_item.name, 'home', 'did not set correct home message')
         self.assertEqual(navbar_item.enabled, True, 'did not default enabled correctly')
-        self.assertEqual(navbar_item.url, '/admin', 'did not default url to admin home')
+        self.assertEqual(navbar_item.url, '/', 'did not default url to admin home')
         self.assertEqual(navbar_item.icon.name, 'house-door-fill')
 
     def test_map_disable(self):
@@ -24,7 +24,7 @@ class TestAdminItemsEnum(unittest.TestCase):
         self.assertEqual(enabled.get_enabled(), True, 'did not leave others enabled')
 
 
-class TestNavbarItem(unittest.TestCase):
+class TestNavbarItem(TestCase):
     def setUp(self):
         self.item_defaults = NavbarItem('home', '/home')
         self.item_not_enabled = NavbarItem('home', '/home', enabled=False)
@@ -55,7 +55,3 @@ class TestNavbarItem(unittest.TestCase):
     def test_disable(self):
         self.item_defaults.disable()
         self.assertEqual(self.item_defaults.get_enabled(), False, 'call to disable did not disable item')
-
-
-if __name__ == '__main__':
-    unittest.main()
