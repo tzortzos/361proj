@@ -7,11 +7,22 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, LabSection
 
 class LabsDirectory(View):
 
     def get(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
-        pass
+        user = LoginUtility.get_user_and_validate_by_user_id(request.session)
 
-    def post(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
-        pass
+        if type(user) is HttpResponseRedirect:
+            return user
+
+        labs = LabSection.objects.all()
+
+        return render(request, 'pages/labs/directory.html', {
+            'self': user,
+            'navbar_items': AdminItems.LABS.items_iterable_except(),
+            'messages': MessageQueue.drain(request.session),
+
+            'labs': labs,
+        })
