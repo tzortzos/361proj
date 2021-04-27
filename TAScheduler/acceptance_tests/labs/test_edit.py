@@ -53,7 +53,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         )
 
         self.lab_full = LabSection.objects.create(
-            lab_section_code='901',
+            lab_section_code='902',
             course_section_id=self.section,
             lab_days='MWF',
             lab_time='2-4',
@@ -68,13 +68,13 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         self.session['user_id'] = self.ta_user.user_id
         self.session.save()
 
-        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
             'lab_code': '901',
             'section_id': self.section.course_section_id,
         })
 
         self.assertContainsMessage(resp, Message(
-            'You do not have permission to create new lab sections',
+            'You do not have permission to edit lab sections',
             Message.Type.ERROR,
         ))
 
@@ -83,7 +83,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
     # TODO needs the positive cases for updating existing, as well as removing things
 
     def test_rejects_remove_code(self):
-        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
             # 'lab_code': '901',
             'section_id': self.section.course_section_id,
         })
@@ -91,10 +91,10 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
+        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_non_digit_code(self):
-        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
             'lab_code': 'abc',
             'section_id': self.section.course_section_id,
         })
@@ -102,11 +102,11 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
+        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_mislengthed_code(self):
         # Test that code lengths must be 3
-        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
             'lab_code': '90103',
             'section_id': self.section.course_section_id,
         })
@@ -114,9 +114,9 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
+        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
-        resp = self.client.post(reverse('labs-create'), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
             'lab_code': '9',
             'section_id': self.section.course_section_id,
         })
@@ -124,20 +124,4 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('The lab code must be exactly 3 digits', error.error(), 'Did not return correct message')
-
-    def test_rejects_professor_change_non_assignments(self):
-        # A professor can edit lab sections, but only their assignments
-        self.session['user_id'] = self.prof_user.user_id
-        self.session.save()
-
-        resp = self.client.post(reverse('labs-create', args=[self.lab_partial.course_section_id]), {
-            'lab_code': self.lab_partial.lab_section_code,
-            'section_id': self.lab_partial.course_section_id.course_section_id,
-            'lab_days': ['M', 'W'],
-        })
-
-        self.assertContainsMessage(resp, Message(
-            'You only have permission to change assignments for labs',
-            Message.Type.ERROR,
-        ))
+        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
