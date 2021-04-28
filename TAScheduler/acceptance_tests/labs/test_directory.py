@@ -10,7 +10,7 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
 
 
-class LabsDelete(TASAcceptanceTestCase[LabError]):
+class LabsDirectory(TASAcceptanceTestCase[LabError]):
 
     def setUp(self):
         self.client = Client()
@@ -21,6 +21,13 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
             univ_id='josiahth',
             password='password',
             type=UserType.ADMIN,
+            tmp_password=False
+        )
+
+        self.ta_user = User.objects.create(
+            univ_id='nleverence',
+            password='password',
+            type=UserType.TA,
             tmp_password=False
         )
 
@@ -42,7 +49,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         )
 
         self.lab_full = LabSection.objects.create(
-            lab_section_code='901',
+            lab_section_code='902',
             course_section_id=self.section,
             lab_days='MWF',
             lab_time='2-4',
@@ -56,7 +63,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
     def test_context_contains_labs(self):
         resp = self.client.get(reverse('labs-directory'))
 
-        labs = resp.context.getlist('labs')
+        labs: List[object] = resp.context.get('labs')
 
         for li in range(len(labs)):
             self.assertTrue(isinstance(labs[li], LabSection), msg='Returned non lab object')

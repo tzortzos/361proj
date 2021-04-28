@@ -56,7 +56,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         )
 
         self.lab_full = LabSection.objects.create(
-            lab_section_code='901',
+            lab_section_code='902',
             course_section_id=self.section,
             lab_days='MWF',
             lab_time='2-4',
@@ -71,7 +71,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         self.session['user_id'] = self.prof_user.user_id
         self.session.save()
 
-        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.course_section_id]))
+        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.lab_section_id]))
 
         self.assertContainsMessage(resp, Message(
             'You do not have permission to delete lab sections',
@@ -84,7 +84,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         self.session['user_id'] = self.ta_user.user_id
         self.session.save()
 
-        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.course_section_id]))
+        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.lab_section_id]))
 
         self.assertContainsMessage(resp, Message(
             'You do not have permission to delete lab sections',
@@ -94,7 +94,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_removes_database(self):
-        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.course_section_id]))
+        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.lab_section_id]))
 
         labs: List[LabSection] = list(LabSection.objects.all())
 

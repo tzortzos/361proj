@@ -9,7 +9,7 @@ from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 
-from TAScheduler.models import CourseSection
+from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
 
 
 class SectionsDelete(View):
@@ -25,7 +25,7 @@ class SectionsDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        section = CourseSection.objects.get(course_section_id=section_id)
+        section = CourseSectionAPI.get_course_section_by_course_id(section_id)
 
         if section is None:
             MessageQueue.push(request.session, Message(
@@ -54,7 +54,7 @@ class SectionsDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        section = CourseSection.objects.get(course_section_id=section_id)
+        section = CourseSectionAPI.get_course_section_by_course_id(section_id)
 
         if section is None:
             MessageQueue.push(request.session, Message(

@@ -26,7 +26,7 @@ class SectionsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        edit = CourseSection.objects.get(course_section_id=section_id)
+        edit = CourseSectionAPI.get_course_section_by_course_id(section_id)
 
         if edit is None:
             MessageQueue.push(request.session, Message(
@@ -58,7 +58,7 @@ class SectionsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        edit = CourseSection.objects.get(course_section_id=section_id)
+        edit = CourseSectionAPI.get_course_section_by_course_id(section_id)
 
         if edit is None:
             MessageQueue.push(request.session, Message(
