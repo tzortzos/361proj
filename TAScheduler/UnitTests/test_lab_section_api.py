@@ -10,6 +10,7 @@ class TestLabSection(TestCase):
 
     def setUp(self) -> None:
         self.lab_section_code = str(uuid.uuid4())[:3]
+        self.lab_section_code2 = ''
         self.course_section_id = CourseSection.objects.create(
             course_section_code=str(uuid.uuid4())[:3],
             course_id= Course.objects.create(
@@ -81,9 +82,12 @@ class TestLabSection(TestCase):
         with self.assertRaises(TypeError, msg='lab section should not be blank.'):
             LabSectionAPI.edit_lab_section(None)
 
-    def test_rejects_empty_lab_section_code(self):
-        with self.assertRaises(TypeError, msg='Course section code should not be blank.'):
-            LabSectionAPI.create_lab_section('', self.course_section_id)
+    def test_empty_section_code(self):
+        new_lab = LabSection.objects.create(
+            lab_section_code=self.lab_section_code2,
+            course_section_id=self.course_section_id)
+        lab = LabSectionAPI.get_lab_section_by_lab_id(new_lab.lab_section_id)
+        self.assertTrue(lab.lab_section_code, msg='Lab section ID can not be blank!')
 
 
 
