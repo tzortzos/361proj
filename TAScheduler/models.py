@@ -115,8 +115,67 @@ class Lab(models.Model):
         return f'{self.section.course.code} section {self.section.code} lab {self.code}'
 
 
-# TODO add Message and Recipient classes for message sending in the application
+class Message(models.Model):
+    """
+    Represents a message sent from one user to a set of users.
+    """
 
+    sender = models.ForeignKey(
+        to='TAScheduler.User', on_delete=models.CASCADE,
+        blank=False,
+        help_text='From',
+    )
+
+    recipients = models.ManyToManyField(
+        to='TAScheduler.User', through='TAScheduler.Recipient',
+        related_name='messages_received',
+        blank=False,
+        help_text='To',
+    )
+
+    """Setting this in the future is not legal and does not 'schedule' a message"""
+    sent = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Sent date',
+    )
+
+    parent = models.ForeignKey(
+        to='TAScheduler.Message', on_delete=models.SET_NULL,  # May possibly want to be cascade to make threads easier to delete
+        null=True, blank=True,
+        help_text='In response to',
+        )
+
+    title = models.CharField(
+        max_length=60,
+        blank=True,
+        help_text='Title',
+    )
+
+    body = models.TextField(
+        max_length=500,
+        blank=False,
+        help_text='Body',
+    )
+
+
+class Recipient(models.Model):
+    """
+    Represents a single recipient for a message
+    """
+
+    recipient = models.ForeignKey(
+        to='TAScheduler.User', on_delete=models.CASCADE,
+        help_text='To',
+    )
+
+    message = models.ForeignKey(
+        to='TAScheduler.Message', on_delete=models.CASCADE,
+    )
+
+    read = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Read date',
+    )
 
 class Skill(models.Model):
     """
