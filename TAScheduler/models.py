@@ -46,6 +46,9 @@ class User(models.Model):
     def __str__(self):
         return f'{self.f_name} {self.l_name} ({self.username}@umw.edu) [{self.get_type_display()}]'
 
+    def email(self) -> str:
+        return f'{self.username}@uwm.edu'
+
 
 class Course(models.Model):
     """
@@ -158,6 +161,10 @@ class Message(models.Model):
         help_text='Body',
     )
 
+    def __str__(self) -> str:
+        return f'[{self.sent}] ({self.sender.email()}) {self.title}'
+
+
 
 class Recipient(models.Model):
     """
@@ -178,9 +185,15 @@ class Recipient(models.Model):
         help_text='Read date',
     )
 
+    def __str__(self) -> str:
+        return f'{self.message} -> {self.recipient.email()}'
+
 
 class Skill(models.Model):
     """
     Represents a singular skill that a TA could possess
     """
     name = models.CharField('Skill', blank=False, unique=True, max_length=30)
+
+    def __str__(self) -> str:
+        return self.name
