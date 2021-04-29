@@ -61,11 +61,11 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_ta_redirects(self):
-        self.session['user_id'] = self.ta_user.user_id
+        self.session['user_id'] = self.ta_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {

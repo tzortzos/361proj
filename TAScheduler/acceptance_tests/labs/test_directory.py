@@ -57,7 +57,7 @@ class LabsDirectory(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_context_contains_labs(self):

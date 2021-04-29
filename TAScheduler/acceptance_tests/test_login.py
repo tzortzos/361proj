@@ -20,7 +20,7 @@ class TestLoginView(TestCase):
             tmp_password=False
         )
 
-        self.long_user = long_user.user_id
+        self.long_user = long_user.id
 
         self.short_user_username = 'nleverence'
         short_user = User.objects.create(
@@ -145,4 +145,4 @@ class TestLoginView(TestCase):
             'password': self.check_pass,
         }, follow=True)
 
-        self.assertRedirects(resp, reverse('users-edit', args=(self.short_user.user_id,)))
+        self.assertRedirects(resp, reverse('users-edit', args=(self.short_user.id,)))

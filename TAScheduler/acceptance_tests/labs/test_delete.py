@@ -64,11 +64,11 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_redirects_professor(self):
-        self.session['user_id'] = self.prof_user.user_id
+        self.session['user_id'] = self.prof_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-delete', args=[self.lab_full.id]))
@@ -81,7 +81,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_redirects_ta(self):
-        self.session['user_id'] = self.ta_user.user_id
+        self.session['user_id'] = self.ta_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-delete', args=[self.lab_full.id]))

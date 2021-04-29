@@ -26,7 +26,7 @@ class CreateSection(TestCase):
             admin_id=self.user,
         )
 
-        self.session['user_id'] = self.user.user_id
+        self.session['user_id'] = self.user.id
         self.session.save()
 
     def assertContainsMessage(self, resp, message: Message, msg: str = 'Message object was not in context'):

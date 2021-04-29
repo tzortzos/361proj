@@ -49,7 +49,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_create_without_days_times(self):
@@ -82,7 +82,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-view', args=[lab.id]))
 
     def test_professor_rejected(self):
-        self.session['user_id'] = self.prof_user.user_id
+        self.session['user_id'] = self.prof_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-create'), {
@@ -98,7 +98,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_ta_redirects(self):
-        self.session['user_id'] = self.ta_user.user_id
+        self.session['user_id'] = self.ta_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-create'), {

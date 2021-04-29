@@ -28,7 +28,7 @@ class UserEdit(View):
             MessageQueue.push(request.session, Message('No user with id {user_id} exists.', Message.Type.ERROR))
             return redirect(reverse('users-directory'))
 
-        if to_edit.user_id != user.user_id and UserAPI.check_user_type(user) != UserType.ADMIN:
+        if to_edit.id != user.id and UserAPI.check_user_type(user) != UserType.ADMIN:
             MessageQueue.push(request.session, Message('You are not allowed to edit other users.', Message.Type.ERROR))
             return redirect(reverse('index'))
 
@@ -50,7 +50,7 @@ class UserEdit(View):
             MessageQueue.push(request.session, Message('No user with id {user_id} exists.', Message.Type.ERROR))
             return redirect(reverse('users-directory'))
 
-        if to_edit.user_id != user.user_id and UserAPI.check_user_type(user) != UserType.ADMIN:
+        if to_edit.id != user.id and UserAPI.check_user_type(user) != UserType.ADMIN:
             MessageQueue.push(request.session, Message('You are not allowed to edit other users.', Message.Type.ERROR))
             return redirect(reverse('index'))
 
@@ -94,7 +94,7 @@ class UserEdit(View):
         # Check error cases
         if fields['new_password'] is not None and len(fields['new_password']) > 0:
             # Attempting to change password
-            if user.user_id != to_edit.user_id:
+            if user.id != to_edit.id:
                 # Admins may not change others' passwords
                 MessageQueue.push(
                     request.session,
@@ -142,7 +142,7 @@ class UserEdit(View):
                 'error': UserEditError('You can\'t remove a user\'s username.', UserEditError.Place.USERNAME),
             })
 
-        if fields['univ_id'] != to_edit.univ_id:
+        if fields['univ_id'] != to_edit.username:
             if UserAPI.check_user_type(user) != UserType.ADMIN:
                 return render(request, 'pages/users/edit_create.html', {
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
@@ -162,7 +162,7 @@ class UserEdit(View):
                     ),
                 })
 
-            to_edit.univ_id = fields['univ_id']
+            to_edit.username = fields['univ_id']
             to_edit.save()
 
         if fields['phone'] is not None:
@@ -210,7 +210,7 @@ class UserEdit(View):
                 to_edit.type = UserType.TA
 
             to_edit.save()
-            MessageQueue.push(request.session, Message(f'User {to_edit.univ_id} is now a {to_edit.get_type_display()}'))
+            MessageQueue.push(request.session, Message(f'User {to_edit.username} is now a {to_edit.get_type_display()}'))
 
-        return redirect(reverse('users-view', args=(to_edit.user_id,)))
+        return redirect(reverse('users-view', args=(to_edit.id,)))
 

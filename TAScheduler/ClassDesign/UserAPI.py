@@ -29,7 +29,7 @@ class UserAPI:
             f_name=fname,
             phone=phone
         )
-        return new_user.user_id
+        return new_user.id
 
     @staticmethod
     def get_user_by_user_id(user_id) -> Optional[User]:

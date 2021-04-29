@@ -30,12 +30,12 @@ class TestDeleteUser(TestCase):
             type=UserType.PROF
         )
 
-        self.valid_delete_url = reverse('users-delete', args=(self.prof.user_id,))
-        self.valid_delete_self = reverse('users-delete', args=(self.admin.user_id,))
+        self.valid_delete_url = reverse('users-delete', args=(self.prof.id,))
+        self.valid_delete_self = reverse('users-delete', args=(self.admin.id,))
         self.invalid_delete_url = reverse('users-delete', args=(340000,))  # Only two users were created so the max valid id is 2
 
         self.session = self.client.session
-        self.session['user_id'] = self.admin.user_id
+        self.session['user_id'] = self.admin.id
         self.session.save()
 
 
@@ -71,11 +71,11 @@ class TestDeleteUser(TestCase):
         self.assertEqual(message.message(), f'No user with id {340000} exists', 'Did not return correct message')
 
     def test_prof_cannot_delete_anyone(self):
-        self.session['user_id'] = self.prof.user_id
+        self.session['user_id'] = self.prof.id
         self.session.save()
 
-        resp_post = self.client.post(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
-        resp_get = self.client.get(reverse('users-delete', args=(self.admin.user_id,)), {}, follow=False)
+        resp_post = self.client.post(reverse('users-delete', args=(self.admin.id,)), {}, follow=False)
+        resp_get = self.client.get(reverse('users-delete', args=(self.admin.id,)), {}, follow=False)
 
         message_post = self.get_first_message(resp_post)
         message_get = self.get_first_message(resp_get)

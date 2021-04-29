@@ -14,7 +14,7 @@ class LoginUtility:
     @staticmethod
     def update_password(user: User, password: str):
         user.password = password
-        user.tmp_password = False
+        user.password_tmp = False
         user.save()
 
     @staticmethod
@@ -50,7 +50,7 @@ class LoginUtility:
             MessageQueue.push(session, Message('You must log into the application before you can view that page'))
             return redirect(reverse('login'))
 
-        if user.tmp_password and password_change_redirect:
+        if user.password_tmp and password_change_redirect:
             MessageQueue.push(session, Message('You must change your password before accessing the application'))
             return redirect(reverse('users-edit', args=(user_id,)))
 

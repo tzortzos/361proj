@@ -21,7 +21,7 @@ class TestCreateUserView(TestCase):
                                          type=UserType.ADMIN,
                                          tmp_password=False)
 
-        self.session['user_id'] = self.admin.user_id
+        self.session['user_id'] = self.admin.id
         self.session.save()
 
         self.prof_username = 'jrock'
@@ -127,7 +127,7 @@ class TestCreateUserView(TestCase):
         self.assertEqual(ret_error.error().body(), 'A username may not have spaces')
 
     def test_rejects_non_admin(self):
-        self.client.session['user_id'] = self.professor.user_id
+        self.client.session['user_id'] = self.professor.id
         resp = self.client.post(reverse('users-create'), {
             'univ_id': 'nleverence',
             'new_password': 'a-very-good-password',

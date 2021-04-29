@@ -28,7 +28,7 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
         self.view_url = reverse('courses-view', args=[self.course.course])
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_edits(self):
