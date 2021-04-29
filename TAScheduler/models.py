@@ -75,7 +75,7 @@ class CourseSection(models.Model):
     instructor_id = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
                                       help_text="Instructor ID")
 
-    ta_ids = models.ManyToManyField(User, related_name='section_assign', blank=True,
+    ta_ids = models.ManyToManyField(User, through='Assignment', related_name='section_assign', blank=True,
                                     help_text='Ta\'s Assigned to this Course Section')
 
     class Meta:
@@ -84,6 +84,12 @@ class CourseSection(models.Model):
 
     def __str__(self):
         return f'{self.course_id.course_code} section {self.course_section_code} [{self.instructor_id}]'
+
+
+class Assignment(models.Model):
+    ta = models.ForeignKey(User)
+    section = models.ForeignKey(CourseSection)
+    max_labs = models.IntegerField(verbose_name='Maximum number of labs that this TA can be assigned', blank=False)
 
 
 class LabSection(models.Model):
