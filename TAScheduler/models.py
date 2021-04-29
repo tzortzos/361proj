@@ -17,6 +17,7 @@ class UserType(models.TextChoices):
         else:
             raise TypeError(f'user_type {maybe_type} is non in the set of [A, P, T]')
 
+
 class User(models.Model):
     """
     Represents all three types of user of our application
@@ -32,6 +33,7 @@ class User(models.Model):
 
     phone = models.CharField(max_length=10, blank=True)
 
+    skills = models.ManyToManyField(to='Skill', blank=True, help_text='What skills does this user possess?')
     description = models.TextField('Extra skills and information', max_length=500, blank=True, default='')
 
     """
@@ -111,3 +113,13 @@ class Lab(models.Model):
 
     def __str__(self):
         return f'{self.section.course.code} section {self.section.code} lab {self.code}'
+
+
+# TODO add Message and Recipient classes for message sending in the application
+
+
+class Skill(models.Model):
+    """
+    Represents a singular skill that a TA could possess
+    """
+    name = models.CharField('Skill', blank=False, unique=True, max_length=30)
