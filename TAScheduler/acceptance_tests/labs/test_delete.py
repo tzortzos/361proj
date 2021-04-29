@@ -7,7 +7,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, Lab
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class LabsDelete(TASAcceptanceTestCase[LabError]):
@@ -45,7 +45,7 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
             tmp_password=False
         )
 
-        self.section = CourseSection.objects.create(
+        self.section = Section.objects.create(
             course_section_code='201',
             course_id=self.course,
         )

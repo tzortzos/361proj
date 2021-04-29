@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import CourseError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, Lab
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class CourseEdit(TASAcceptanceTestCase[CourseError]):
@@ -24,8 +24,8 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
         self.course = Course.objects.create(course_code='351', course_name='DSA')
 
-        self.edit_url = reverse('courses-edit', args=[self.course.course_id])
-        self.view_url = reverse('courses-view', args=[self.course.course_id])
+        self.edit_url = reverse('courses-edit', args=[self.course.course])
+        self.view_url = reverse('courses-view', args=[self.course.course])
 
         # Set current user
         self.session['user_id'] = self.admin_user.user_id

@@ -13,7 +13,7 @@ class CourseAPI:
         if code is '' or name is '':
             raise TypeError('Course code or Course name can\'t be empty.')
         new_course = Course.objects.create(course_code=code, course_name=name, admin_id=admin)
-        return new_course.course_id
+        return new_course.course
 
     @staticmethod
     def get_course_by_course_code(code: str) -> Optional[Course]:

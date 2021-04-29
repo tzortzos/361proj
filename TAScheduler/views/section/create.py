@@ -7,7 +7,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSection, CourseSectionAPI
+from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import SectionError
@@ -100,27 +100,27 @@ class SectionsCreate(View):
 
 
         # TODO Replace with CourseSectionAPI methods when complete
-        section = CourseSection.objects.get(course_section_id=section_id)
+        section = Section.objects.get(course_section_id=section_id)
 
         if section is None:
             raise ValueError('Could not create section')
 
         if len(lecture_days) > 0:
-            section.lecture_days = lecture_days
+            section.days = lecture_days
 
         if lecture_time is not None:
-            section.lecture_time = lecture_time
+            section.time = lecture_time
 
         if instructor_id is not None:
             instructor = UserAPI.get_user_by_user_id(instructor_id)
 
             if instructor is not None:
-                section.instructor_id = instructor
+                section.prof = instructor
 
         tas = list(filter(lambda a: a is not None, map(UserAPI.get_user_by_user_id, ta_ids)))
 
         for ta in tas:
-            section.ta_ids.add(ta)
+            section.tas.add(ta)
 
         section.save()
 

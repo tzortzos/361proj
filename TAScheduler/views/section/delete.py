@@ -66,7 +66,7 @@ class SectionsDelete(View):
         section.delete()
 
         MessageQueue.push(request.session, Message(
-            f'Successfully deleted Course Section {section.course_section_code}'
-            f' for course {section.course_id.course_code} {section.course_id.course_name}'
+            f'Successfully deleted Course Section {section.code}'
+            f' for course {section.course.course_code} {section.course.course_name}'
         ))
         return redirect(reverse('sections-directory'))

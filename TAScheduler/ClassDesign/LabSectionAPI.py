@@ -1,6 +1,6 @@
 from typing import Optional, Union, List
 
-from TAScheduler.models import User, CourseSection
+from TAScheduler.models import User, Section
 from TAScheduler.models import Lab
 
 
@@ -9,7 +9,7 @@ class LabSectionAPI:
     @staticmethod
     def create_lab_section(
             lab_section_code: str,
-            course_section_id: CourseSection,
+            course_section_id: Section,
             lab_days: str = '',
             lab_time: str = '',
             ta_id: User = None,

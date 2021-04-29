@@ -1,4 +1,4 @@
-from TAScheduler.models import Course, User, UserType, CourseSection
+from TAScheduler.models import Course, User, UserType, Section
 from typing import Optional, Iterable
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -16,7 +16,7 @@ class CourseSectionAPI:
         """
         Creates new course section associated to Course, returns the course section id primary key.
         """
-        new_course_section = CourseSection(
+        new_course_section = Section(
             course_section_code=section_code,
             course_id=course_id,
             lecture_days=days,
@@ -24,25 +24,25 @@ class CourseSectionAPI:
             instructor_id=instructor)
         new_course_section.save()
 
-        return new_course_section.course_section_id
+        return new_course_section.id
 
     @staticmethod
-    def get_course_section_by_course_id(id: str) -> Optional[CourseSection]:
+    def get_course_section_by_course_id(id: str) -> Optional[Section]:
         """
         Get course section by id if it exists, returns the course section object or none
         """
         try:
-            return CourseSection.objects.get(course_section_id=id)
+            return Section.objects.get(course_section_id=id)
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
-    def get_all_course_sections_for_course(course_id: Course) -> Optional[Iterable[CourseSection]]:
+    def get_all_course_sections_for_course(course_id: Course) -> Optional[Iterable[Section]]:
         """
         Get all course sections associated with a course if any exist otherwise returns none
         """
         try:
-            return CourseSection.objects.filter(course_id=course_id)
+            return Section.objects.filter(course_id=course_id)
         except ObjectDoesNotExist:
             return None
 
@@ -52,7 +52,7 @@ class CourseSectionAPI:
         Deletes course section if it exists, returns boolean for confirmation
         """
         try:
-            section = CourseSection.objects.get(course_section_id=id)
+            section = Section.objects.get(course_section_id=id)
             section.delete()
             return True
         except ObjectDoesNotExist:

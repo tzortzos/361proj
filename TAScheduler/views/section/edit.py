@@ -7,7 +7,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSection, CourseSectionAPI
+from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import SectionError
@@ -112,7 +112,7 @@ class SectionsEdit(View):
             # NOTE it would be really nice if this could catch the integrity error and return an unsaved version of the
             #      database object in the case that it could not be saved, that way we could re-fill the fields with
             #      the relevant information in this case.
-            edit.course_section_code = section_code
+            edit.code = section_code
             edit.save()
         except IntegrityError:
             edit.refresh_from_db()
@@ -132,30 +132,30 @@ class SectionsEdit(View):
 
 
         # TODO Replace with CourseSectionAPI methods when complete
-        section = CourseSection.objects.get(course_section_id=section_id)
+        section = Section.objects.get(course_section_id=section_id)
 
         if section is None:
             raise ValueError('Could not create section')
 
-        section.lecture_days = lecture_days
+        section.days = lecture_days
 
         if lecture_time is not None:
-            edit.lecture_time = lecture_time
+            edit.time = lecture_time
         else:
-            edit.lecture_time = ''
+            edit.time = ''
 
         if instructor_id is not None:
             instructor = UserAPI.get_user_by_user_id(instructor_id)
         else:
             instructor = None
-        section.instructor_id = instructor
+        section.prof = instructor
 
         tas = list(filter(lambda a: a is not None, map(UserAPI.get_user_by_user_id, ta_ids)))
 
-        section.ta_ids.clear()
+        section.tas.clear()
 
         for ta in tas:
-            section.ta_ids.add(ta)
+            section.tas.add(ta)
 
         section.save()
 

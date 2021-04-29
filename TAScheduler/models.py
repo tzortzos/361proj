@@ -60,35 +60,35 @@ class Course(models.Model):
         return f'({self.course_code}) {self.course_name}'
 
 
-class CourseSection(models.Model):
+class Section(models.Model):
     """
     Represents an Abstract Course Section (section 201 of CS361) which may have multiple Lab Sections
     associated to it.
     """
 
     #course_id is bad!!List things from need to input to optional/default
-    course_section_id = models.AutoField('Course Section ID', primary_key=True)
-    course_section_code = models.CharField('Course Section Code', blank=False, max_length=3)
-    lecture_days = models.CharField('Lecture Day(s)', blank=True, max_length=6)
-    lecture_time = models.TextField('Lecture Time', blank=True, max_length=12)
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE, blank=False, help_text="Course ID")
-    instructor_id = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
-                                      help_text="Instructor ID")
+    id = models.AutoField('Course Section ID', primary_key=True)
+    code = models.CharField('Course Section Code', blank=False, max_length=3)
+    days = models.CharField('Lecture Day(s)', blank=True, max_length=6)
+    time = models.TextField('Lecture Time', blank=True, max_length=12)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=False, help_text="Course ID")
+    prof = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
+                             help_text="Instructor ID")
 
-    ta_ids = models.ManyToManyField(User, through='Assignment', related_name='section_assign', blank=True,
-                                    help_text='Ta\'s Assigned to this Course Section')
+    tas = models.ManyToManyField(User, through='Assignment', related_name='section_assign', blank=True,
+                                 help_text='Ta\'s Assigned to this Course Section')
 
     class Meta:
         # Adds a unique constraint combination on the two fields
-        unique_together = ['course_section_code', 'course_id']
+        unique_together = ['code', 'course']
 
     def __str__(self):
-        return f'{self.course_id.course_code} section {self.course_section_code} [{self.instructor_id}]'
+        return f'{self.course.course_code} section {self.code} [{self.prof}]'
 
 
 class Assignment(models.Model):
     ta = models.ForeignKey(User)
-    section = models.ForeignKey(CourseSection)
+    section = models.ForeignKey(Section)
     max_labs = models.IntegerField(verbose_name='Maximum number of labs that this TA can be assigned', blank=False)
 
 
@@ -101,7 +101,7 @@ class Lab(models.Model):
     code = models.CharField('Lab Section Code', blank=False, max_length=3)
     day = models.CharField('Lab Day(s)', blank=True, max_length=6)
     time = models.TextField('Lab Time', blank=True, max_length=12)
-    course = models.ForeignKey('CourseSection', on_delete=models.CASCADE, blank=False,
+    course = models.ForeignKey('TAScheduler.models.Section', on_delete=models.CASCADE, blank=False,
                                help_text="Course Section ID")
     ta = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
                            help_text="TA ID")
