@@ -36,8 +36,8 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
 
         self.assertRedirects(resp, reverse('courses-view', args=[course.course]))
 
-        self.assertEqual('351', course.course_code, msg='Did not save code to database')
-        self.assertEqual('Data Structures and Algorithms', course.course_name, msg='Did not save course name to database')
+        self.assertEqual('351', course.code, msg='Did not save code to database')
+        self.assertEqual('Data Structures and Algorithms', course.name, msg='Did not save course name to database')
 
     def test_rejects_missing_code(self):
         resp = self.client.post(reverse('courses-create'), {

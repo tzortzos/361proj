@@ -112,8 +112,8 @@ class CoursesEdit(View):
             })
 
         # TODO replace with CourseAPI edit method later
-        course.course_name = course_name
-        course.course_code = course_code
+        course.name = course_name
+        course.code = course_code
         course.save()
 
-        return redirect(reverse('courses-view', args=[course.course_id]))
+        return redirect(reverse('courses-view', args=[course.id]))

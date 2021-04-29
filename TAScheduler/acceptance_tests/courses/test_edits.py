@@ -41,8 +41,8 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
         self.course.refresh_from_db()
 
-        self.assertEqual('361', self.course.course_code, msg='Did not save code to database')
-        self.assertEqual('Software Engineering', self.course.course_name, msg='Did not save course name to database')
+        self.assertEqual('361', self.course.code, msg='Did not save code to database')
+        self.assertEqual('Software Engineering', self.course.name, msg='Did not save course name to database')
 
     def test_rejects_missing_code(self):
         resp = self.client.post(self.edit_url, {
