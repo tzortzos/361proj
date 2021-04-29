@@ -32,6 +32,8 @@ class User(models.Model):
 
     phone = models.CharField(max_length=10, blank=True)
 
+    description = models.TextField('Extra skills and information', max_length=500, blank=True, default='')
+
     """
     Output of a Password Hasher
     see: https://docs.djangoproject.com/en/3.2/topics/auth/passwords/
