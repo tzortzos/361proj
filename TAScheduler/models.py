@@ -140,7 +140,8 @@ class Message(models.Model):
     )
 
     parent = models.ForeignKey(
-        to='TAScheduler.Message', on_delete=models.SET_NULL,  # May possibly want to be cascade to make threads easier to delete
+        # May possibly want to be cascade to make threads easier to delete
+        to='TAScheduler.Message', on_delete=models.SET_NULL,
         null=True, blank=True,
         help_text='In response to',
         )
@@ -176,6 +177,7 @@ class Recipient(models.Model):
         null=True, blank=True,
         help_text='Read date',
     )
+
 
 class Skill(models.Model):
     """
