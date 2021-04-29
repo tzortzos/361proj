@@ -34,7 +34,7 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
 
         course = list(Course.objects.all())[0]
 
-        self.assertRedirects(resp, reverse('courses-view', args=[course.course]))
+        self.assertRedirects(resp, reverse('courses-view', args=[course.section]))
 
         self.assertEqual('351', course.code, msg='Did not save code to database')
         self.assertEqual('Data Structures and Algorithms', course.name, msg='Did not save course name to database')

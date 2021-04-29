@@ -41,7 +41,7 @@ class TestCourse(TestCase):
         self.assertEqual(None, response, msg="Expected None when course does not exist in database.")
 
     def test_get_course_by_course_id(self):
-        course_id = self.course1.course
+        course_id = self.course1.section
         course = CourseAPI.get_course_by_course_id(course_id)
         self.assertEqual(course, self.course1, msg="Expected course1 when using its course id to retrieve.")
 
@@ -54,12 +54,12 @@ class TestCourse(TestCase):
         self.assertTrue(self.course2 in list_of_courses, msg='Expected course2 in all courses.')
 
     def test_delete_course(self):
-        response = CourseAPI.delete_course(self.course1.course)
+        response = CourseAPI.delete_course(self.course1.section)
         self.assertEqual(True, response, msg='Expected a course that exists and was deleted to return true.')
 
     def test_delete_course_not_in_db(self):
-        response1 = CourseAPI.delete_course(self.course2.course)
-        response2 = CourseAPI.delete_course(self.course2.course)
+        response1 = CourseAPI.delete_course(self.course2.section)
+        response2 = CourseAPI.delete_course(self.course2.section)
         self.assertEqual(False, response2, msg='Expected a delete call on a course that didn\'t exist tor return true.')
         # with self.assertRaises(ObjectDoesNotExist, msg="Expected the Course to be deleted from database."):
         #     Course.objects.get(course_code=self.course1.course_code)

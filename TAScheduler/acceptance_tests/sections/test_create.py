@@ -44,7 +44,7 @@ class CreateSection(TestCase):
     def test_adds_to_database(self):
         resp = self.client.post(reverse('sections-create'), {
             'section_code': '901',
-            'course_id': self.course.course,
+            'course_id': self.course.section,
         })
 
         section = list(Section.objects.all())
@@ -54,24 +54,24 @@ class CreateSection(TestCase):
         section = section[0]
 
         self.assertEqual('901', section.code, 'Did not save section code to database')
-        self.assertEqual(self.course, section.course, 'Did not save course to database')
+        self.assertEqual(self.course, section.section, 'Did not save course to database')
 
     def test_redirects_on_success(self):
         resp = self.client.post(reverse('sections-create'), {
             'section_code': '901',
-            'course_id': self.course.course,
+            'course_id': self.course.section,
         })
 
         section = list(Section.objects.all())[0]
 
         self.assertRedirects(
             resp,
-            reverse('sections-view', args=(section.course,))
+            reverse('sections-view', args=(section.section,))
         )
 
     def test_rejects_missing_section_code(self):
         resp = self.client.post(reverse('sections-create'), {
-            'course_id': self.course.course,
+            'course_id': self.course.section,
         })
 
         context_error = self.assertContextError(resp)

@@ -24,8 +24,8 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
         self.course = Course.objects.create(course_code='351', course_name='DSA')
 
-        self.edit_url = reverse('courses-edit', args=[self.course.course])
-        self.view_url = reverse('courses-view', args=[self.course.course])
+        self.edit_url = reverse('courses-edit', args=[self.course.section])
+        self.view_url = reverse('courses-view', args=[self.course.section])
 
         # Set current user
         self.session['user_id'] = self.admin_user.id

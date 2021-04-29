@@ -29,10 +29,10 @@ class CourseDeletes(TASAcceptanceTestCase[CourseError]):
 
     def test_delete_with_message(self):
 
-        resp = self.client.post(reverse('courses-delete', args=[self.course.course]))
+        resp = self.client.post(reverse('courses-delete', args=[self.course.section]))
 
         with self.assertRaises(Course.DoesNotExist):
-            Course.objects.get(course_id=self.course.course)
+            Course.objects.get(course_id=self.course.section)
 
         self.assertContainsMessage(resp, Message('Course 351 DSA deleted successfully'))
 

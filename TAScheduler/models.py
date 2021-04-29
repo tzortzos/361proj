@@ -86,8 +86,8 @@ class Section(models.Model):
 
 
 class Assignment(models.Model):
-    ta = models.ForeignKey(User)
-    section = models.ForeignKey(Section)
+    ta = models.ForeignKey(User, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
     max_labs = models.IntegerField(verbose_name='Maximum number of labs that this TA can be assigned', blank=False)
 
 
@@ -98,16 +98,16 @@ class Lab(models.Model):
 
     id = models.AutoField('Lab Section ID', primary_key=True)
     code = models.CharField('Lab Section Code', blank=False, max_length=3)
-    day = models.CharField('Lab Day(s)', blank=True, max_length=6)
-    time = models.TextField('Lab Time', blank=True, max_length=12)
-    course = models.ForeignKey('TAScheduler.models.Section', on_delete=models.CASCADE, blank=False,
-                               help_text="Course Section ID")
+    day = models.CharField('Lab Day(s)', blank=True, max_length=1)
+    time = models.CharField('Lab Time', blank=True, max_length=12)
+    section = models.ForeignKey('TAScheduler.Section', on_delete=models.CASCADE, blank=False,
+                                help_text="Course Section ID")
     ta = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
                            help_text="TA ID")
 
     class Meta:
         # Adds a unique constraint combination on the two fields
-        unique_together = ['lab_section_code', 'course_section_id']
+        unique_together = ['code', 'section']
 
     def __str__(self):
-        return f'{self.course.course_id.code} section {self.course.course_section_code} lab {self.code}'
+        return f'{self.section.course.code} section {self.section.code} lab {self.code}'

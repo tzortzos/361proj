@@ -70,7 +70,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
 
         resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': '901',
-            'section_id': self.section.course,
+            'section_id': self.section.section,
         })
 
         self.assertContainsMessage(resp, Message(
@@ -85,7 +85,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
     def test_rejects_remove_code(self):
         resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             # 'lab_code': '901',
-            'section_id': self.section.course,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -96,7 +96,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
     def test_rejects_non_digit_code(self):
         resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': 'abc',
-            'section_id': self.section.course,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -108,7 +108,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         # Test that code lengths must be 3
         resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': '90103',
-            'section_id': self.section.course,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -118,7 +118,7 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
 
         resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': '9',
-            'section_id': self.section.course,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)

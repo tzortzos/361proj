@@ -119,7 +119,7 @@ class LabsEdit(View):
                 'error': LabError('You cannot remove a section from this lab', LabError.Place.SECTION),
             })
 
-        lab.course = section
+        lab.section = section
 
         if ta_id is not None and ta_id != -1:
             lab.ta = UserAPI.get_user_by_user_id(ta_id)
