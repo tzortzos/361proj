@@ -92,23 +92,23 @@ class Assignment(models.Model):
     max_labs = models.IntegerField(verbose_name='Maximum number of labs that this TA can be assigned', blank=False)
 
 
-class LabSection(models.Model):
+class Lab(models.Model):
     """
     Represent an Abstract Lab Section (lab section 901, 902, etc.. for Course section 201, Course CS361)
     """
 
-    lab_section_id = models.AutoField('Lab Section ID', primary_key=True)
-    lab_section_code = models.CharField('Lab Section Code', blank=False, max_length=3)
-    lab_days = models.CharField('Lab Day(s)', blank=True, max_length=6)
-    lab_time = models.TextField('Lab Time', blank=True, max_length=12)
-    course_section_id = models.ForeignKey('CourseSection', on_delete=models.CASCADE, blank=False,
-                                          help_text="Course Section ID")
-    ta_id = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
-                              help_text="TA ID")
+    id = models.AutoField('Lab Section ID', primary_key=True)
+    code = models.CharField('Lab Section Code', blank=False, max_length=3)
+    day = models.CharField('Lab Day(s)', blank=True, max_length=6)
+    time = models.TextField('Lab Time', blank=True, max_length=12)
+    course = models.ForeignKey('CourseSection', on_delete=models.CASCADE, blank=False,
+                               help_text="Course Section ID")
+    ta = models.ForeignKey('User', on_delete=models.SET_NULL, blank=True, null=True,
+                           help_text="TA ID")
 
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['lab_section_code', 'course_section_id']
 
     def __str__(self):
-        return f'{self.course_section_id.course_id.course_code} section {self.course_section_id.course_section_code} lab {self.lab_section_code}'
+        return f'{self.course.course_id.course_code} section {self.course.course_section_code} lab {self.code}'

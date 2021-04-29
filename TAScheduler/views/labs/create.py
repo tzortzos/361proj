@@ -10,7 +10,7 @@ from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.models import CourseSection
 from TAScheduler.viewsupport.errors import LabError
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, LabSection
+from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
 from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
 
 from more_itertools import ilen

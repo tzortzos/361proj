@@ -7,7 +7,7 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, LabSection
+from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
 
 class LabsDirectory(View):
 
@@ -17,7 +17,7 @@ class LabsDirectory(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        labs = LabSection.objects.all()
+        labs = Lab.objects.all()
 
         return render(request, 'pages/labs/directory.html', {
             'self': user,

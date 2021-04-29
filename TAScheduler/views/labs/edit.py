@@ -103,7 +103,7 @@ class LabsEdit(View):
                 'error': LabError('You cannot remove the 3 digit lab code', LabError.Place.CODE),
             })
 
-        lab.lab_section_code = lab_code
+        lab.code = lab_code
 
         section = CourseSectionAPI.get_course_section_by_course_id(section_id)
 
@@ -119,13 +119,13 @@ class LabsEdit(View):
                 'error': LabError('You cannot remove a section from this lab', LabError.Place.SECTION),
             })
 
-        lab.course_section_id = section
+        lab.course = section
 
         if ta_id is not None and ta_id != -1:
-            lab.ta_id = UserAPI.get_user_by_user_id(ta_id)
+            lab.ta = UserAPI.get_user_by_user_id(ta_id)
 
-        lab.lab_days = lab_day
-        lab.lab_time = lab_time
+        lab.day = lab_day
+        lab.time = lab_time
 
         lab.save()
 

@@ -66,7 +66,7 @@ class CreateSection(TestCase):
 
         self.assertRedirects(
             resp,
-            reverse('sections-view', args=(section.course_section_id,))
+            reverse('sections-view', args=(section.course,))
         )
 
     def test_rejects_missing_section_code(self):

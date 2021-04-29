@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import CourseError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, CourseSection, Lab
 
 
 class CourseDeletes(TASAcceptanceTestCase[CourseError]):

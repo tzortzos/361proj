@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI
-from TAScheduler.models import UserType, CourseSection, Course, User, LabSection
+from TAScheduler.models import UserType, CourseSection, Course, User, Lab
 
 
 class TestLabSection(TestCase):
@@ -22,11 +22,11 @@ class TestLabSection(TestCase):
                     password='password123')
             )
         )
-        self.labsection1 = LabSection.objects.create(
+        self.labsection1 = Lab.objects.create(
             lab_section_code=str(uuid.uuid4())[:3],
             course_section_id=self.course_section_id)
 
-        self.labsection2 = LabSection.objects.create(
+        self.labsection2 = Lab.objects.create(
             lab_section_code=str(uuid.uuid4())[:3],
             course_section_id=self.course_section_id)
 
@@ -35,10 +35,10 @@ class TestLabSection(TestCase):
         self.assertTrue(lab_id > 0, msg='Expected a lab_id key returned indicating created and saved in database.')
 
     def test_get_lab_section_by_lab_id(self):
-        new_lab = LabSection.objects.create(
+        new_lab = Lab.objects.create(
             lab_section_code=self.lab_section_code,
             course_section_id=self.course_section_id)
-        lab = LabSectionAPI.get_lab_section_by_lab_id(new_lab.lab_section_id)
+        lab = LabSectionAPI.get_lab_section_by_lab_id(new_lab.id)
         self.assertEqual(new_lab, lab, msg='Expected to get a lab section object returned by new lab id.')
 
     def test_get_all_lab_sections_from_course_section_and_course(self):
@@ -49,7 +49,7 @@ class TestLabSection(TestCase):
         self.assertTrue(self.labsection2 in list_of_labs, msg='Expected labs section 1 in the list for course section.')
 
     def test_edit_lab_section(self):
-        new_lab = LabSection.objects.create(
+        new_lab = Lab.objects.create(
             lab_section_code=str(uuid.uuid4())[:3],
             course_section_id=self.course_section_id)
 
@@ -61,33 +61,33 @@ class TestLabSection(TestCase):
         self.lab_days = 'MWF'
 
         LabSectionAPI.edit_lab_section(
-            new_lab.lab_section_id,
+            new_lab.id,
             lab_days=self.lab_days,
             lab_time='1-3p',
             ta_id=ta
         )
 
-        new_lab = LabSection.objects.get(lab_section_id=new_lab.lab_section_id)
+        new_lab = Lab.objects.get(lab_section_id=new_lab.id)
 
-        self.assertEquals(self.lab_days, new_lab.lab_days, msg='Expected update of lab days to MWF.')
-        self.assertEqual('1-3p', new_lab.lab_time, msg='Expected update of lab time to 1-3p.')
-        self.assertEqual(ta, new_lab.ta_id, msg='Expected update of assigned ta to ta.')
+        self.assertEquals(self.lab_days, new_lab.day, msg='Expected update of lab days to MWF.')
+        self.assertEqual('1-3p', new_lab.time, msg='Expected update of lab time to 1-3p.')
+        self.assertEqual(ta, new_lab.ta, msg='Expected update of assigned ta to ta.')
 
     def test_delete_lab_section(self):
-        LabSectionAPI.delete_lab_section(self.labsection1.lab_section_id)
+        LabSectionAPI.delete_lab_section(self.labsection1.id)
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the lab section to be deleted."):
-            LabSection.objects.get(lab_section_id=self.labsection1.lab_section_id)
+            Lab.objects.get(lab_section_id=self.labsection1.id)
 
     def test_rejects_edit_empty_lab_section(self):
         with self.assertRaises(TypeError, msg='lab section should not be blank.'):
             LabSectionAPI.edit_lab_section(None)
 
     def test_empty_section_code(self):
-        new_lab = LabSection.objects.create(
+        new_lab = Lab.objects.create(
             lab_section_code=self.lab_section_code2,
             course_section_id=self.course_section_id)
-        lab = LabSectionAPI.get_lab_section_by_lab_id(new_lab.lab_section_id)
-        self.assertTrue(lab.lab_section_code, msg='Lab section ID can not be blank!')
+        lab = LabSectionAPI.get_lab_section_by_lab_id(new_lab.id)
+        self.assertTrue(lab.code, msg='Lab section ID can not be blank!')
 
 
 
