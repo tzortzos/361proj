@@ -10,7 +10,7 @@ from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import SectionError
+from TAScheduler.viewsupport.errors import SectionEditError, SectionEditPlace
 from TAScheduler.models import User, UserType, Course
 
 
@@ -89,7 +89,7 @@ class SectionsEdit(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('You cannot remove a course from this section', SectionError.Place.COURSE),
+                'error': SectionEditError('You cannot remove a course from this section', SectionEditPlace.COURSE),
             })
 
         if section_code is None:
@@ -104,7 +104,7 @@ class SectionsEdit(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('All sections must have a 3 digit code', SectionError.Place.CODE),
+                'error': SectionEditError('All sections must have a 3 digit code', SectionEditPlace.CODE),
             })
 
 
@@ -127,12 +127,12 @@ class SectionsEdit(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('A section already exists for this course with that code', SectionError.Place.CODE),
+                'error': SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE),
             })
 
 
         # TODO Replace with CourseSectionAPI methods when complete
-        section = Section.objects.get(course_section_id=section_id)
+        section = Section.objects.get(id=section_id)
 
         if section is None:
             raise ValueError('Could not create section')

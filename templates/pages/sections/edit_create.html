@@ -24,7 +24,7 @@
 <div class="row">
     {# Title #}
     {% if section %}
-        <h2>Edit Course Section {{ section.course_section_code }} of {{ section.course_id.course_code }}</h2>
+        <h2>Edit Course Section {{ section.code }} of {{ section.course.code }}</h2>
     {% else %}
         <h2>Create a Course</h2>
     {% endif %}
@@ -46,17 +46,17 @@
 
                     {% for course in courses %}
                         <option value="{{ course.course_id }}"
-                                {% if section and course.course_id == section.course_id_id %}
+                                {% if section and course == section.course %}
                                 selected
                                 {% endif %}
                         >
-                            {{ course.course_code }} - {{ course.course_name }}
+                            {{ course.code }} - {{ course.name }}
                         </option>
                     {% endfor %}
                 </select>
                 <div class="invalid-feedback">
-                    {% if error and error.place_course %}
-                        {{ error.error.body }}
+                    {% if error and error.place.course %}
+                        {{ error.message }}
                     {% else %}
                         You must select a course
                     {% endif %}
@@ -64,13 +64,13 @@
 
                 {# Section Code #}
                 <label for="section_code" class="form-label">Section Code</label>
-                <input type="text" value="{{ section.course_section_code }}"
+                <input type="text" value="{{ section.code }}"
                        id="section_code" name="section_code"
                        required pattern="[0-9]{3}"
-                       class="form-control {% if error and error.place_code %}is-invalid{% endif %}">
+                       class="form-control {% if error and error.place.code %}is-invalid{% endif %}">
                 <div class="invalid-feedback">
-                    {% if error and error.place_code %}
-                        {{ error.error.body }}
+                    {% if error and error.place.code %}
+                        {{ error.message }}
                     {% else %}
                         A section code is required, and must be exactly 3 digits
                     {% endif %}
@@ -83,7 +83,7 @@
                     <div class="form-check btn-group px-0">
                         {# Monay #}
                         <input type="checkbox" class="btn-check" id="M" name="lecture_days" value="M"
-                                {% if section and 'M' in section.lecture_days %}
+                                {% if section and 'M' in section.days %}
                                checked
                                 {% endif %}
                         >
@@ -91,7 +91,7 @@
 
                         {# Tuesday #}
                         <input type="checkbox" class="btn-check" id="T" name="lecture_days" value="T"
-                                {% if section and 'T' in section.lecture_days %}
+                                {% if section and 'T' in section.days %}
                                checked
                                 {% endif %}
                         >
@@ -99,7 +99,7 @@
 
                         {# Wednesday #}
                         <input type="checkbox" class="btn-check" id="W" name="lecture_days" value="W"
-                                {% if section and 'W' in section.lecture_days %}
+                                {% if section and 'W' in section.days %}
                                checked
                                 {% endif %}
                         >
@@ -107,7 +107,7 @@
 
                         {# Thursday #}
                         <input type="checkbox" class="btn-check" id="H" name="lecture_days" value="H"
-                                {% if section and 'H' in section.lecture_days %}
+                                {% if section and 'H' in section.days %}
                                checked
                                 {% endif %}
                         >
@@ -115,7 +115,7 @@
 
                         {# Wednesday #}
                         <input type="checkbox" class="btn-check" id="F" name="lecture_days" value="F"
-                                {% if section and 'F' in section.lecture_days %}
+                                {% if section and 'F' in section.days %}
                                checked
                                 {% endif %}
                         >
@@ -137,7 +137,7 @@
                         <label class="list-group-item">
                             <input type="radio" class="form-check-input me-1"
                                    name="professor_id" id="-1" value="-1"
-                                   {% if section is None or section.instructor_id is None %}checked{% endif %}
+                                   {% if section is None or section.prof is None %}checked{% endif %}
                             >
                             <strong>Unassigned</strong>
                         </label>
@@ -145,10 +145,10 @@
                         {% for professor in professors %}
                             <label class="list-group-item">
                                 <input type="radio" class="form-check-input me-1"
-                                       name="professor_id" id="{{ professor.user_id }}" value="{{ professor.user_id }}"
-                                        {% if section is not None and section.instructor_id == professor %}checked{% endif %}
+                                       name="professor_id" id="{{ professor.id }}" value="{{ professor.id }}"
+                                        {% if section is not None and section.prof == professor %}checked{% endif %}
                                 >
-                                <strong>{{ professor.univ_id }}</strong> {{ professor.f_name }} {{ professor.l_name }}
+                                <strong>{{ professor.username }}</strong> {{ professor.f_name }} {{ professor.l_name }}
                             </label>
                         {% endfor %}
                     </div>
@@ -163,12 +163,12 @@
                         {% for ta in tas %}
                             <label class="list-group-item">
                                 <input type="checkbox" class="form-check-input me-1"
-                                       name="ta_ids" id="{{ ta.user_id }}" value="{{ ta.user_id }}"
-                                        {% if ta in section.ta_ids.all %}
+                                       name="ta_ids" id="{{ ta.id }}" value="{{ ta.id }}"
+                                        {% if ta in section.tas.all %}
                                             checked
                                         {% endif %}
                                 >
-                                <strong>{{ ta.univ_id }}</strong> {{ ta.f_name }} {{ ta.l_name }}
+                                <strong>{{ ta.username }}</strong> {{ ta.f_name }} {{ ta.l_name }}
                             </label>
                         {% endfor %}
                     </div>
@@ -189,7 +189,7 @@
 
                     {# delete #}
                     {% if section %}
-                        <a class="btn btn-large btn-danger" href="{% url 'sections-delete' section.course_section_id %}">
+                        <a class="btn btn-large btn-danger" href="{% url 'sections-delete' section.id %}">
                             <i class="bi bi-trash-fill"></i>
                         </a>
                     {% endif %}
