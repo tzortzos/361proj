@@ -7,7 +7,7 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI
+from TAScheduler.ClassDesign.LabAPI import LabAPI
 
 class LabsDelete(View):
 
@@ -25,7 +25,7 @@ class LabsDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabSectionAPI.get_lab_section_by_lab_id(lab_id)
+        lab = LabAPI.get_by_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(
@@ -56,7 +56,7 @@ class LabsDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabSectionAPI.get_lab_section_by_lab_id(lab_id)
+        lab = LabAPI.get_by_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(
@@ -65,7 +65,7 @@ class LabsDelete(View):
             ))
             return redirect(reverse('labs-directory'))
 
-        LabSectionAPI.delete_lab_section(lab_id)
+        LabAPI.delete_by_id(lab_id)
 
         MessageQueue.push(request.session, Message('Successfully deleted lab section'))
 

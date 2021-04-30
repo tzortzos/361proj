@@ -10,7 +10,7 @@ from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.models import Section
 from TAScheduler.viewsupport.errors import LabEditPlace, LabEditError
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
+from TAScheduler.ClassDesign.LabAPI import LabAPI, Lab
 from TAScheduler.ClassDesign.SectionAPI import SectionAPI
 
 from more_itertools import ilen
@@ -103,7 +103,7 @@ class LabsCreate(View):
         if ta_id is not None:
             ta_id = UserAPI.get_user_by_user_id(ta_id)
 
-        lab_id = LabSectionAPI.create_lab_section(lab_code, section, lab_day, lab_time, ta_id)
+        lab_id = LabAPI.create(lab_code, section, lab_day, lab_time, ta_id)
 
         return redirect(reverse('labs-view', args=[lab_id]))
 
