@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import CourseError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class CourseEdit(TASAcceptanceTestCase[CourseError]):
@@ -24,11 +24,11 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
         self.course = Course.objects.create(course_code='351', course_name='DSA')
 
-        self.edit_url = reverse('courses-edit', args=[self.course.course_id])
-        self.view_url = reverse('courses-view', args=[self.course.course_id])
+        self.edit_url = reverse('courses-edit', args=[self.course.section])
+        self.view_url = reverse('courses-view', args=[self.course.section])
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_edits(self):
@@ -41,8 +41,8 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
         self.course.refresh_from_db()
 
-        self.assertEqual('361', self.course.course_code, msg='Did not save code to database')
-        self.assertEqual('Software Engineering', self.course.course_name, msg='Did not save course name to database')
+        self.assertEqual('361', self.course.code, msg='Did not save code to database')
+        self.assertEqual('Software Engineering', self.course.name, msg='Did not save course name to database')
 
     def test_rejects_missing_code(self):
         resp = self.client.post(self.edit_url, {

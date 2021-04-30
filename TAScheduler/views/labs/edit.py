@@ -10,7 +10,7 @@ from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSection, CourseSectionAPI
+from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
 from TAScheduler.viewsupport.errors import LabError
 
 class LabsEdit(View):
@@ -44,7 +44,7 @@ class LabsEdit(View):
 
             'edit': lab,
 
-            'sections': CourseSection.objects.all(),
+            'sections': Section.objects.all(),
             'tas': User.objects.filter(type=UserType.TA),
         })
 
@@ -83,7 +83,7 @@ class LabsEdit(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'sections': CourseSection.objects.all(),
+                'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
                 'error': LabError('You cannot remove the 3 digit lab code', LabError.Place.SECTION),
@@ -97,13 +97,13 @@ class LabsEdit(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'sections': CourseSection.objects.all(),
+                'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
                 'error': LabError('You cannot remove the 3 digit lab code', LabError.Place.CODE),
             })
 
-        lab.lab_section_code = lab_code
+        lab.code = lab_code
 
         section = CourseSectionAPI.get_course_section_by_course_id(section_id)
 
@@ -113,19 +113,19 @@ class LabsEdit(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'sections': CourseSection.objects.all(),
+                'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
                 'error': LabError('You cannot remove a section from this lab', LabError.Place.SECTION),
             })
 
-        lab.course_section_id = section
+        lab.section = section
 
         if ta_id is not None and ta_id != -1:
-            lab.ta_id = UserAPI.get_user_by_user_id(ta_id)
+            lab.ta = UserAPI.get_user_by_user_id(ta_id)
 
-        lab.lab_days = lab_day
-        lab.lab_time = lab_time
+        lab.day = lab_day
+        lab.time = lab_time
 
         lab.save()
 

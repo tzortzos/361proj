@@ -7,7 +7,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class LabsDirectory(TASAcceptanceTestCase[LabError]):
@@ -38,17 +38,17 @@ class LabsDirectory(TASAcceptanceTestCase[LabError]):
             admin_id=self.admin_user,
         )
 
-        self.section = CourseSection.objects.create(
+        self.section = Section.objects.create(
             course_section_code='201',
             course_id=self.course,
         )
 
-        self.lab_partial = LabSection.objects.create(
+        self.lab_partial = Lab.objects.create(
             lab_section_code='901',
             course_section_id=self.section,
         )
 
-        self.lab_full = LabSection.objects.create(
+        self.lab_full = Lab.objects.create(
             lab_section_code='902',
             course_section_id=self.section,
             lab_days='MWF',
@@ -57,7 +57,7 @@ class LabsDirectory(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_context_contains_labs(self):
@@ -66,7 +66,7 @@ class LabsDirectory(TASAcceptanceTestCase[LabError]):
         labs: List[object] = resp.context.get('labs')
 
         for li in range(len(labs)):
-            self.assertTrue(isinstance(labs[li], LabSection), msg='Returned non lab object')
+            self.assertTrue(isinstance(labs[li], Lab), msg='Returned non lab object')
 
         self.assertEqual(2, len(labs), 'Did not return the correct number of lab arguments')
 

@@ -4,7 +4,7 @@ from django.shortcuts import render
 from typing import Union
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSection
+from TAScheduler.ClassDesign.CourseSectionAPI import Section
 from TAScheduler.viewsupport.message import MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
 
@@ -21,5 +21,5 @@ class SectionsDirectory(View):
             'navbar_items': AdminItems.SECTIONS.items_iterable_except(),
             'messages': MessageQueue.drain(request.session),
 
-            'sections': list(CourseSection.objects.all()),
+            'sections': list(Section.objects.all()),
         })

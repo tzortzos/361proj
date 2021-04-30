@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import CourseError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class CourseDeletes(TASAcceptanceTestCase[CourseError]):
@@ -24,15 +24,15 @@ class CourseDeletes(TASAcceptanceTestCase[CourseError]):
         self.course = Course.objects.create(course_code='351', course_name='DSA')
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_delete_with_message(self):
 
-        resp = self.client.post(reverse('courses-delete', args=[self.course.course_id]))
+        resp = self.client.post(reverse('courses-delete', args=[self.course.section]))
 
         with self.assertRaises(Course.DoesNotExist):
-            Course.objects.get(course_id=self.course.course_id)
+            Course.objects.get(course_id=self.course.section)
 
         self.assertContainsMessage(resp, Message('Course 351 DSA deleted successfully'))
 

@@ -24,7 +24,7 @@ class TestCreateUserView(TestCase):
                                          type=UserType.ADMIN,
                                          tmp_password=False)
 
-        self.session['user_id'] = self.admin.user_id
+        self.session['user_id'] = self.admin.id
         self.session.save()
 
     def assertContextError(self, resp) -> UserEditError:

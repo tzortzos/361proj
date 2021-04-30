@@ -8,9 +8,9 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.models import CourseSection
+from TAScheduler.models import Section
 from TAScheduler.viewsupport.errors import LabError
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, LabSection
+from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
 from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
 
 from more_itertools import ilen
@@ -36,7 +36,7 @@ class LabsCreate(View):
             'navbar_items': AdminItems.items_iterable(),
             'messages': MessageQueue.drain(request.session),
 
-            'sections': CourseSection.objects.all(),
+            'sections': Section.objects.all(),
             'tas': User.objects.filter(type=UserType.TA),
         })
 
@@ -66,7 +66,7 @@ class LabsCreate(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'sections': CourseSection.objects.all(),
+                'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
                 'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),
@@ -80,7 +80,7 @@ class LabsCreate(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'sections': CourseSection.objects.all(),
+                'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
                 'error': LabError('You must provide a 3 digit lab code', LabError.Place.CODE),
@@ -94,7 +94,7 @@ class LabsCreate(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'sections': CourseSection.objects.all(),
+                'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
                 'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),

@@ -26,7 +26,7 @@ class TestEditUser(TestCase):
             type=UserType.ADMIN
         )
 
-        self.admin_edit_url = reverse('users-edit', args=(int(self.admin.user_id),))
+        self.admin_edit_url = reverse('users-edit', args=(int(self.admin.id),))
 
         self.prof_username = 'nleverence'
         self.prof = User.objects.create(
@@ -36,14 +36,14 @@ class TestEditUser(TestCase):
             type=UserType.PROF
         )
 
-        self.prof_edit_url = reverse('users-edit', args=(self.prof.user_id,))
+        self.prof_edit_url = reverse('users-edit', args=(self.prof.id,))
 
     def set_admin_session(self):
-        self.session['user_id'] = self.admin.user_id
+        self.session['user_id'] = self.admin.id
         self.session.save()
 
     def set_prof_session(self):
-        self.session['user_id'] = self.prof.user_id
+        self.session['user_id'] = self.prof.id
         self.session.save()
 
     def assertDoesNotRedirect(self, resp, msg: Optional[str] = None):
@@ -81,7 +81,7 @@ class TestEditUser(TestCase):
 
         self.assertRedirects(
             resp,
-            reverse('users-view', args=(self.admin.user_id,))
+            reverse('users-view', args=(self.admin.id,))
         )
 
     def test_edit_self_password(self):
@@ -96,7 +96,7 @@ class TestEditUser(TestCase):
 
         self.assertRedirects(
             resp,
-            reverse('users-view', args=(self.admin.user_id,)),
+            reverse('users-view', args=(self.admin.id,)),
         )
 
 
@@ -146,10 +146,10 @@ class TestEditUser(TestCase):
 
         self.assertContainsMessage(
             resp,
-            Message(f'User {self.prof.univ_id} is now a Administrator')
+            Message(f'User {self.prof.username} is now a Administrator')
         )
 
-        self.assertRedirects(resp, reverse('users-view', args=(self.prof.user_id,)))
+        self.assertRedirects(resp, reverse('users-view', args=(self.prof.id,)))
 
     def test_rejects_empty_username(self):
         self.set_admin_session()

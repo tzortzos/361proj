@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import CourseError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class CourseCreates(TASAcceptanceTestCase[CourseError]):
@@ -23,7 +23,7 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_creates(self):
@@ -34,10 +34,10 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
 
         course = list(Course.objects.all())[0]
 
-        self.assertRedirects(resp, reverse('courses-view', args=[course.course_id]))
+        self.assertRedirects(resp, reverse('courses-view', args=[course.section]))
 
-        self.assertEqual('351', course.course_code, msg='Did not save code to database')
-        self.assertEqual('Data Structures and Algorithms', course.course_name, msg='Did not save course name to database')
+        self.assertEqual('351', course.code, msg='Did not save code to database')
+        self.assertEqual('Data Structures and Algorithms', course.name, msg='Did not save course name to database')
 
     def test_rejects_missing_code(self):
         resp = self.client.post(reverse('courses-create'), {

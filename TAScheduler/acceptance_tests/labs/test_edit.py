@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 class LabsEdit(TASAcceptanceTestCase[LabError]):
 
@@ -42,17 +42,17 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
             admin_id=self.admin_user,
         )
 
-        self.section = CourseSection.objects.create(
+        self.section = Section.objects.create(
             course_section_code='201',
             course_id=self.course,
         )
 
-        self.lab_partial = LabSection.objects.create(
+        self.lab_partial = Lab.objects.create(
             lab_section_code='901',
             course_section_id=self.section,
         )
 
-        self.lab_full = LabSection.objects.create(
+        self.lab_full = Lab.objects.create(
             lab_section_code='902',
             course_section_id=self.section,
             lab_days='MWF',
@@ -61,16 +61,16 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_ta_redirects(self):
-        self.session['user_id'] = self.ta_user.user_id
+        self.session['user_id'] = self.ta_user.id
         self.session.save()
 
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         self.assertContainsMessage(resp, Message(
@@ -83,9 +83,9 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
     # TODO needs the positive cases for updating existing, as well as removing things
 
     def test_rejects_remove_code(self):
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             # 'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -94,9 +94,9 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_non_digit_code(self):
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': 'abc',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -106,9 +106,9 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
 
     def test_rejects_mislengthed_code(self):
         # Test that code lengths must be 3
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': '90103',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -116,9 +116,9 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
         self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.lab_section_id]), {
+        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
             'lab_code': '9',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)

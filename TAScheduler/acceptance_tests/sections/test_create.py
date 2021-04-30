@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
 
-from TAScheduler.models import User, UserType, Course, CourseSection
+from TAScheduler.models import User, UserType, Course, Section
 from TAScheduler.viewsupport.errors import SectionError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
@@ -26,7 +26,7 @@ class CreateSection(TestCase):
             admin_id=self.user,
         )
 
-        self.session['user_id'] = self.user.user_id
+        self.session['user_id'] = self.user.id
         self.session.save()
 
     def assertContainsMessage(self, resp, message: Message, msg: str = 'Message object was not in context'):
@@ -44,34 +44,34 @@ class CreateSection(TestCase):
     def test_adds_to_database(self):
         resp = self.client.post(reverse('sections-create'), {
             'section_code': '901',
-            'course_id': self.course.course_id,
+            'course_id': self.course.section,
         })
 
-        section = list(CourseSection.objects.all())
+        section = list(Section.objects.all())
 
         self.assertEqual(1, len(section), 'Did not create course section in database')
 
         section = section[0]
 
-        self.assertEqual('901', section.course_section_code, 'Did not save section code to database')
-        self.assertEqual(self.course, section.course_id, 'Did not save course to database')
+        self.assertEqual('901', section.code, 'Did not save section code to database')
+        self.assertEqual(self.course, section.section, 'Did not save course to database')
 
     def test_redirects_on_success(self):
         resp = self.client.post(reverse('sections-create'), {
             'section_code': '901',
-            'course_id': self.course.course_id,
+            'course_id': self.course.section,
         })
 
-        section = list(CourseSection.objects.all())[0]
+        section = list(Section.objects.all())[0]
 
         self.assertRedirects(
             resp,
-            reverse('sections-view', args=(section.course_section_id,))
+            reverse('sections-view', args=(section.section,))
         )
 
     def test_rejects_missing_section_code(self):
         resp = self.client.post(reverse('sections-create'), {
-            'course_id': self.course.course_id,
+            'course_id': self.course.section,
         })
 
         context_error = self.assertContextError(resp)

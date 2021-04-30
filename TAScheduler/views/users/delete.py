@@ -59,5 +59,5 @@ class UserDelete(View):
 
         UserAPI.delete_user(to_delete)
 
-        MessageQueue.push(request.session, Message(f'Successfully deleted user {to_delete.univ_id}'))
+        MessageQueue.push(request.session, Message(f'Successfully deleted user {to_delete.username}'))
         return redirect(reverse('users-directory'))

@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
-from TAScheduler.models import Course, CourseSection
+from TAScheduler.models import Course, Section
 
 
 class TestCourseSection(TestCase):
@@ -23,11 +23,11 @@ class TestCourseSection(TestCase):
         self.course_id1 = Course.objects.create(course_code=self.course_code, course_name='TestCourse')
         self.course_id2 = Course.objects.create(course_code=self.course_code2, course_name='TestCourse2')
 
-        self.course_section1 = CourseSection.objects.create(
+        self.course_section1 = Section.objects.create(
             course_section_code=self.course_section_code1,
             course_id=self.course_id1)
 
-        self.course_section2 = CourseSection.objects.create(
+        self.course_section2 = Section.objects.create(
             course_section_code=self.course_section_code2,
             course_id=self.course_id1
         )
@@ -37,7 +37,7 @@ class TestCourseSection(TestCase):
         self.assertTrue(new_course_section_id > 0, msg='Expecting new id returned confirming saved to database.')
 
     def test_get_course_section_by_course_id(self):
-        course_section3 = CourseSectionAPI.get_course_section_by_course_id(self.course_section1.course_section_id)
+        course_section3 = CourseSectionAPI.get_course_section_by_course_id(self.course_section1.section)
         self.assertEqual(self.course_section1, course_section3, msg='Expected course1 to be course2 after call to get.')
 
     def test_get_all_course_sections_for_course(self):
@@ -46,9 +46,9 @@ class TestCourseSection(TestCase):
         self.assertTrue(self.course_section2 in query_set, msg='Expected course_section2 in list of course sections.')
 
     def test_delete_course_section(self):
-        CourseSectionAPI.delete_course_section(self.course_section2.course_section_id)
+        CourseSectionAPI.delete_course_section(self.course_section2.section)
         with self.assertRaises(ObjectDoesNotExist, msg="Expected the course section to be deleted"):
-            CourseSection.objects.get(course_section_id=self.course_section2.course_section_id)
+            Section.objects.get(course_section_id=self.course_section2.section)
 
     def test_get_course_section_by_course_id_not_in_database(self):
         response = CourseSectionAPI.get_course_section_by_course_id(self.course_code2)

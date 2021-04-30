@@ -7,7 +7,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class LabsDelete(TASAcceptanceTestCase[LabError]):
@@ -45,17 +45,17 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
             tmp_password=False
         )
 
-        self.section = CourseSection.objects.create(
+        self.section = Section.objects.create(
             course_section_code='201',
             course_id=self.course,
         )
 
-        self.lab_partial = LabSection.objects.create(
+        self.lab_partial = Lab.objects.create(
             lab_section_code='901',
             course_section_id=self.section,
         )
 
-        self.lab_full = LabSection.objects.create(
+        self.lab_full = Lab.objects.create(
             lab_section_code='902',
             course_section_id=self.section,
             lab_days='MWF',
@@ -64,14 +64,14 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_redirects_professor(self):
-        self.session['user_id'] = self.prof_user.user_id
+        self.session['user_id'] = self.prof_user.id
         self.session.save()
 
-        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.lab_section_id]))
+        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.id]))
 
         self.assertContainsMessage(resp, Message(
             'You do not have permission to delete lab sections',
@@ -81,10 +81,10 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_redirects_ta(self):
-        self.session['user_id'] = self.ta_user.user_id
+        self.session['user_id'] = self.ta_user.id
         self.session.save()
 
-        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.lab_section_id]))
+        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.id]))
 
         self.assertContainsMessage(resp, Message(
             'You do not have permission to delete lab sections',
@@ -94,9 +94,9 @@ class LabsDelete(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_removes_database(self):
-        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.lab_section_id]))
+        resp = self.client.post(reverse('labs-delete', args=[self.lab_full.id]))
 
-        labs: List[LabSection] = list(LabSection.objects.all())
+        labs: List[Lab] = list(Lab.objects.all())
 
         self.assertEqual(1, len(labs), 'Did not remove lab section')
 

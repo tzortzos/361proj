@@ -5,7 +5,7 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-from TAScheduler.models import User, UserType, Course, CourseSection, LabSection
+from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
 class LabsCreate(TASAcceptanceTestCase[LabError]):
@@ -43,51 +43,51 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
             admin_id=self.admin_user,
         )
 
-        self.section = CourseSection.objects.create(
+        self.section = Section.objects.create(
             course_section_code='201',
             course_id=self.course,
         )
 
         # Set current user
-        self.session['user_id'] = self.admin_user.user_id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_create_without_days_times(self):
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
-        labs = list(LabSection.objects.all())[0]
+        labs = list(Lab.objects.all())[0]
 
-        self.assertEqual('901', labs.lab_section_code, 'Did not save lab section code to database')
-        self.assertEqual(self.section, labs.course_section_id, 'Did not associate correct course section with new lab')
+        self.assertEqual('901', labs.code, 'Did not save lab section code to database')
+        self.assertEqual(self.section, labs.section, 'Did not associate correct course section with new lab')
 
-        self.assertRedirects(resp, reverse('labs-view', args=[labs.lab_section_id]))
+        self.assertRedirects(resp, reverse('labs-view', args=[labs.id]))
 
     def test_create_full(self):
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
             'lab_day': 'M',
             'lab_time': '2-4',
         })
 
-        lab = list(LabSection.objects.all())[0]
+        lab = list(Lab.objects.all())[0]
 
-        self.assertEqual('M', lab.lab_days, f'Day \'M\' not saved to lab')
+        self.assertEqual('M', lab.day, f'Day \'M\' not saved to lab')
 
-        self.assertEqual('2-4', lab.lab_time, 'Did not save correct time to database')
+        self.assertEqual('2-4', lab.time, 'Did not save correct time to database')
 
-        self.assertRedirects(resp, reverse('labs-view', args=[lab.lab_section_id]))
+        self.assertRedirects(resp, reverse('labs-view', args=[lab.id]))
 
     def test_professor_rejected(self):
-        self.session['user_id'] = self.prof_user.user_id
+        self.session['user_id'] = self.prof_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         self.assertContainsMessage(resp, Message(
@@ -98,12 +98,12 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_ta_redirects(self):
-        self.session['user_id'] = self.ta_user.user_id
+        self.session['user_id'] = self.ta_user.id
         self.session.save()
 
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         self.assertContainsMessage(resp, Message(
@@ -116,7 +116,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
     def test_rejects_missing_code(self):
         resp = self.client.post(reverse('labs-create'), {
             # 'lab_code': '901',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -127,7 +127,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
     def test_rejects_non_digit_code(self):
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': 'abc',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -138,7 +138,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
     def test_rejects_mislengthed_code(self):
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': '90103',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
@@ -148,7 +148,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
 
         resp = self.client.post(reverse('labs-create'), {
             'lab_code': '9',
-            'section_id': self.section.course_section_id,
+            'section_id': self.section.section,
         })
 
         error = self.assertContextError(resp)
