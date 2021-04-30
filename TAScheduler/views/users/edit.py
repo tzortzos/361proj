@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render, reverse
 from typing import Dict, Optional
 
 from TAScheduler.viewsupport.message import Message, MessageQueue
-from TAScheduler.viewsupport.errors import UserEditError, PageError
+from TAScheduler.viewsupport.errors import UserEditError, UserEditPlace
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.viewsupport.navbar import AdminItems
@@ -47,7 +47,7 @@ class UserEdit(View):
         to_edit = UserAPI.get_user_by_user_id(user_id)
 
         if to_edit is None:
-            MessageQueue.push(request.session, Message('No user with id {user_id} exists.', Message.Type.ERROR))
+            MessageQueue.push(request.session, Message(f'No user with id {user_id} exists.', Message.Type.ERROR))
             return redirect(reverse('users-directory'))
 
         if to_edit.id != user.id and UserAPI.check_user_type(user) != UserType.ADMIN:
@@ -131,7 +131,7 @@ class UserEdit(View):
                 'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                 'self': user,
                 'edit': to_edit,
-                'error': UserEditError('New password can\'t be empty.', UserEditError.Place.PASSWORD),
+                'error': UserEditError('New password can\'t be empty.', UserEditPlace.PASSWORD),
             })
 
         if fields['univ_id'] is None or len(fields['univ_id']) == 0:
@@ -139,7 +139,7 @@ class UserEdit(View):
                 'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                 'self': user,
                 'edit': to_edit,
-                'error': UserEditError('You can\'t remove a user\'s username.', UserEditError.Place.USERNAME),
+                'error': UserEditError('You can\'t remove a user\'s username.', UserEditPlace.USERNAME),
             })
 
         if fields['univ_id'] != to_edit.username:
@@ -148,7 +148,7 @@ class UserEdit(View):
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
-                    'error': UserEditError('You cannot change your own username', UserEditError.Place.USERNAME),
+                    'error': UserEditError('You cannot change your own username', UserEditPlace.USERNAME),
                 })
 
             if len(fields['univ_id']) > 20:
@@ -158,7 +158,7 @@ class UserEdit(View):
                     'edit': to_edit,
                     'error': UserEditError(
                         'A username may not be longer than 20 characters.',
-                        UserEditError.Place.USERNAME
+                        UserEditPlace.USERNAME
                     ),
                 })
 
@@ -178,7 +178,7 @@ class UserEdit(View):
                     'edit': to_edit,
                     'error': UserEditError(
                         'Phone number needs to be exactly 10 digits long.',
-                        UserEditError.Place.PHONE
+                        UserEditPlace.PHONE
                     ),
                 })
 
@@ -196,7 +196,7 @@ class UserEdit(View):
                     'edit': to_edit,
                     'error': UserEditError(
                         'Only admins may change user types',
-                        UserEditError.Place.TYPE
+                        UserEditPlace.TYPE
                     ),
                 })
 

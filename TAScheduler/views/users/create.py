@@ -7,7 +7,7 @@ from typing import List
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import PageError, UserEditError
+from TAScheduler.viewsupport.errors import UserEditError, UserEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
@@ -50,7 +50,7 @@ class UserCreate(View):
         if new_pass is None or len(new_pass) < 8:
             return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
-                'error': UserEditError('Password must be at least 8 characters in length', UserEditError.Place.PASSWORD),
+                'error': UserEditError('Password must be at least 8 characters in length', UserEditPlace.PASSWORD),
                 'new_user_pass': LoginUtility.generate_tmp_password(),
             })
 
@@ -62,27 +62,27 @@ class UserCreate(View):
         if univ_id is None or len(univ_id) == 0:
             return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
-                'error': UserEditError('You must provide a university id', UserEditError.Place.USERNAME),
+                'error': UserEditError('You must provide a university id', UserEditPlace.USERNAME),
                 'new_user_pass': new_pass,
             })
         elif len(univ_id) > 20:
             return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
-                'error': UserEditError('A university id may not be longer than 20 characters', UserEditError.Place.USERNAME),
+                'error': UserEditError('A university id may not be longer than 20 characters', UserEditPlace.USERNAME),
                 'new_user_pass': new_pass,
             })
         elif len(''.join(filter(lambda c: c == ' ', iter(univ_id)))) > 0:
             print(f'found spaces in "{univ_id}"')
             return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
-                'error': UserEditError('A username may not have spaces', UserEditError.Place.USERNAME),
+                'error': UserEditError('A username may not have spaces', UserEditPlace.USERNAME),
                 'new_user_pass': new_pass,
             })
         elif len(''.join(filter(lambda c: c == '@', univ_id))) > 0:
             print(f'found @ sign in in "{univ_id}"')
             return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
-                'error': UserEditError('You only need to put in the first part of a university email', UserEditError.Place.USERNAME),
+                'error': UserEditError('You only need to put in the first part of a university email', UserEditPlace.USERNAME),
                 'new_user_pass': new_pass,
             })
 
@@ -96,7 +96,7 @@ class UserCreate(View):
         if user_type is None or user_type not in ['A', 'P', 'T']:
             return render(request, 'pages/users/edit_create.html', {
                 'self': maybe_user,
-                'error': UserEditError('You must provide a user type', UserEditError.Place.TYPE),
+                'error': UserEditError('You must provide a user type', UserEditPlace.TYPE),
                 'new_user_pass': new_pass,
             })
 

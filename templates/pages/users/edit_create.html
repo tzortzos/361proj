@@ -222,7 +222,6 @@ Post returns the following variables:
                        type="submit"
                        value="{% if edit %}edit{% else %}create{% endif %}">
 
-                {# TODO should be users-directory #}
                 <a class="btn btn-large btn-dark" href="{% url 'users-directory' %}">cancel</a>
 
                 {% if self.get_type == TAScheduler.models.UserType.ADMIN and edit is not None %}

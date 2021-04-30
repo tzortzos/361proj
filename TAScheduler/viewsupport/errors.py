@@ -44,45 +44,27 @@ class LoginPlace(Enum):
 LoginError = PageError[LoginPlace]
 
 
-class UserEditError:
-    """
-    Represents error states for the creation and editing of a user.
-    """
+class UserEditPlace(Enum):
+    USERNAME = 0
+    PASSWORD = 1
+    TYPE = 2
+    PHONE = 3
 
-    class Place(Enum):
-        USERNAME = auto()
-        PASSWORD = auto()
-        TYPE = auto()
-        PHONE = auto()
+    def username(self) -> bool:
+        return self is UserEditPlace.USERNAME
 
-    def __init__(self, error_text: Union[PageError, str], place: Place):
-        self._place = place
-        if type(error_text) is PageError:
-            self._error = error_text
-        elif type(error_text) is str:
-            self._error = PageError(error_text)
-        else:
-            raise TypeError('error_text must be either a PageError or str')
+    def password(self) -> bool:
+        return self is UserEditPlace.PASSWORD
 
-    def error(self) -> PageError:
-        """Get the inner error from this UserEditError"""
-        return self._error
+    def ty(self) -> bool:
+        return self is UserEditPlace.TYPE
 
-    def place(self):
-        """Get the place for this error"""
-        return self._place
+    def phone(self) -> bool:
+        return self is UserEditPlace.PHONE
 
-    def place_username(self) -> bool:
-        return self._place == UserEditError.Place.USERNAME
 
-    def place_password(self) -> bool:
-        return self._place == UserEditError.Place.PASSWORD
-
-    def place_type(self) -> bool:
-        return self._place == UserEditError.Place.TYPE
-
-    def place_phone(self) -> bool:
-        return self._place == UserEditError.Place.PHONE
+"""Represents errors that can be displayed on the user edit page"""
+UserEditError = PageError[UserEditPlace]
 
 
 class SectionError:
