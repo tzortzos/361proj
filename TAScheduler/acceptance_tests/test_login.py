@@ -78,7 +78,7 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place().username(), 'Did not return error with password')
+        self.assertTrue(error.place().password(), 'Did not return error with password')
         self.assertEqual(error.message(), 'You must provide a password')
 
     def test_rejects_short_password(self):
@@ -91,7 +91,7 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place().username(), 'Did not return error with password')
+        self.assertTrue(error.place().password(), 'Did not return error with password')
         self.assertEqual(error.message(), 'A password must be at least 8 characters in length')
 
     def test_rejects_mismatched_password(self):
@@ -104,7 +104,7 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place().username(), 'Did not return error with password')
+        self.assertTrue(error.place().password(), 'Did not return error with password')
         self.assertEqual(error.message(), 'Incorrect Password')
 
     def test_successful_login_sets_session(self):
