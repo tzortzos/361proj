@@ -11,7 +11,7 @@ from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
-from TAScheduler.viewsupport.errors import LabError
+from TAScheduler.viewsupport.errors import LabEditError, LabEditPlace
 
 class LabsEdit(View):
     def get(self, request: HttpRequest, lab_id: int) -> Union[HttpResponse, HttpResponseRedirect]:
@@ -86,7 +86,7 @@ class LabsEdit(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You cannot remove the 3 digit lab code', LabError.Place.SECTION),
+                'error': LabEditError('You cannot remove the 3 digit lab code', LabEditPlace.SECTION),
             })
 
         non_digits = ilen((a for a in lab_code if a not in set(digits)))
@@ -100,7 +100,7 @@ class LabsEdit(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You cannot remove the 3 digit lab code', LabError.Place.CODE),
+                'error': LabEditError('You cannot remove the 3 digit lab code', LabEditPlace.CODE),
             })
 
         lab.code = lab_code
@@ -116,13 +116,16 @@ class LabsEdit(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You cannot remove a section from this lab', LabError.Place.SECTION),
+                'error': LabEditError('You cannot remove a section from this lab', LabEditPlace.SECTION),
             })
 
         lab.section = section
 
         if ta_id is not None and ta_id != -1:
             lab.ta = UserAPI.get_user_by_user_id(ta_id)
+
+        if ta_id is not None and ta_id == -1:
+            lab.ta = None
 
         lab.day = lab_day
         lab.time = lab_time

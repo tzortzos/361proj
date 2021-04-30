@@ -9,7 +9,7 @@ from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.models import Section
-from TAScheduler.viewsupport.errors import LabError
+from TAScheduler.viewsupport.errors import LabEditPlace, LabEditError
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
 from TAScheduler.ClassDesign.SectionAPI import SectionAPI
 
@@ -69,7 +69,7 @@ class LabsCreate(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),
+                'error': LabEditError('You must pick a section for this lab', LabEditPlace.SECTION),
             })
 
         non_digits = ilen((a for a in lab_code if a not in set(digits)))
@@ -83,7 +83,7 @@ class LabsCreate(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You must provide a 3 digit lab code', LabError.Place.CODE),
+                'error': LabEditError('You must provide a 3 digit lab code', LabEditPlace.CODE),
             })
 
         section = SectionAPI.get_by_id(section_id)
@@ -97,7 +97,7 @@ class LabsCreate(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),
+                'error': LabEditError('You must pick a section for this lab', LabEditPlace.SECTION),
             })
 
         if ta_id is not None:
