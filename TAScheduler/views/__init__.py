@@ -41,10 +41,3 @@ class Index(View):
             'navbar_items': AdminItems.HOME.items_iterable_except(),
             'messages': MessageQueue.drain(request.session),
         })
-
-
-class CourseEdit(View):
-    def get(self, request):
-        return render(request, 'pages/create_course.html', {
-            'navbar_items': AdminItems.items_iterable(),
-        })
