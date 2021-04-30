@@ -67,89 +67,55 @@ class UserEditPlace(Enum):
 UserEditError = PageError[UserEditPlace]
 
 
-class SectionError:
-    """
-    Represents an error that can be displayed on a course section page.
-    """
+class CourseEditPlace(Enum):
+    CODE = 0
+    NAME = 1
 
-    class Place(Enum):
-        CODE = 0
-        COURSE = 1
-        INSTRUCTOR = 2
-        TAS = 3
+    def code(self) -> bool:
+        return self is CourseEditPlace.CODE
 
-    def __init__(self, msg: Union[PageError, str], place: Place):
-        if type(msg) is str:
-            self._msg = PageError(msg)
-        elif type(msg) is PageError:
-            self._msg = msg
-        else:
-            raise TypeError('Message must be a str or a PageError')
-
-        self._place = place
-
-    def error(self) -> PageError:
-        return self._msg
-
-    def place(self) -> Place:
-        return self._place
-
-    def place_code(self) -> bool:
-        return self._place is SectionError.Place.CODE
-
-    def place_course(self) -> bool:
-        return self._place is SectionError.Place.COURSE
-
-    def place_instructor(self) -> bool:
-        return self._place is SectionError.Place.INSTRUCTOR
-
-    def place_tas(self) -> bool:
-        return self._place is SectionError.Place.TAS
+    def name(self) -> bool:
+        return self is CourseEditPlace.NAME
 
 
-class LabError:
-    """
-    Represents Errors than can be displayed on the lab section creation and editing pages.
-    """
-
-    class Place(Enum):
-        CODE = 0
-        SECTION = 1
-
-    def __init__(self, msg: str, place: Place):
-        self._msg = msg
-        self._place = place
-
-    def error(self) -> str:
-        return self._msg
-
-    def place(self) -> Place:
-        return self._place
-
-    def place_code(self) -> bool:
-        return self._place is LabError.Place.CODE
-
-    def place_section(self) -> bool:
-        return self._place is LabError.Place.SECTION
+"""Represents errors which can be displayed on the course edit page"""
+CourseEditError = PageError[CourseEditPlace]
 
 
-class CourseError:
-    class Place(Enum):
-        CODE = 0
-        NAME = 1
+class SectionEditPlace(Enum):
+    CODE = 0
+    COURSE = 1
+    INSTRUCTOR = 2
+    TAS = 3
 
-    def __init__(self, msg: str, place: Place):
-        self._msg = msg
-        self._place = place
+    def code(self) -> bool:
+        return self is SectionEditPlace.CODE
 
-    def error(self) -> str:
-        return self._msg
+    def course(self) -> bool:
+        return self is SectionEditPlace.COURSE
 
-    def place(self) -> Place:
-        return self._place
+    def instructor(self) -> bool:
+        return self is SectionEditPlace.INSTRUCTOR
 
-    def place_code(self) -> bool:
-        return self._place is CourseError.Place.CODE
+    def tas(self) -> bool:
+        return self is SectionEditPlace.TAS
 
-    def place_name(self) -> bool:
-        return self._place is CourseError.Place.NAME
+
+"""Represents errors that can be displayed on the section edit page"""
+SectionEditError = PageError[SectionEditPlace]
+
+
+class LabEditPlace(Enum):
+    CODE = 0
+    SECTION = 1
+
+    def code(self) -> bool:
+        return self is LabEditPlace.CODE
+
+    def section(self) -> bool:
+        return self is LabEditPlace.SECTION
+
+
+"""Represents errors which can be displayed on the lab edit page"""
+LabEditError = PageError[LabEditPlace]
+
