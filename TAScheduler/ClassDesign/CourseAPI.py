@@ -12,7 +12,7 @@ class CourseAPI:
         """
         if code is '' or name is '':
             raise TypeError('Course code or Course name can\'t be empty.')
-        new_course = Course.objects.create(course_code=code, course_name=name, admin_id=admin)
+        new_course = Course.objects.create(code=code, name=name, admin=admin)
         return new_course.section
 
     @staticmethod
@@ -21,7 +21,7 @@ class CourseAPI:
         Gets a course by its course_code, if it exists or returns None
         """
         try:
-            course = Course.objects.get(course_code=code)
+            course = Course.objects.get(code=code)
             return course
         except Course.DoesNotExist:
             return None
@@ -32,7 +32,7 @@ class CourseAPI:
         Gets a course by its course_id, if it exists
         """
         try:
-            course = Course.objects.get(course_id=id)
+            course = Course.objects.get(id=id)
             return course
         except Course.DoesNotExist:
             return None
@@ -56,7 +56,7 @@ class CourseAPI:
         Deletes course, if it exists, using a course_id value, returns boolean to confirm
         """
         try:
-            course = Course.objects.get(course_id=id)
+            course = Course.objects.get(id=id)
             course.delete()
             return True
         except Course.DoesNotExist:
