@@ -1,4 +1,6 @@
+from __future__ import annotations
 from django.db import models
+from typing import Optional
 
 
 class UserType(models.TextChoices):
@@ -7,7 +9,7 @@ class UserType(models.TextChoices):
     TA = "T", "TA"
 
     @classmethod
-    def from_str(cls, maybe_type: str):
+    def from_str(cls, maybe_type: str) -> UserType:
         if maybe_type == 'A':
             return UserType.ADMIN
         elif maybe_type == 'P':
@@ -16,6 +18,13 @@ class UserType(models.TextChoices):
             return UserType.TA
         else:
             raise TypeError(f'user_type {maybe_type} is non in the set of [A, P, T]')
+
+    @classmethod
+    def try_from_str(cls, maybe_type: str) -> Optional[UserType]:
+        try:
+            return cls.from_str(maybe_type)
+        except TypeError:
+            return None
 
 
 class User(models.Model):
