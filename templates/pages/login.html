@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 
 {% comment %}
-This page can be rendered with the context variables as follows:
-- error: Optional[PageError[Login]] (either place USERNAME or PASSWORD) which will make the form highlight the incorrect field
-- user_name: Optional[str] which will re-fill the username field for you
+
+Login Prompt.
+
+Context:
+- error: Optional[PageError[Login]]     See viewsupport.errors for usage
+- user_name: Optional[str]              Set a pre-filled value for the username field
+
 {% endcomment %}
 
 {% block content %}
