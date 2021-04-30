@@ -27,7 +27,7 @@ class SectionAPI:
         return new_course_section.id
 
     @staticmethod
-    def get_by_id(id: str) -> Optional[Section]:
+    def get_by_id(id: int) -> Optional[Section]:
         """
         Get course section by id if it exists, returns the course section object or none
         """
