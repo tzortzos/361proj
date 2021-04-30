@@ -8,7 +8,7 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI, Course
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import CourseError
+from TAScheduler.viewsupport.errors import CourseEditError, CourseEditPlace
 
 class CoursesEdit(View):
 
@@ -77,9 +77,9 @@ class CoursesEdit(View):
 
                 'edit': course,
 
-                'error': CourseError(
+                'error': CourseEditError(
                     'You cannot remove a course code',
-                    CourseError.Place.CODE
+                    CourseEditPlace.CODE
                 ),
             })
 
@@ -91,9 +91,9 @@ class CoursesEdit(View):
 
                 'edit': course,
 
-                'error': CourseError(
+                'error': CourseEditError(
                     'A course code must be exactly 3 digits',
-                    CourseError.Place.CODE
+                    CourseEditPlace.CODE
                 ),
             })
 
@@ -105,9 +105,9 @@ class CoursesEdit(View):
 
                 'edit': course,
 
-                'error': CourseError(
+                'error': CourseEditError(
                     'You cannot remove the course name',
-                    CourseError.Place.NAME,
+                    CourseEditPlace.NAME,
                 ),
             })
 
