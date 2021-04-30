@@ -15,7 +15,7 @@ Context:
                 align-items-center align-items-sm-start
                 justify-content-between justify-content-start">
 
-        <h4 class="mb-0">{{ course.course_code }} {{ course.course_name }}</h4>
+        <h4 class="mb-0">{{ course.code }} {{ course.name }}</h4>
 
     </div>
 
@@ -24,16 +24,16 @@ Context:
         <div class="btn-group">
 
             {# Information #}
-            <a class="btn btn-dark" href="{% url 'courses-view' course.course_id %}"><i class="bi bi-info-circle-fill"></i></a>
+            <a class="btn btn-dark" href="{% url 'courses-view' course.id %}"><i class="bi bi-info-circle-fill"></i></a>
 
             {% if self.type == 'A' %}
 
                 {# Edit #}
-                <a class="btn btn-dark" href="{% url 'courses-edit' course.course_id %}"><i class="bi bi-pencil-fill"></i></a>
+                <a class="btn btn-dark" href="{% url 'courses-edit' course.id %}"><i class="bi bi-pencil-fill"></i></a>
 
                 {% if not nodelete %}
                     {# Delete #}
-                    <a class="btn btn-danger" href="{% url 'courses-delete' course.course_id %}"><i class="bi bi-trash-fill"></i></a>
+                    <a class="btn btn-danger" href="{% url 'courses-delete' course.id %}"><i class="bi bi-trash-fill"></i></a>
                 {% endif %}
 
             {% endif %}
