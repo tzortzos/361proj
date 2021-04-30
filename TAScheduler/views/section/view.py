@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, reverse
 from typing import Union
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
-from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 
@@ -16,7 +16,7 @@ class SectionsView(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        section = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        section = SectionAPI.get_by_id(section_id)
 
         if section is None:
             MessageQueue.push(request.session, Message(

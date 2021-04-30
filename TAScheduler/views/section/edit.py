@@ -7,7 +7,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import SectionError
@@ -26,7 +26,7 @@ class SectionsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        edit = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        edit = SectionAPI.get_by_id(section_id)
 
         if edit is None:
             MessageQueue.push(request.session, Message(
@@ -58,7 +58,7 @@ class SectionsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        edit = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        edit = SectionAPI.get_by_id(section_id)
 
         if edit is None:
             MessageQueue.push(request.session, Message(

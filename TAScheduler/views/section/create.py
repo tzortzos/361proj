@@ -7,7 +7,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.viewsupport.errors import SectionError
@@ -85,7 +85,7 @@ class SectionsCreate(View):
             # NOTE it would be really nice if this could catch the integrity error and return an unsaved version of the
             #      database object in the case that it could not be saved, that way we could re-fill the fields with
             #      the relevant information in this case.
-            section_id: int = CourseSectionAPI.create_course_section(section_code, course)
+            section_id: int = SectionAPI.create_course_section(section_code, course)
         except IntegrityError:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,

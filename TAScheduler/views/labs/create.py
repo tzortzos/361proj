@@ -11,7 +11,7 @@ from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.models import Section
 from TAScheduler.viewsupport.errors import LabError
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import SectionAPI
 
 from more_itertools import ilen
 
@@ -86,7 +86,7 @@ class LabsCreate(View):
                 'error': LabError('You must provide a 3 digit lab code', LabError.Place.CODE),
             })
 
-        section = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        section = SectionAPI.get_by_id(section_id)
 
         if section is None:
             return render(request, 'pages/labs/edit_create.html', {

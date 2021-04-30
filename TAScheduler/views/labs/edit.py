@@ -10,7 +10,7 @@ from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.errors import LabError
 
 class LabsEdit(View):
@@ -105,7 +105,7 @@ class LabsEdit(View):
 
         lab.code = lab_code
 
-        section = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        section = SectionAPI.get_by_id(section_id)
 
         if section is None:
             return render(request, 'pages/labs/edit_create.html', {
