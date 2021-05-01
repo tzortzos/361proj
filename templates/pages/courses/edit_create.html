@@ -5,7 +5,10 @@ Create and edit course objects
 
 Context:
 - self: User
+- messages: Iterable[Message]
+- navbar_items: Iterable[NavbarItem]
 - edit: Optional[Course]
+- error: Optional[CourseEditError]
 
 POST Vars
 - course_code

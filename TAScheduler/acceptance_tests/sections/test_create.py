@@ -4,69 +4,60 @@ from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
 
 from TAScheduler.models import User, UserType, Course, Section
-from TAScheduler.viewsupport.errors import SectionError
+from TAScheduler.viewsupport.errors import SectionEditError, SectionEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
+from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 
 
-class CreateSection(TestCase):
+class CreateSection(TASAcceptanceTestCase[SectionEditError]):
     def setUp(self):
         self.client = Client()
         self.session = self.client.session
 
-        self.user = User.objects.create(
-            univ_id='josiahth',
+        self.admin_user = User.objects.create(
+            username='josiahth',
             password='good-password',
             type=UserType.ADMIN,
-            tmp_password=False,
+            password_tmp=False,
         )
 
         self.course = Course.objects.create(
-            course_code='361',
-            course_name='Software Engineering',
-            admin_id=self.user,
+            code='361',
+            course='Software Engineering',
         )
 
-        self.session['user_id'] = self.user.id
+        self.session['user_id'] = self.admin_user.id
         self.session.save()
 
-    def assertContainsMessage(self, resp, message: Message, msg: str = 'Message object was not in context'):
-        self.assertTrue(message in MessageQueue.get(resp.client.session), msg=msg)
+        self.good_code = '901'
+        self.good_name = 'Software Engineering'
 
-    def assertContextError(self, resp) -> SectionError:
-        """Assert that a UserEditError was returned in the context and return it"""
-        context = resp.context
-
-        self.assertIsNotNone(context['error'], 'Did not return error')
-        self.assertEqual(type(context['error']), SectionError, 'Did not return correctly typed error')
-
-        return context['error']
+        self.url = reverse('sections-create')
 
     def test_adds_to_database(self):
-        resp = self.client.post(reverse('sections-create'), {
-            'section_code': '901',
-            'course_id': self.course.section,
+        resp = self.client.post(self.url, {
+            'section_code': self.good_code,
+            'course_id': self.course.id,
         })
 
-        section = list(Section.objects.all())
+        section = list(Section.objects.all())[0]
 
-        self.assertEqual(1, len(section), 'Did not create course section in database')
+        self.assertRedirects(resp, reverse('sections-view', args=[section.id]))
 
-        section = section[0]
-
-        self.assertEqual('901', section.code, 'Did not save section code to database')
-        self.assertEqual(self.course, section.section, 'Did not save course to database')
+        self.assertEqual(self.good_code, section.code)
+        self.assertEqual(self.course, section.section)
 
     def test_redirects_on_success(self):
-        resp = self.client.post(reverse('sections-create'), {
-            'section_code': '901',
-            'course_id': self.course.section,
+        resp = self.client.post(self.url, {
+            'section_code': self.good_code,
+            'course_id': self.course.id,
         })
 
         section = list(Section.objects.all())[0]
 
         self.assertRedirects(
             resp,
-            reverse('sections-view', args=(section.section,))
+            reverse('sections-view', args=[section.section])
         )
 
     def test_rejects_missing_section_code(self):
@@ -83,7 +74,7 @@ class CreateSection(TestCase):
         )
 
         self.assertEqual(
-            SectionError.Place.CODE,
+            SectionEditPlace.CODE,
             context_error.place(),
             msg='Did not reject missing course code with error message in correct place',
         )
