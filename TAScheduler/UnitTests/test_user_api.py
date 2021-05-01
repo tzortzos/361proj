@@ -12,12 +12,15 @@ class TestUser(TestCase):
         self.fname1 = 'bob'
         self.phone1 = '123-456-7890'
         self.univ_id1 = 'bsmith'
-        self.univ_id2 = ''
-        self.univ_id3 = 'BroderickChristophersonJames'
-        self.password2 = ''
         self.password1 = 'password123'
-        self.user_id1 = UserAPI.create_user(UserType.ADMIN, self.univ_id1, self.password1, self.lname1, self.fname1,
-                                            self.phone1)
+        self.user_id1 = User.objects.create(
+            type=UserType.ADMIN,
+            univ_id=self.univ_id1,
+            password=self.password1,
+            l_name=self.lname1,
+            f_name= self.fname1,
+            phone=self.phone1)
+        self.user_id2 = User.objects.create(type=UserType.PROF,univ_id='ateacher',password='Password456')
 
     def test_create_user(self):
         user_id = UserAPI.create_user(UserType.ADMIN, 'asmith','password456')

@@ -5,9 +5,10 @@ from django.db.models import ObjectDoesNotExist
 
 from TAScheduler.models import User, UserType
 from TAScheduler.viewsupport.errors import PageError, UserEditError
+from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 
 
-class TestCreateUserView(TestCase):
+class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
     def setUp(self):
         self.client = Client()
         self.session = self.client.session
@@ -30,12 +31,6 @@ class TestCreateUserView(TestCase):
                                              type=UserType.PROF,
                                              tmp_password=False)
 
-    def get_error(self, resp_context) -> UserEditError:
-        self.assertIsNotNone(resp_context['error'], 'Did not return error in context on empty password')
-        self.assertEqual(type(resp_context['error']), UserEditError, 'Did not return correctly typed error')
-
-        return resp_context['error']
-
     def test_rejects_empty_password(self):
         resp = self.client.post(reverse('users-create'), {
             'univ_id': 'nleverence',
@@ -46,10 +41,10 @@ class TestCreateUserView(TestCase):
 
         self.assertIsNotNone(resp, 'Did not return a response')
 
-        ret_error = self.get_error(resp.context)
+        error = self.assertContextError(resp)
 
-        self.assertTrue(ret_error.place() is UserEditError.Place.PASSWORD, 'Did not recognize that password was empty')
-        self.assertEqual(ret_error.error().body(), 'Password must be at least 8 characters in length')
+        self.assertTrue(error.place() is UserEditError.Place.PASSWORD, 'Did not recognize that password was empty')
+        self.assertEqual(error.error().body(), 'Password must be at least 8 characters in length')
 
     def test_rejects_short_password(self):
         resp = self.client.post(reverse('users-create'), {

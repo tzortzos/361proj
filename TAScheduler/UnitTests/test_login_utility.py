@@ -12,6 +12,7 @@ class TestLoginUtility(TestCase):
     def test_update_password(self):
         new_pass = str(uuid.uuid4())[:8]
         LoginUtility.update_password(self.user1,new_pass)
+        print(new_pass)
         self.assertEqual(new_pass, self.user1.password, msg='Expected the password to have been updated.')
         self.assertEqual(False, self.user1.password_tmp, msg='Expected tmp password boolean to change to False.')
 
@@ -28,3 +29,13 @@ class TestLoginUtility(TestCase):
     def test_get_user_and_validate_by_user_login_redirect(self):
         user = LoginUtility.get_user_and_validate_by_user_id(0)
         self.assertEqual('/login/', user.url, msg='Expected redirect to login for non-existent user.')
+
+    def test_same_password_update(self):
+        new_pass = "NewPassword123"
+
+        try:
+            if new_pass is not self.user1.tmp_password:
+                LoginUtility.update_password(self.user1, new_pass)
+        except False:
+            print('Error, new password can not be the same as temp password!')
+

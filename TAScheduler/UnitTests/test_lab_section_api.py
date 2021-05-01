@@ -9,6 +9,7 @@ from TAScheduler.models import UserType, Section, Course, User, Lab
 class TestLabSection(TestCase):
 
     def setUp(self) -> None:
+        self.lab_section_code2 = ''
         self.lab_section_code = str(uuid.uuid4())[:3]
         self.lab_section_code2 = ''
         self.course_section_id = Section.objects.create(
