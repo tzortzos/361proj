@@ -49,6 +49,8 @@ class CoursesCreate(View):
         course_code: Optional[str] = request.POST.get('course_code', None)
         course_name: Optional[str] = request.POST.get('course_name', None)
 
+        # TODO optionally add preferred skills for TAs assigned to this course
+
         if course_code is None or len(course_code) != 3:
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
@@ -73,6 +75,6 @@ class CoursesCreate(View):
                 ),
             })
 
-        course: int = CourseAPI.create_course(course_code, course_name, user)
+        course_id: int = CourseAPI.create_course(course_code, course_name, user)
 
-        return redirect(reverse('courses-view', args=[course]))
+        return redirect(reverse('courses-view', args=[course_id]))

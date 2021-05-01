@@ -6,7 +6,7 @@ import more_itertools
 class CourseAPI:
 
     @staticmethod
-    def create_course(code: str, name: str, admin: User) -> Union[int, TypeError]:
+    def create_course(code: str, name: str, admin: User) -> Union[int, TypeError]:  # Note to nathan: raising an exception is not the same as returning an error
         """
         Creates a course by taking a code and name with admin log, raises TypeError if argument issue
         """
