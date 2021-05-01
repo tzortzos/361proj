@@ -4,9 +4,9 @@ from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
 
 from TAScheduler.models import User, UserType
-from TAScheduler.viewsupport.errors import PageError, UserEditError
+from TAScheduler.viewsupport.errors import UserEditPlace, UserEditError
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-
+from TAScheduler.viewsupport.message import MessageQueue, Message
 
 class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
     def setUp(self):
@@ -43,8 +43,8 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         error = self.assertContextError(resp)
 
-        self.assertTrue(error.place() is UserEditError.Place.PASSWORD, 'Did not recognize that password was empty')
-        self.assertEqual(error.error().body(), 'Password must be at least 8 characters in length')
+        self.assertTrue(error.place() is UserEditPlace.PASSWORD)
+        self.assertEqual('Password must be at least 8 characters in length', error.message())
 
     def test_rejects_short_password(self):
         resp = self.client.post(reverse('users-create'), {
@@ -56,10 +56,10 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         self.assertIsNotNone(resp, 'Did not return a response')
 
-        ret_error = self.get_error(resp.context)  # Asserts that an error exists as well
+        error = self.assertContextError(resp)  # Asserts that an error exists as well
 
-        self.assertTrue(ret_error.place() is UserEditError.Place.PASSWORD, 'Did not recognize that password was empty')
-        self.assertEqual(ret_error.error().body(), 'Password must be at least 8 characters in length')
+        self.assertTrue(error.place() is UserEditPlace.PASSWORD)
+        self.assertEqual('Password must be at least 8 characters in length', error.message())
 
     def test_rejects_empty_username(self):
         resp = self.client.post(reverse('users-create'), {
@@ -71,10 +71,10 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         self.assertIsNotNone(resp, 'Did not return a response')
 
-        ret_error = self.get_error(resp.context)  # Asserts that an error exists as well
+        error = self.assertContextError(resp)  # Asserts that an error exists as well
 
-        self.assertTrue(ret_error.place() is UserEditError.Place.USERNAME, 'Did not recognize missing username')
-        self.assertEqual(ret_error.error().body(), 'You must provide a university id')
+        self.assertTrue(error.place() is UserEditPlace.USERNAME)
+        self.assertEqual('You must provide a university id', error.message())
 
     def test_rejects_long_username(self):
         resp = self.client.post(reverse('users-create'), {
@@ -86,10 +86,10 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         self.assertIsNotNone(resp, 'Did not return a response')
 
-        ret_error = self.get_error(resp.context)  # Asserts that an error exists as well
+        error = self.assertContextError(resp)  # Asserts that an error exists as well
 
-        self.assertTrue(ret_error.place() is UserEditError.Place.USERNAME, 'Did not recognize missing username')
-        self.assertEqual(ret_error.error().body(), 'A university id may not be longer than 20 characters')
+        self.assertTrue(error.place() is UserEditPlace.USERNAME, 'Did not recognize missing username')
+        self.assertEqual('A university id may not be longer than 20 characters', error.message())
 
     def test_rejects_username_with_at_sign(self):
         resp = self.client.post(reverse('users-create'), {
@@ -101,10 +101,10 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         self.assertIsNotNone(resp, 'Did not return a response')
 
-        ret_error = self.get_error(resp.context)  # Asserts that an error exists as well
+        error = self.assertContextError(resp)  # Asserts that an error exists as well
 
-        self.assertTrue(ret_error.place() is UserEditError.Place.USERNAME, 'Did not recognize missing username')
-        self.assertEqual(ret_error.error().body(), 'You only need to put in the first part of a university email')
+        self.assertTrue(error.place() is UserEditPlace.USERNAME, 'Did not recognize missing username')
+        self.assertEqual('You only need to put in the first part of a university email', error.message())
 
     def test_rejects_username_with_spaces(self):
         resp = self.client.post(reverse('users-create'), {
@@ -116,10 +116,10 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         self.assertIsNotNone(resp, 'Did not return a response')
 
-        ret_error = self.get_error(resp.context)  # Asserts that an error exists as well
+        error = self.assertContextError(resp)  # Asserts that an error exists as well
 
-        self.assertTrue(ret_error.place() is UserEditError.Place.USERNAME, 'Did not recognize missing username')
-        self.assertEqual(ret_error.error().body(), 'A username may not have spaces')
+        self.assertTrue(error.place() is UserEditPlace.USERNAME, 'Did not recognize missing username')
+        self.assertEqual('A username may not have spaces', error.message())
 
     def test_rejects_non_admin(self):
         self.client.session['user_id'] = self.professor.id
@@ -130,22 +130,11 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
 
         }, follow=False)
 
-        old_user = User.objects.get(univ_id='nleverence')
+        self.assertContainsMessage(resp,
+                                   Message('You do not have permission to create users', Message.Type.ERROR))
+
+        old_user = User.objects.get(username='nleverence')
         self.assertIsNotNone(old_user, 'Did not remove user')
 
         self.assertRedirects(resp, reverse('users-directory'))
 
-    def test_rejects_missing_session(self):
-        del self.session['user_id']
-        self.session.save()
-        resp = self.client.post(reverse('users-create'), {
-            'univ_id': 'nleverence',
-            'new_password': 'a-very-good-password',
-            'user_type': 'T',
-
-        }, follow=False)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            User.objects.get(univ_id='nleverence')
-
-        self.assertRedirects(resp, reverse('login'))

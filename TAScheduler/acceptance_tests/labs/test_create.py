@@ -10,7 +10,7 @@ from TAScheduler.models import User, UserType, Course, Section, Lab
 
 class LabsCreate(TASAcceptanceTestCase[LabError]):
 
-    def setUp(self):
+    def setUp(self):e
         self.client = Client()
         self.session = self.client.session
 
