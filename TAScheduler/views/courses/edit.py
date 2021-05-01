@@ -69,7 +69,7 @@ class CoursesEdit(View):
         course_code: Optional[str] = request.POST.get('course_code', None)
         course_name: Optional[str] = request.POST.get('course_name', None)
 
-        if course_code is None:
+        def render_error(error: CourseEditError):
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
                 'navbar_items': AdminItems.items_iterable(),
@@ -77,39 +77,26 @@ class CoursesEdit(View):
 
                 'edit': course,
 
-                'error': CourseEditError(
+                'error': error
+            })
+
+        if course_code is None:
+            return render_error(CourseEditError(
                     'You cannot remove a course code',
                     CourseEditPlace.CODE
-                ),
-            })
+                ))
 
         if len(course_code) != 3:
-            return render(request, 'pages/courses/edit_create.html', {
-                'self': user,
-                'navbar_items': AdminItems.items_iterable(),
-                'messages': MessageQueue.drain(request.session),
-
-                'edit': course,
-
-                'error': CourseEditError(
+            return render_error(CourseEditError(
                     'A course code must be exactly 3 digits',
                     CourseEditPlace.CODE
-                ),
-            })
+                ))
 
         if course_name is None:
-            return render(request, 'pages/courses/edit_create.html', {
-                'self': user,
-                'navbar_items': AdminItems.items_iterable(),
-                'messages': MessageQueue.drain(request.session),
-
-                'edit': course,
-
-                'error': CourseEditError(
+            return render_error(CourseEditError(
                     'You cannot remove the course name',
                     CourseEditPlace.NAME,
-                ),
-            })
+                ))
 
         # TODO replace with CourseAPI edit method later
         course.name = course_name
