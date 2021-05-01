@@ -130,9 +130,9 @@ class SectionsEdit(View):
                 'error': SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE),
             })
 
+        section = SectionAPI.get_by_id(section_id)
 
-        # TODO Replace with CourseSectionAPI methods when complete
-        section = Section.objects.get(id=section_id)
+        # TODO replace edit functionality with SectionAPI methods when implemented
 
         if section is None:
             raise ValueError('Could not create section')
@@ -154,6 +154,7 @@ class SectionsEdit(View):
 
         section.tas.clear()
 
+        # TODO replace with AssignUtility (?) methods when implemented
         for ta in tas:
             section.tas.add(ta)
 
