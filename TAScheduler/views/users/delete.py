@@ -50,14 +50,13 @@ class UserDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        # We have an admin user so it is safe to delete
         to_delete = UserAPI.get_user_by_user_id(user_id)
 
         if to_delete is None:
             MessageQueue.push(request.session, Message(f'No user with id {user_id} exists', Message.Type.ERROR))
             return redirect(reverse('users-directory'))
 
-        UserAPI.delete_user(to_delete)
+        UserAPI.delete_user(user_id)
 
         MessageQueue.push(request.session, Message(f'Successfully deleted user {to_delete.username}'))
         return redirect(reverse('users-directory'))
