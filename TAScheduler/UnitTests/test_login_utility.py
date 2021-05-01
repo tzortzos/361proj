@@ -17,7 +17,7 @@ class TestLoginUtility(TestCase):
 
     def test_get_user_and_validate_by_user_id(self):
         new_pass = str(uuid.uuid4())[:8]
-        LoginUtility.update_password(self.user1,new_pass)
+        LoginUtility.update_password(self.user1, new_pass)
         user = LoginUtility.get_user_and_validate_by_user_id(self.user1.id)
         self.assertEqual(self.user1, user, msg='Expected user to be returned because exists and tmp password false')
 

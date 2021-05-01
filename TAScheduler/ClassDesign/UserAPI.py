@@ -23,7 +23,7 @@ class UserAPI:
 
         new_user = User.objects.create(
             type=user_type,
-            univ_id=univ_id,
+            username=univ_id,
             password=password,
             l_name=lname,
             f_name=fname,
@@ -37,7 +37,7 @@ class UserAPI:
         Get user by user id and returns User if it exists, otherwise returns None
         """
         try:
-            return User.objects.get(user_id=user_id)
+            return User.objects.get(id=user_id)
         except User.DoesNotExist:
             return None
 
@@ -47,7 +47,7 @@ class UserAPI:
         Get user by university id and returns User if it exists, otherwise returns None
         """
         try:
-            return User.objects.get(univ_id=univ_id)
+            return User.objects.get(username=univ_id)
         except User.DoesNotExist:
             return None
 
@@ -69,7 +69,7 @@ class UserAPI:
         Deletes User if it exists using the id and returns a boolean for confirmation
         """
         try:
-            user = User.objects.get(user_id=id)
+            user = User.objects.get(id=id)
             user.delete()
             return True
         except ObjectDoesNotExist:
