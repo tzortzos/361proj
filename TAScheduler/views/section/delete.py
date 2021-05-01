@@ -55,18 +55,19 @@ class SectionsDelete(View):
             return user
 
         section = SectionAPI.get_by_id(section_id)
+        # NOTE It might be nice for delete to return information about the deleted object
+        # (or the deleted object itself?)
+        success = SectionAPI.delete_by_id(section_id)
 
-        if section is None:
+        if success:
+            MessageQueue.push(request.session, Message(
+                f'Successfully deleted Course Section {section.code}'
+                f' for course {section.course.code} {section.course.name}'
+            ))
+            return redirect(reverse('sections-directory'))
+        else:
             MessageQueue.push(request.session, Message(
                 f'No Course Section exists with the id {section_id}',
                 Message.Type.ERROR,
             ))
             return redirect(reverse('sections-directory'))
-
-        section.delete()
-
-        MessageQueue.push(request.session, Message(
-            f'Successfully deleted Course Section {section.code}'
-            f' for course {section.course.code} {section.course.name}'
-        ))
-        return redirect(reverse('sections-directory'))
