@@ -4,7 +4,7 @@ from TAScheduler.models import User, Section
 from TAScheduler.models import Lab
 
 
-class LabSectionAPI:
+class LabAPI:
 
     @staticmethod
     def create_lab_section(
