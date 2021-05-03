@@ -18,16 +18,6 @@ class UserType(models.TextChoices):
                 return user_types[key]
         raise TypeError(f'user_type {maybe_type} is not in the set of {user_types}')
 
-    # @classmethod
-    # def from_str(cls, maybe_type: str) -> UserType:
-    #     if maybe_type == 'A':
-    #         return UserType.ADMIN
-    #     elif maybe_type == 'P':
-    #         return UserType.PROF
-    #     elif maybe_type == 'T':
-    #         return UserType.TA
-    #     else:
-    #         raise TypeError(f'user_type {maybe_type} is non in the set of [A, P, T]')
 
     @classmethod
     def try_from_str(cls, maybe_type: str) -> Optional[UserType]:
