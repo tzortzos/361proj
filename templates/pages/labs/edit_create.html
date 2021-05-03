@@ -38,7 +38,9 @@ Post returns the following variables
         <div class="col-12 mb-3">
             {# Section Selection #}
             <label class="form-label" for="course_id">Section</label>
-            <select id="course_id" name="section_id" class="form-select" required>
+            <select id="course_id" name="section_id"
+                    class="form-select {% if error.place.section %}is-invalid{% endif %}"
+                    required>
                 {% if section is None %}
                     <option value="-1" selected>Choose</option>
                 {% endif %}
@@ -54,8 +56,8 @@ Post returns the following variables
                 {% endfor %}
             </select>
             <div class="invalid-feedback">
-                {% if error and error.place_section %}
-                    {{ error.error}}
+                {% if error and error.place.section %}
+                    {{ error.message }}
                 {% else %}
                     You must select a Section
                 {% endif %}
@@ -65,15 +67,15 @@ Post returns the following variables
             <label for="lab_code" class="form-label">Lab Code</label>
             <input type="text" required pattern="[0-9]{3}"
                    name="lab_code"
-                   {% if error and error.place_code %}
+                   {% if error and error.place.code %}
                        class="form-control is-invalid"
                    {% else %}
                        class="form-control"
                    {% endif %}
-                    value="{{ edit.lab_section_code }}"
+                    value="{{ edit.code }}"
             >
-            {% if error and error.place_code %}
-                <div class="invalid-feedback">{{ error.error }}</div>
+            {% if error and error.place.code %}
+                <div class="invalid-feedback">{{ error.message }}</div>
             {% else %}
                 <div class="invalid-feedback">A lab must have a 3 digit code</div>
             {% endif %}
@@ -88,7 +90,7 @@ Post returns the following variables
                 <div class="form-check btn-group px-0">
                     {# Monay #}
                     <input type="radio" class="btn-check" id="M" name="lab_day" value="M"
-                            {% if edit and 'M' in edit.lab_days %}
+                            {% if edit and 'M' in edit.day %}
                            checked
                             {% endif %}
                     >
@@ -104,7 +106,7 @@ Post returns the following variables
 
                     {# Wednesday #}
                     <input type="radio" class="btn-check" id="W" name="lab_day" value="W"
-                            {% if edit and 'W' in edit.lab_days %}
+                            {% if edit and 'W' in edit.day %}
                            checked
                             {% endif %}
                     >
@@ -112,7 +114,7 @@ Post returns the following variables
 
                     {# Thursday #}
                     <input type="radio" class="btn-check" id="H" name="lab_day" value="H"
-                            {% if edit and 'H' in edit.lab_days %}
+                            {% if edit and 'H' in edit.day %}
                            checked
                             {% endif %}
                     >
@@ -120,7 +122,7 @@ Post returns the following variables
 
                     {# Wednesday #}
                     <input type="radio" class="btn-check" id="F" name="lab_day" value="F"
-                            {% if edit and 'F' in edit.lab_days %}
+                            {% if edit and 'F' in edit.day %}
                            checked
                             {% endif %}
                     >
@@ -132,7 +134,7 @@ Post returns the following variables
             <div class="form-group">
                 <label for="lab_time" class="form-label">Lab Time</label>
                 <input type="text" id="lab_time" name="lab_time" class="form-control"
-                        value="{{ edit.lab_time }}">
+                        value="{{ edit.time }}">
             </div>
 
         </div>
@@ -146,7 +148,7 @@ Post returns the following variables
                 <label class="list-group-item">
                     <input type="radio" class="form-check-input me-1"
                            name="ta_id" id="-1" value="-1"
-                           {% if edit is None or edit.ta_id is None %}checked{% endif %}>
+                           {% if edit is None or edit.ta is None %}checked{% endif %}>
                     <strong>unassigned</strong>
                 </label>
 
@@ -155,9 +157,9 @@ Post returns the following variables
 
                     <label class="list-group-item">
                         <input type="radio" class="form-check-input me-1"
-                               name="ta_id" id="{{ ta.user_id }}" value="{{ ta.user_id }}"
-                               {% if edit is not None and edit.ta_id == ta %}checked{% endif %}>
-                        <strong>{{ ta.univ_id }}</strong> {{ ta.f_name }} {{ ta.l_name }}
+                               name="ta_id" id="{{ ta.id }}" value="{{ ta.id }}"
+                               {% if edit is not None and edit.ta == ta %}checked{% endif %}>
+                        <strong>{{ ta.username }}</strong> {{ ta.f_name }} {{ ta.l_name }}
                     </label>
 
                 {% endfor %}
@@ -181,7 +183,7 @@ Post returns the following variables
 
                 {# delete #}
                 {% if edit %}
-                    <a class="btn btn-large btn-danger" href="{% url 'labs-delete' edit.lab_section_id %}">
+                    <a class="btn btn-large btn-danger" href="{% url 'labs-delete' edit.id %}">
                         <i class="bi bi-trash-fill"></i>
                     </a>
                 {% endif %}

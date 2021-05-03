@@ -4,7 +4,7 @@ from django.shortcuts import render
 from typing import Union
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
-from TAScheduler.ClassDesign.CourseSectionAPI import Section
+from TAScheduler.ClassDesign.SectionAPI import Section
 from TAScheduler.viewsupport.message import MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
 

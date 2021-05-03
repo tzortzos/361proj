@@ -1,203 +1,121 @@
-from typing import Optional, Union
+from __future__ import annotations
+from typing import Optional, Union, Generic, TypeVar, Type
 from enum import Enum, auto
 
-class PageError:
+P = TypeVar('P', bound=Enum)
+
+
+class PageError(Generic[P]):
     """
     Represents an error which may or may not have a headline, and which should be rendered with the
     `partials/inline_error.html` partial.
     """
 
-    def __init__(self, body: str, headline: Optional[str] = None):
+    def __init__(self, msg: str, place: P):
         """
         Create a new basic error with or without a headline value
         """
-        self._body = body
-        self._headline = headline
-
-    def has_headline(self) -> bool:
-        """
-        Returns true if the error has a headline value, used by template
-        to render as a error panel instead of alert.
-        :return:
-        """
-        return self._headline is not None
-
-    def headline(self) -> str:
-        """
-        Raises TypeError in the case that this error has no headline,
-        use has_headline() to check beforehand.
-        """
-
-        if self._headline is None:
-            raise TypeError('Tried to get headline from error without one')
-
-        return self._headline
-
-    def body(self) -> str:
-        """
-        Returns the body text of this error
-        :return:
-        """
-
-        return self._body
-
-
-class LoginError:
-    """
-    Represents an error to be used on the login page,
-    placed with the username or password field depending on the variant
-    """
-
-    class Place(Enum):
-        USERNAME = 0
-        PASSWORD = 1
-
-    def __init__(self, error_text: Union[PageError, str], place: Place):
-        self._place = place
-        if type(error_text) is PageError:
-            self._error = error_text
-        elif type(error_text) is str:
-            self._error = PageError(error_text)
-        else:
-            raise TypeError('LoginError must be of type PageError or str')
-
-    def error(self) -> PageError:
-        """Gets the inner error of this instance of LoginError"""
-        return self._error
-
-    def place_username(self):
-        """Returns true iff this login error is associated with the login field"""
-        return self._place == LoginError.Place.USERNAME
-
-    def place_password(self):
-        """Returns true iff this login error is associated with the password field"""
-        return self._place == LoginError.Place.PASSWORD
-
-
-class UserEditError:
-    """
-    Represents error states for the creation and editing of a user.
-    """
-
-    class Place(Enum):
-        USERNAME = auto()
-        PASSWORD = auto()
-        TYPE = auto()
-        PHONE = auto()
-
-    def __init__(self, error_text: Union[PageError, str], place: Place):
-        self._place = place
-        if type(error_text) is PageError:
-            self._error = error_text
-        elif type(error_text) is str:
-            self._error = PageError(error_text)
-        else:
-            raise TypeError('error_text must be either a PageError or str')
-
-    def error(self) -> PageError:
-        """Get the inner error from this UserEditError"""
-        return self._error
-
-    def place(self):
-        """Get the place for this error"""
-        return self._place
-
-    def place_username(self) -> bool:
-        return self._place == UserEditError.Place.USERNAME
-
-    def place_password(self) -> bool:
-        return self._place == UserEditError.Place.PASSWORD
-
-    def place_type(self) -> bool:
-        return self._place == UserEditError.Place.TYPE
-
-    def place_phone(self) -> bool:
-        return self._place == UserEditError.Place.PHONE
-
-
-class SectionError:
-    """
-    Represents an error that can be displayed on a course section page.
-    """
-
-    class Place(Enum):
-        CODE = 0
-        COURSE = 1
-        INSTRUCTOR = 2
-        TAS = 3
-
-    def __init__(self, msg: Union[PageError, str], place: Place):
-        if type(msg) is str:
-            self._msg = PageError(msg)
-        elif type(msg) is PageError:
-            self._msg = msg
-        else:
-            raise TypeError('Message must be a str or a PageError')
-
-        self._place = place
-
-    def error(self) -> PageError:
-        return self._msg
-
-    def place(self) -> Place:
-        return self._place
-
-    def place_code(self) -> bool:
-        return self._place is SectionError.Place.CODE
-
-    def place_course(self) -> bool:
-        return self._place is SectionError.Place.COURSE
-
-    def place_instructor(self) -> bool:
-        return self._place is SectionError.Place.INSTRUCTOR
-
-    def place_tas(self) -> bool:
-        return self._place is SectionError.Place.TAS
-
-
-class LabError:
-    """
-    Represents Errors than can be displayed on the lab section creation and editing pages.
-    """
-
-    class Place(Enum):
-        CODE = 0
-        SECTION = 1
-
-    def __init__(self, msg: str, place: Place):
         self._msg = msg
         self._place = place
 
-    def error(self) -> str:
+    def message(self) -> str:
+        """Return the message contained in this error"""
         return self._msg
 
-    def place(self) -> Place:
+    def place(self) -> P:
+        """Return the placement of this error"""
         return self._place
 
-    def place_code(self) -> bool:
-        return self._place is LabError.Place.CODE
-
-    def place_section(self) -> bool:
-        return self._place is LabError.Place.SECTION
 
 
-class CourseError:
-    class Place(Enum):
-        CODE = 0
-        NAME = 1
+class LoginPlace(Enum):
+    USERNAME = 0
+    PASSWORD = 1
 
-    def __init__(self, msg: str, place: Place):
-        self._msg = msg
-        self._place = place
+    def username(self) -> bool:
+        return self is LoginPlace.USERNAME
 
-    def error(self) -> str:
-        return self._msg
+    def password(self) -> bool:
+        return self is LoginPlace.PASSWORD
 
-    def place(self) -> Place:
-        return self._place
 
-    def place_code(self) -> bool:
-        return self._place is CourseError.Place.CODE
+# Export a Concertized variant of PageError for consumption
+"""Represents errors that can be displayed on the login page"""
+LoginError = PageError[LoginPlace]
 
-    def place_name(self) -> bool:
-        return self._place is CourseError.Place.NAME
+
+class UserEditPlace(Enum):
+    USERNAME = 0
+    PASSWORD = 1
+    TYPE = 2
+    PHONE = 3
+
+    def username(self) -> bool:
+        return self is UserEditPlace.USERNAME
+
+    def password(self) -> bool:
+        return self is UserEditPlace.PASSWORD
+
+    def ty(self) -> bool:
+        return self is UserEditPlace.TYPE
+
+    def phone(self) -> bool:
+        return self is UserEditPlace.PHONE
+
+
+"""Represents errors that can be displayed on the user edit page"""
+UserEditError = PageError[UserEditPlace]
+
+
+class CourseEditPlace(Enum):
+    CODE = 0
+    NAME = 1
+
+    def code(self) -> bool:
+        return self is CourseEditPlace.CODE
+
+    def name(self) -> bool:
+        return self is CourseEditPlace.NAME
+
+
+"""Represents errors which can be displayed on the course edit page"""
+CourseEditError = PageError[CourseEditPlace]
+
+
+class SectionEditPlace(Enum):
+    CODE = 0
+    COURSE = 1
+    INSTRUCTOR = 2
+    TAS = 3
+
+    def code(self) -> bool:
+        return self is SectionEditPlace.CODE
+
+    def course(self) -> bool:
+        return self is SectionEditPlace.COURSE
+
+    def instructor(self) -> bool:
+        return self is SectionEditPlace.INSTRUCTOR
+
+    def tas(self) -> bool:
+        return self is SectionEditPlace.TAS
+
+
+"""Represents errors that can be displayed on the section edit page"""
+SectionEditError = PageError[SectionEditPlace]
+
+
+class LabEditPlace(Enum):
+    CODE = 0
+    SECTION = 1
+
+    def code(self) -> bool:
+        return self is LabEditPlace.CODE
+
+    def section(self) -> bool:
+        return self is LabEditPlace.SECTION
+
+
+"""Represents errors which can be displayed on the lab edit page"""
+LabEditError = PageError[LabEditPlace]
+

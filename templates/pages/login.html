@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 
 {% comment %}
-This page can be rendered with the context variables as follows:
-- error: Optional[PageError] (either place USERNAME or PASSWORD) which will make the form highlight the incorrect field
-- user_name: Optional[str] which will re-fill the username field for you
+
+Login Prompt.
+
+Context:
+- error: Optional[PageError[Login]]     See viewsupport.errors for usage
+- user_name: Optional[str]              Set a pre-filled value for the username field
+
 {% endcomment %}
 
 {% block content %}
@@ -20,14 +24,14 @@ This page can be rendered with the context variables as follows:
                 <label for="username" class="form-label">username</label>
                 <div class="input-group has-validation">
 
-                    <input type="text" name="username" class="form-control {% if error and error.place_username %} is-invalid {% endif %}"
+                    <input type="text" name="username" class="form-control {% if error and error.place.username %} is-invalid {% endif %}"
                            required pattern="[^@\s]+"
                            value="{{ user_name }}">
                     <div class="input-group-text">@uwm.edu</div>
 
                     <div class="invalid-feedback">
-                        {% if error and error.place_username %}
-                        {{ error.error.body }}
+                        {% if error and error.place.username %}
+                        {{ error.message }}
                         {% else %}
                         You must input only the leading portion of your <em>school</em> email
                         {% endif %}
@@ -37,10 +41,10 @@ This page can be rendered with the context variables as follows:
 
             <div class="mb-3">
                 <label for="password" class="form-label">password</label>
-                <input type="password" name="password" class="form-control {% if error and error.place_password %} is-invalid {% endif %}" required minlength="8">
+                <input type="password" name="password" class="form-control {% if error and error.place.password %} is-invalid {% endif %}" required minlength="8">
                 <div class="invalid-feedback">
-                    {% if error and error.place_password %}
-                        {{ error.error.body }}
+                    {% if error and error.place.password %}
+                        {{ error.message }}
                     {% else %}
                         You must input your password<br /><small>It must be at least 8 characters</small>
                     {% endif %}

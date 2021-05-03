@@ -9,7 +9,7 @@ Takes the following context:
 <div class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center">
     {# Left #}
     <div class="me-sm-auto d-flex flex-row flex-sm-column align-items-center align-items-sm-start justify-content-between justify-content-sm-start">
-        <h4 class="mb-0">{{ user.univ_id }}</h4>
+        <h4 class="mb-0">{{ user.id }}</h4>
         <!-- <hr class="mb-0 d-none d-sm-inline "/> -->
         <p class="mb-0">{{ user.f_name }} {{ user.l_name }} </p>
         <em>{{ user.get_type_display }}</em>
@@ -19,16 +19,16 @@ Takes the following context:
     <div class="d-flex justify-content-center mt-3 mt-sm-0 mb-3 mb-sm-0">
         <div class="btn-group">
             {# Information #}
-            <a class="btn btn-dark" href="{% url 'users-view' user.user_id %}"><i class="bi bi-info-circle-fill"></i></a>
+            <a class="btn btn-dark" href="{% url 'users-view' user.id %}"><i class="bi bi-info-circle-fill"></i></a>
 
             {# Edit #}
-            {% if user.user_id == self.user_id or self.type == 'A' %}
-                <a class="btn btn-dark" href="{% url 'users-edit' user.user_id %}"><i class="bi bi-pencil-fill"></i></a>
+            {% if user.id == self.id or self.type == 'A' %}
+                <a class="btn btn-dark" href="{% url 'users-edit' user.id %}"><i class="bi bi-pencil-fill"></i></a>
             {% endif %}
 
             {# Delete #}
             {% if self.type == 'A' and not nodelete %}
-                <a class="btn btn-danger" href="{% url 'users-delete' user.user_id %}"><i class="bi bi-trash-fill"></i></a>
+                <a class="btn btn-danger" href="{% url 'users-delete' user.id %}"><i class="bi bi-trash-fill"></i></a>
             {% endif %}
         </div>
     </div>

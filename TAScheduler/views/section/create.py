@@ -7,10 +7,10 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import SectionError
+from TAScheduler.viewsupport.errors import SectionEditPlace, SectionEditError
 from TAScheduler.models import User, UserType, Course
 
 
@@ -65,7 +65,7 @@ class SectionsCreate(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('You must select a course for this section', SectionError.Place.COURSE),
+                'error': SectionEditError('You must select a course for this section', SectionEditPlace.COURSE),
             })
 
         if section_code is None:
@@ -77,7 +77,7 @@ class SectionsCreate(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('You must input a 3 digit section code', SectionError.Place.CODE),
+                'error': SectionEditError('You must input a 3 digit section code', SectionEditPlace.CODE),
             })
 
 
@@ -85,7 +85,7 @@ class SectionsCreate(View):
             # NOTE it would be really nice if this could catch the integrity error and return an unsaved version of the
             #      database object in the case that it could not be saved, that way we could re-fill the fields with
             #      the relevant information in this case.
-            section_id: int = CourseSectionAPI.create_course_section(section_code, course)
+            section_id: int = SectionAPI.create_course_section(section_code, course)
         except IntegrityError:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
@@ -95,12 +95,12 @@ class SectionsCreate(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('A section already exists for this course with that code', SectionError.Place.CODE),
+                'error': SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE),
             })
 
 
         # TODO Replace with CourseSectionAPI methods when complete
-        section = Section.objects.get(course_section_id=section_id)
+        section = Section.objects.get(id=section_id)
 
         if section is None:
             raise ValueError('Could not create section')

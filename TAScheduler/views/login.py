@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse
 
 from TAScheduler.ClassDesign.UserAPI import UserType, UserAPI
 
-from TAScheduler.viewsupport.errors import PageError, LoginError
+from TAScheduler.viewsupport.errors import LoginError, LoginPlace
 from TAScheduler.viewsupport.message import MessageQueue
 
 
@@ -18,70 +18,61 @@ class Login(View):
     """
 
     def get(self, request: HttpRequest):
-        try:
-            # In the case where the user is already logged in,
-            # we redirect them to their homepage
-            _ = request.session['user_id']
-            return redirect(reverse('index'))
+        u = request.session.get('user_id', None) is None
 
-        except KeyError:
-            # Otherwise we render the default login page
+        if u:
             return render(request, 'pages/login.html', {
                 'messages': MessageQueue.drain(request.session),
             })
+        else:
+            return redirect(reverse('index'))
 
     def post(self, request: HttpRequest):
 
-        try:
-            r_username = str(request.POST['username'])
-        except KeyError:
-            # No Username Provided
-            r_username = None
+        r_username = request.POST.get('username', '')
+        r_password = request.POST.get('password', '')
+
+
 
         # Username Empty
-        if r_username is None or len(r_username) == 0:
+        if len(r_username) == 0:
             return render(request, 'pages/login.html', {
-                'error': LoginError(PageError('You must provide a username'), LoginError.Place.USERNAME)
+                'error': LoginError('You must provide a username', LoginPlace.USERNAME)
             })
 
         # Username too long
         if len(r_username) > 20:
             return render(request, 'pages/login.html', {
-                'error': LoginError(PageError('That Username is too Long'), LoginError.Place.USERNAME)
+                'error': LoginError('That Username is too Long', LoginPlace.USERNAME)
             })
 
-        try:
-            r_password = str(request.POST['password'])
-        except KeyError:
-            # No Password Provided
-            r_password = None
-
         # Password Empty
-        if r_password is None or len(r_password) == 0:
+        if len(r_password) == 0:
             return render(request, 'pages/login.html', {
-                'error': LoginError(PageError('You must provide a password'), LoginError.Place.PASSWORD),
+                'error': LoginError('You must provide a password', LoginPlace.PASSWORD),
                 'user_name': r_username
             })
 
         # Password too short
         if len(r_password) < 8:
             return render(request, 'pages/login.html', {
-                'error': LoginError(PageError('A password must be at least 8 characters in length'), LoginError.Place.PASSWORD),
+                'error': LoginError('A password must be at least 8 characters in length', LoginPlace.PASSWORD),
                 'user_name': r_username,
             })
 
         user = UserAPI.get_user_by_univ_id(r_username)
+
         if user is None:
             # No such user exists
             return render(request, 'pages/login.html', {
-                'error': LoginError(PageError('No such user'), LoginError.Place.USERNAME),
+                'error': LoginError('No such user', LoginPlace.USERNAME),
                 'user_name': r_username,
             })
 
         if user.password != r_password:
             # The password does not match for the user
             return render(request, 'pages/login.html', {
-                'error': LoginError(PageError('Incorrect Password'), LoginError.Place.PASSWORD),
+                'error': LoginError('Incorrect Password', LoginPlace.PASSWORD),
                 'user_name': r_username,
             })
         else:
@@ -89,6 +80,6 @@ class Login(View):
             request.session['user_id'] = user.id
 
             if user.password_tmp:
-                return redirect(reverse('users-edit', args=(user.id,)))
+                return redirect(reverse('users-edit', args=[user.id]))
 
             return redirect(reverse('index'))

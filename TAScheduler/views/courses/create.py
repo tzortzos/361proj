@@ -8,7 +8,7 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import CourseError
+from TAScheduler.viewsupport.errors import CourseEditPlace, CourseEditError
 
 class CoursesCreate(View):
 
@@ -49,15 +49,17 @@ class CoursesCreate(View):
         course_code: Optional[str] = request.POST.get('course_code', None)
         course_name: Optional[str] = request.POST.get('course_name', None)
 
+        # TODO optionally add preferred skills for TAs assigned to this course
+
         if course_code is None or len(course_code) != 3:
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'error': CourseError(
+                'error': CourseEditError(
                     'A course code must be exactly 3 digits',
-                    CourseError.Place.CODE
+                    CourseEditPlace.CODE
                 ),
             })
 
@@ -67,12 +69,12 @@ class CoursesCreate(View):
                 'navbar_items': AdminItems.items_iterable(),
                 'messages': MessageQueue.drain(request.session),
 
-                'error': CourseError(
+                'error': CourseEditError(
                     'You must provide a course name',
-                    CourseError.Place.NAME,
+                    CourseEditPlace.NAME,
                 ),
             })
 
-        course: int = CourseAPI.create_course(course_code, course_name, user)
+        course_id: int = CourseAPI.create_course(course_code, course_name, user)
 
-        return redirect(reverse('courses-view', args=[course]))
+        return redirect(reverse('courses-view', args=[course_id]))

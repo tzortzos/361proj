@@ -23,7 +23,7 @@ Takes the following context variables on top of app_base vars:
 </div>
 <div class="list-group">
     {% for user in users %}
-        {% include 'partials/user_list_row.html' with user=user self=self nodelete=nodelete only %}
+        {% include 'partials/list_row/user.html' with user=user self=self nodelete=nodelete only %}
     {% endfor %}
 </div>
 {% endblock application_pane %}

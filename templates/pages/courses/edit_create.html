@@ -5,7 +5,10 @@ Create and edit course objects
 
 Context:
 - self: User
+- messages: Iterable[Message]
+- navbar_items: Iterable[NavbarItem]
 - edit: Optional[Course]
+- error: Optional[CourseEditError]
 
 POST Vars
 - course_code
@@ -28,15 +31,15 @@ POST Vars
         <div class="input-group has-validation">
 
             <input type="text" name="course_code"
-                   value="{{ edit.course_code }}"
-                   {% if error and error.place_code %}
+                   value="{{ edit.code }}"
+                   {% if error and error.place.code %}
                        class="form-control is-invalid"
                    {% else %}
                        class="form-control"
                    {% endif %}
             >
-            {% if error and error.place_code %}
-                <div class="invalid-feedback">{{ error.error }}</div>
+            {% if error and error.place.code %}
+                <div class="invalid-feedback">{{ error.message }}</div>
             {% else %}
                 <div class="invalid-feedback">The course code must be exactly 3 digits</div>
             {% endif %}
@@ -47,16 +50,16 @@ POST Vars
         <div class="input-group has-validation mb-3">
 
             <input type="text" name="course_name"
-                   value="{{ edit.course_name }}"
+                   value="{{ edit.name }}"
                    required
-                   {% if error and error.place_name %}
+                   {% if error and error.place.name %}
                        class="form-control is-invalid"
                    {% else %}
                        class="form-control"
                    {% endif %}
             >
-            {% if error and error.place_name %}
-                <div class="invalid-feedback">{{ error.error }}</div>
+            {% if error and error.place.name %}
+                <div class="invalid-feedback">{{ error.message }}</div>
             {% else %}
                 <div class="invalid-feedback">You must input a course name.</div>
             {% endif %}
@@ -77,7 +80,7 @@ POST Vars
 
                 {# delete #}
                 {% if section %}
-                    <a class="btn btn-large btn-danger" href="{% url 'courses-delete' edit.course_id %}">
+                    <a class="btn btn-large btn-danger" href="{% url 'courses-delete' edit.id %}">
                         <i class="bi bi-trash-fill"></i>
                     </a>
                 {% endif %}

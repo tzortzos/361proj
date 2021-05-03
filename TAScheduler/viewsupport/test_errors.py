@@ -1,34 +1,30 @@
-import unittest
+from django.test import TestCase
 from TAScheduler.viewsupport.errors import PageError
+from enum import Enum
 
-class TestBasicErrors(unittest.TestCase):
 
-    def setUp(self):
-        self.error = PageError('This is the body of the error')
+class TestErrorPlace(Enum):
+    ZERO = 0
+    ONE = 1
 
-    def test_creates(self):
-        self.assertEqual(self.error.body(), 'This is the body of the error', 'Does not return correct body')
 
-    def test_no_headline(self):
-        self.assertEqual(self.error.has_headline(), False, 'Does not correctly indicate no error')
+TestError = PageError[TestErrorPlace]
 
-    def test_get_headline_raises(self):
-        with self.assertRaises(TypeError, msg='Did not raise correct exception in case where tried to access nonexistant headline'):
-            self.error.headline()
 
-class TestHeadlineErrors(unittest.TestCase):
+class TestConcretePageError(TestCase):
+
 
     def setUp(self) -> None:
-        self.error = PageError('This is the body of the error', 'Headline')
+        self.message = 'A Message'
+        self.place = TestErrorPlace.ONE
 
-    def test_creates(self):
-        self.assertEqual(self.error.body(), 'This is the body of the error', 'Did not return correct body')
+        self.error = TestError(
+            self.message,
+            self.place
+        )
 
-    def test_has_headline(self):
-        self.assertTrue(self.error.has_headline(), 'Did not indicate existence of headline correctly')
+    def test_returns_message(self):
+        self.assertEqual(self.message, self.error.message(), 'Did not return correct message')
 
-    def test_returns_headline(self):
-        self.assertEqual(self.error.headline(), 'Headline', 'Did not return correct headline')
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_returns_place(self):
+        self.assertEqual(self.place, self.error.place(), 'Did not return correct place')

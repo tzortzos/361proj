@@ -13,23 +13,21 @@ class TestLoginView(TestCase):
         self.long_user_username = 'josiahth'
         long_user = User.objects.create(
             type=UserType.ADMIN,
-            univ_id=self.long_user_username,
+            username=self.long_user_username,
             password=self.check_pass,
             l_name='hilden',
             f_name='josiah',
-            tmp_password=False
+            password_tmp=False
         )
 
         self.long_user = long_user.id
 
         self.short_user_username = 'nleverence'
-        short_user = User.objects.create(
+        self.short_user = User.objects.create(
             type=UserType.PROF,
-            univ_id=self.short_user_username,
+            username=self.short_user_username,
             password=self.check_pass,
         )
-
-        self.short_user = short_user
 
     def test_rejects_empty_username(self):
         resp = self.client.post(reverse('login'), {
@@ -37,11 +35,11 @@ class TestLoginView(TestCase):
             'password': 'verysecurepassword'
         })
 
-        error: LoginError= resp.context['error']
+        error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place_username(), 'Did not return error with username')
-        self.assertEqual(error.error().body(), 'You must provide a username')
+        self.assertTrue(error.place().username(), 'Did not return error with username')
+        self.assertEqual(error.message(), 'You must provide a username')
 
     def test_rejects_long_username(self):
         # Usernames may not be longer than 20 characters,
@@ -55,8 +53,8 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error for too long username')
-        self.assertTrue(error.place_username(), 'Did not return error for username')
-        self.assertEqual(error.error().body(), 'That Username is too Long')
+        self.assertTrue(error.place().username(), 'Did not return error for username')
+        self.assertEqual(error.message(), 'That Username is too Long')
 
     def test_rejects_no_such_username(self):
         # Username does not exist in the database
@@ -68,8 +66,8 @@ class TestLoginView(TestCase):
         error = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error for nonexistent user')
-        self.assertTrue(error.place_username(), 'Did not return error for non-existence username.')
-        self.assertEqual(error.error().body(), 'No such user')
+        self.assertTrue(error.place().username(), 'Did not return error for non-existence username.')
+        self.assertEqual(error.message(), 'No such user')
 
     def test_rejects_empty_password(self):
         resp = self.client.post(reverse('login'), {
@@ -80,8 +78,8 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place_password(), 'Did not return error with password')
-        self.assertEqual(error.error().body(), 'You must provide a password')
+        self.assertTrue(error.place().password(), 'Did not return error with password')
+        self.assertEqual(error.message(), 'You must provide a password')
 
     def test_rejects_short_password(self):
         # Passwords of less than or equal to 8 passwords are not valid
@@ -93,8 +91,8 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place_password(), 'Did not return error with password')
-        self.assertEqual(error.error().body(), 'A password must be at least 8 characters in length')
+        self.assertTrue(error.place().password(), 'Did not return error with password')
+        self.assertEqual(error.message(), 'A password must be at least 8 characters in length')
 
     def test_rejects_mismatched_password(self):
         # Username and password do not match
@@ -106,8 +104,8 @@ class TestLoginView(TestCase):
         error: LoginError = resp.context['error']
 
         self.assertIsNotNone(error, 'Did not return error message')
-        self.assertTrue(error.place_password(), 'Did not return error with password')
-        self.assertEqual(error.error().body(), 'Incorrect Password')
+        self.assertTrue(error.place().password(), 'Did not return error with password')
+        self.assertEqual(error.message(), 'Incorrect Password')
 
     def test_successful_login_sets_session(self):
         # Successful login sets the session with the users' primary key (user_id)
@@ -121,6 +119,7 @@ class TestLoginView(TestCase):
             user_id = self.client.session['user_id']
         except KeyError:
             self.assertTrue(False, 'Did not set user_id on successful login')
+            return  # Only here to assure that the previous assertion always fails
 
         self.assertIsNotNone(user_id, 'Did not set user_id on login')
         self.assertEqual(user_id, self.long_user, 'Did not set correct key with valid login')
@@ -143,6 +142,6 @@ class TestLoginView(TestCase):
         resp = self.client.post(reverse('login'), {
             'username': self.short_user_username,
             'password': self.check_pass,
-        }, follow=True)
+        }, follow=False)
 
-        self.assertRedirects(resp, reverse('users-edit', args=(self.short_user.id,)))
+        self.assertRedirects(resp, reverse('users-edit', args=[self.short_user.id]))

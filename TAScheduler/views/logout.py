@@ -4,6 +4,7 @@ from django.shortcuts import redirect, reverse
 
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
+
 class Logout(View):
     def get(self, request: HttpRequest) -> HttpResponseRedirect:
         try:

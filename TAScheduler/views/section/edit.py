@@ -7,10 +7,10 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
-from TAScheduler.ClassDesign.CourseSectionAPI import Section, CourseSectionAPI
+from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.errors import SectionError
+from TAScheduler.viewsupport.errors import SectionEditError, SectionEditPlace
 from TAScheduler.models import User, UserType, Course
 
 
@@ -26,7 +26,7 @@ class SectionsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        edit = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        edit = SectionAPI.get_by_id(section_id)
 
         if edit is None:
             MessageQueue.push(request.session, Message(
@@ -58,7 +58,7 @@ class SectionsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        edit = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        edit = SectionAPI.get_by_id(section_id)
 
         if edit is None:
             MessageQueue.push(request.session, Message(
@@ -89,7 +89,7 @@ class SectionsEdit(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('You cannot remove a course from this section', SectionError.Place.COURSE),
+                'error': SectionEditError('You cannot remove a course from this section', SectionEditPlace.COURSE),
             })
 
         if section_code is None:
@@ -104,7 +104,7 @@ class SectionsEdit(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('All sections must have a 3 digit code', SectionError.Place.CODE),
+                'error': SectionEditError('All sections must have a 3 digit code', SectionEditPlace.CODE),
             })
 
 
@@ -127,12 +127,12 @@ class SectionsEdit(View):
                 'professors': User.objects.filter(type=UserType.PROF),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': SectionError('A section already exists for this course with that code', SectionError.Place.CODE),
+                'error': SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE),
             })
 
+        section = SectionAPI.get_by_id(section_id)
 
-        # TODO Replace with CourseSectionAPI methods when complete
-        section = Section.objects.get(course_section_id=section_id)
+        # TODO replace edit functionality with SectionAPI methods when implemented
 
         if section is None:
             raise ValueError('Could not create section')
@@ -154,6 +154,7 @@ class SectionsEdit(View):
 
         section.tas.clear()
 
+        # TODO replace with AssignUtility (?) methods when implemented
         for ta in tas:
             section.tas.add(ta)
 

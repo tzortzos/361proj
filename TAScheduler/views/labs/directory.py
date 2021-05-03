@@ -7,7 +7,7 @@ from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
+from TAScheduler.ClassDesign.LabAPI import LabAPI, Lab
 
 class LabsDirectory(View):
 

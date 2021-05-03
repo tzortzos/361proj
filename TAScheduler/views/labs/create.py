@@ -9,9 +9,9 @@ from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
 from TAScheduler.viewsupport.navbar import AdminItems
 from TAScheduler.models import Section
-from TAScheduler.viewsupport.errors import LabError
-from TAScheduler.ClassDesign.LabSectionAPI import LabSectionAPI, Lab
-from TAScheduler.ClassDesign.CourseSectionAPI import CourseSectionAPI
+from TAScheduler.viewsupport.errors import LabEditPlace, LabEditError
+from TAScheduler.ClassDesign.LabAPI import LabAPI, Lab
+from TAScheduler.ClassDesign.SectionAPI import SectionAPI
 
 from more_itertools import ilen
 
@@ -60,7 +60,7 @@ class LabsCreate(View):
         lab_day = request.POST.get('lab_day', '')
         lab_time = request.POST.get('lab_time', '')
 
-        if section_id is None:
+        def render_error(error: LabEditError):
             return render(request, 'pages/labs/edit_create.html', {
                 'self': user,
                 'navbar_items': AdminItems.items_iterable(),
@@ -69,41 +69,26 @@ class LabsCreate(View):
                 'sections': Section.objects.all(),
                 'tas': User.objects.filter(type=UserType.TA),
 
-                'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),
+                'error': error,
             })
+
+        if section_id is None:
+            return render_error(LabEditError('You must pick a section for this lab'))
 
         non_digits = ilen((a for a in lab_code if a not in set(digits)))
 
         if lab_code is None or len(lab_code) != 3 or non_digits > 0:
-            return render(request, 'pages/labs/edit_create.html', {
-                'self': user,
-                'navbar_items': AdminItems.items_iterable(),
-                'messages': MessageQueue.drain(request.session),
+            return render_error(LabEditError('You must provide a 3 digit lab code', LabEditPlace.CODE))
 
-                'sections': Section.objects.all(),
-                'tas': User.objects.filter(type=UserType.TA),
-
-                'error': LabError('You must provide a 3 digit lab code', LabError.Place.CODE),
-            })
-
-        section = CourseSectionAPI.get_course_section_by_course_id(section_id)
+        section = SectionAPI.get_by_id(section_id)
 
         if section is None:
-            return render(request, 'pages/labs/edit_create.html', {
-                'self': user,
-                'navbar_items': AdminItems.items_iterable(),
-                'messages': MessageQueue.drain(request.session),
-
-                'sections': Section.objects.all(),
-                'tas': User.objects.filter(type=UserType.TA),
-
-                'error': LabError('You must pick a section for this lab', LabError.Place.SECTION),
-            })
+            return render_error(LabEditError('You must pick a section for this lab', LabEditPlace.SECTION))
 
         if ta_id is not None:
             ta_id = UserAPI.get_user_by_user_id(ta_id)
 
-        lab_id = LabSectionAPI.create_lab_section(lab_code, section, lab_day, lab_time, ta_id)
+        lab_id = LabAPI.create(lab_code, section, lab_day, lab_time, ta_id)
 
         return redirect(reverse('labs-view', args=[lab_id]))
 

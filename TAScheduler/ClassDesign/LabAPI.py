@@ -66,7 +66,7 @@ class LabSectionAPI:
 
     @staticmethod
     def delete_lab_section(
-          lab_section: int
+            lab_section: int
     ) -> bool:
         """
         Using the lab_section id primary key, deletes user if it exists.
