@@ -6,14 +6,15 @@ import more_itertools
 class CourseAPI:
 
     @staticmethod
-    def create_course(code: str, name: str, admin: User) -> Union[int, TypeError]:  # Note to nathan: raising an exception is not the same as returning an error
+    def create_course(code: str, name: str) -> Union[int, TypeError]:
         """
         Creates a course by taking a code and name with admin log, raises TypeError if argument issue
         """
-        if code is '' or name is '':
+        if code == '' or name == '':
             raise TypeError('Course code or Course name can\'t be empty.')
-        new_course = Course.objects.create(code=code, name=name, admin=admin)
-        return new_course.section
+
+        new_course = Course.objects.create(code=code, name=name)
+        return new_course.id
 
     @staticmethod
     def get_course_by_course_code(code: str) -> Optional[Course]:

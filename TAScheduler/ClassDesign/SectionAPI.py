@@ -7,22 +7,23 @@ class SectionAPI:
 
     @staticmethod
     def create_course_section(
-            section_code: str,
-            course_id: Course,
+            code: str,
+            course: Course,
             days: str = '',
             time: str = '',
-            professor: User = None,
+            prof: User = None,
     ) -> int:
         """
         Creates new course section associated to Course, returns the course section id primary key.
         """
-        new_course_section = Section(
-            code=section_code,
-            course=course_id,
+        if code == '' or course == None:
+            raise TypeError("Code or Course cannot be blank.")
+        new_course_section = Section.objects.create(
+            code=code,
+            course=course,
             days=days,
             time=time,
-            prof=professor)
-        new_course_section.save()
+            prof=prof)
 
         return new_course_section.id
 
@@ -56,6 +57,6 @@ class SectionAPI:
             section.delete()
             return True
         except ObjectDoesNotExist:
-            return False
+            return None
 
 
