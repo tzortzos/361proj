@@ -3,21 +3,27 @@ from django.db import models
 from typing import Optional
 
 
+
 class UserType(models.TextChoices):
     ADMIN = "A", "Administrator"
     PROF = "P", "Professor"
     TA = "T", "TA"
 
     @classmethod
-    def from_str(cls, maybe_type: str) -> UserType:
-        if maybe_type == 'A':
-            return UserType.ADMIN
-        elif maybe_type == 'P':
-            return UserType.PROF
-        elif maybe_type == 'T':
-            return UserType.TA
-        else:
-            raise TypeError(f'user_type {maybe_type} is non in the set of [A, P, T]')
+        def from_str(cls, maybe_type: str, user_types: dict = None) -> UserType
+            """
+            Try to translate a UserType string, as stored in the database and returned from templates, into a
+            UserType object. Must be in the set ["A", "P", "T"].
+            
+            Raises TypeError if it is not in said set.
+            """
+            if user_types is None:
+            user_types = dict([('A', UserType.ADMIN), ('P', UserType.PROF), ('T', UserType.TA)])
+        for key in user_types:
+            if maybe_type == key:
+                return user_types[key]
+        raise TypeError(f'user_type {maybe_type} is not in the set of {user_types}')
+
 
     @classmethod
     def try_from_str(cls, maybe_type: str) -> Optional[UserType]:
@@ -166,7 +172,7 @@ class Message(models.Model):
         to='TAScheduler.Message', on_delete=models.SET_NULL,
         null=True, blank=True,
         help_text='In response to',
-        )
+    )
 
     title = models.CharField(
         max_length=60,
@@ -182,7 +188,6 @@ class Message(models.Model):
 
     def __str__(self) -> str:
         return f'[{self.sent}] ({self.sender.email()}) {self.title}'
-
 
 
 class Recipient(models.Model):
