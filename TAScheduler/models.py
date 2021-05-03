@@ -10,8 +10,14 @@ class UserType(models.TextChoices):
     TA = "T", "TA"
 
     @classmethod
-    def from_str(cls, maybe_type: str, user_types: dict = None) -> UserType:
-        if user_types is None:
+        def from_str(cls, maybe_type: str, user_types: dict = None) -> UserType
+            """
+            Try to translate a UserType string, as stored in the database and returned from templates, into a
+            UserType object. Must be in the set ["A", "P", "T"].
+            
+            Raises TypeError if it is not in said set.
+            """
+            if user_types is None:
             user_types = dict([('A', UserType.ADMIN), ('P', UserType.PROF), ('T', UserType.TA)])
         for key in user_types:
             if maybe_type == key:
