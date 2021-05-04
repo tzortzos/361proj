@@ -10,7 +10,7 @@ class UserType(models.TextChoices):
     TA = "T", "TA"
 
     @classmethod
-    def from_str(cls, maybe_type: str, user_types: dict = None) -> UserType
+    def from_str(cls, maybe_type: str, user_types: dict = None) -> UserType:
         """
         Try to translate a UserType string, as stored in the database and returned from templates, into a
         UserType object. Must be in the set ["A", "P", "T"].
