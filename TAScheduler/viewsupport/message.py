@@ -69,7 +69,7 @@ class MessageQueue:
                 session.save()
                 return iter(messages)
             else:
-                MessageQueue.put(messages[n:])
+                MessageQueue.put(session, messages[n:])
                 return iter(messages[:n])
 
         except KeyError:
