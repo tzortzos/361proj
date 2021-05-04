@@ -1,14 +1,14 @@
 from django.test import Client
 from django.shortcuts import reverse
 
+from TAScheduler.viewsupport.errors import CourseEditError, CourseEditPlace
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-from TAScheduler.viewsupport.errors import CourseError
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
-class CourseCreates(TASAcceptanceTestCase[CourseError]):
+class CourseCreates(TASAcceptanceTestCase[CourseEditError]):
 
     def setUp(self) -> None:
         self.client = Client()
@@ -47,8 +47,9 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('A course code must be exactly 3 digits', error.error(), 'Did not return correct error message')
-        self.assertEqual(CourseError.Place.CODE, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual('A course code must be exactly 3 digits', error.message(),
+                         'Did not return correct error message')
+        self.assertEqual(CourseEditPlace.CODE, error.place(), 'Did not associate incorrect code with correct place')
 
     def test_rejects_short_code(self):
         resp = self.client.post(reverse('courses-create'), {
@@ -58,9 +59,9 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('A course code must be exactly 3 digits', error.error(),
+        self.assertEqual('A course code must be exactly 3 digits', error.message(),
                          'Did not return correct error message')
-        self.assertEqual(CourseError.Place.CODE, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.CODE, error.place(), 'Did not associate incorrect code with correct place')
 
     def test_rejects_missing_name(self):
         resp = self.client.post(reverse('courses-create'), {
@@ -70,6 +71,6 @@ class CourseCreates(TASAcceptanceTestCase[CourseError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('You must provide a course name', error.error(),
+        self.assertEqual('You must provide a course name', error.message(),
                          'Did not return correct error message')
-        self.assertEqual(CourseError.Place.NAME, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.NAME, error.place(), 'Did not associate incorrect code with correct place')

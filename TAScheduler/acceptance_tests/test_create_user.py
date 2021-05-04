@@ -8,6 +8,7 @@ from TAScheduler.viewsupport.errors import UserEditPlace, UserEditError
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.viewsupport.message import MessageQueue, Message
 
+
 class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
     def setUp(self):
         self.client = Client()

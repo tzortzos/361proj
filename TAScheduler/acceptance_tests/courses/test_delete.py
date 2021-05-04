@@ -2,13 +2,13 @@ from django.test import Client
 from django.shortcuts import reverse
 
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-from TAScheduler.viewsupport.errors import CourseError
+from TAScheduler.viewsupport.errors import CourseEditError, CourseEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
-class CourseDeletes(TASAcceptanceTestCase[CourseError]):
+class CourseDeletes(TASAcceptanceTestCase[CourseEditError]):
     def setUp(self):
         self.client = Client()
         self.session = self.client.session
@@ -34,6 +34,7 @@ class CourseDeletes(TASAcceptanceTestCase[CourseError]):
         with self.assertRaises(Course.DoesNotExist):
             Course.objects.get(course_id=self.course.section)
 
-        self.assertContainsMessage(resp, Message('Course 351 DSA deleted successfully'))
+        self.assertContainsMessage(resp, Message('Course 351 DSA deleted successfully'),
+                                   Message.Type.ERROR)
 
         self.assertRedirects(resp, reverse('courses-directory'))
