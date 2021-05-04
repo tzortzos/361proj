@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from TAScheduler.viewsupport.message import Message
 
 
@@ -17,4 +17,37 @@ class TestMessage(TestCase):
         self.assertTrue(message.type() is Message.Type.ERROR, 'Did not override type correctly')
 
 
-# TODO add tests for message queue in sessions
+class TestMessageQueue(TestCase):
+
+    def setUp(self) -> None:
+        self.client = Client()
+        self.sesion = self.client.session
+
+        self.msg_text = 'This is a test message'
+
+        self.reg_message = Message(self.msg_text)
+        self.err_message = Message(self.msg_text, Message.Type.ERROR)
+
+    def test_maps_serializable(self):
+        pass
+
+    def test_maps_deserializable(self):
+        pass
+
+    def test_pushes(self):
+        pass
+
+    def test_returns_pushed(self):
+        pass
+
+    def test_drain_all(self):
+        pass
+
+    def test_drain_fewer(self):
+        pass
+
+    def test_get_all(self):
+        pass
+
+    def test_set_directly(self):
+        pass
