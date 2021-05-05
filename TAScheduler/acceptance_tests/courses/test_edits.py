@@ -2,13 +2,13 @@ from django.test import Client
 from django.shortcuts import reverse
 
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-from TAScheduler.viewsupport.errors import CourseError
+from TAScheduler.viewsupport.errors import CourseEditError, CourseEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
-class CourseEdit(TASAcceptanceTestCase[CourseError]):
+class CourseEdit(TASAcceptanceTestCase[CourseEditError]):
 
     def setUp(self) -> None:
         self.client = Client()
@@ -26,6 +26,10 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
         self.edit_url = reverse('courses-edit', args=[self.course.section])
         self.view_url = reverse('courses-view', args=[self.course.section])
+        self.good_code = '361'
+        self.good_name = 'Software Engineering'
+        self.good_name2 = 'Data Structures and Algorithms'
+        self.good_code2 = '351'
 
         # Set current user
         self.session['user_id'] = self.admin_user.id
@@ -33,48 +37,46 @@ class CourseEdit(TASAcceptanceTestCase[CourseError]):
 
     def test_edits(self):
         resp = self.client.post(self.edit_url, {
-            'course_code': '361',
-            'course_name': 'Software Engineering',
+            'course_code': self.good_code,
+            'course_name': self.good_name,
         })
 
         self.assertRedirects(resp, self.view_url)
 
         self.course.refresh_from_db()
 
-        self.assertEqual('361', self.course.code, msg='Did not save code to database')
-        self.assertEqual('Software Engineering', self.course.name, msg='Did not save course name to database')
+        self.assertEqual(self.good_code, self.course.code, msg='Did not save code to database')
+        self.assertEqual(self.good_name, self.course.name, msg='Did not save course name to database')
 
     def test_rejects_missing_code(self):
         resp = self.client.post(self.edit_url, {
-            # 'course_code': '351',
-            'course_name': 'Data Structures and Algorithms',
+            # 'course_code': self.good_code2,
+            'course_name': self.good_name2,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('You cannot remove a course code', error.error(), 'Did not return correct error message')
-        self.assertEqual(CourseError.Place.CODE, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.CODE, error.place())
+        self.assertEqual('You cannot remove a course code', error.message())
 
     def test_rejects_short_code(self):
         resp = self.client.post(self.edit_url, {
-            'course_code': '35',
-            'course_name': 'Data Structures and Algorithms',
+            'course_code': self.good_code2,
+            'course_name': self.good_name2,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('A course code must be exactly 3 digits', error.error(),
-                         'Did not return correct error message')
-        self.assertEqual(CourseError.Place.CODE, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.CODE, error.place())
+        self.assertEqual('A course code must be exactly 3 digits', error.message())
 
     def test_rejects_missing_name(self):
         resp = self.client.post(self.edit_url, {
-            'course_code': '351',
-            # 'course_name': 'Data Structures and Algorithms',
+            'course_code': self.good_code2,
+            # 'course_name': self.good_name2,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('You cannot remove the course name', error.error(),
-                         'Did not return correct error message')
-        self.assertEqual(CourseError.Place.NAME, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.NAME, error.place())
+        self.assertEqual('You cannot remove the course name', error.message())
