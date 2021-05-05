@@ -62,42 +62,24 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
 
     def test_rejects_missing_section_code(self):
         resp = self.client.post(reverse('sections-create'), {
+            # 'section_code': self.good_code,
             'course_id': self.course.section,
         })
 
-        context_error = self.assertContextError(resp)
+        error = self.assertContextError(resp)
 
-        self.assertEqual(
-            'You must input a 3 digit section code',
-            context_error.error().body(),
-            msg='Did not reject missing section code with correct message'
-        )
-
-        self.assertEqual(
-            SectionEditPlace.CODE,
-            context_error.place(),
-            msg='Did not reject missing course code with error message in correct place',
-        )
+        self.assertEqual(SectionEditPlace.CODE, error.place())
+        self.assertEqual('You must input a 3 digit section code', error.message())
 
     def test_rejects_missing_course_id(self):
         # The course_id should always exist, but the default value is
         # -1 which is used as our invalidity sigill as the database will
         # never user that value as a course_id
         resp = self.client.post(reverse('sections-create'), {
-            'section_code': '901',
-            'course_id': '-1',
+            'section_code': self.good_code,
+            # 'course_id': self.good_name,
         })
+        error = self.assertContextError(resp)
 
-        context_error = self.assertContextError(resp)
-
-        self.assertEqual(
-            'You must select a course for this section',
-            context_error.error().body(),
-            msg='Did not reject incorrect course id with correct message',
-        )
-
-        self.assertEqual(
-            SectionError.Place.COURSE,
-            context_error.place(),
-            msg='Did not place rejection message on correct field for incorrect course id'
-        )
+        self.assertEqual(SectionEditPlace.COURSE, error.place())
+        self.assertEqual('You must select a course for this section', error.message())
