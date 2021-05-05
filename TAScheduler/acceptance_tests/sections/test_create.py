@@ -37,7 +37,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
     def test_adds_to_database(self):
         resp = self.client.post(self.url, {
             'section_code': self.good_code,
-            'course_id': self.course.id,
+            'course_name': self.good_name,
         })
 
         section = list(Section.objects.all())[0]
@@ -50,7 +50,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
     def test_redirects_on_success(self):
         resp = self.client.post(self.url, {
             'section_code': self.good_code,
-            'course_id': self.course.id,
+            'course_name': self.good_name,
         })
 
         section = list(Section.objects.all())[0]
@@ -63,7 +63,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
     def test_rejects_missing_section_code(self):
         resp = self.client.post(reverse('sections-create'), {
             # 'section_code': self.good_code,
-            'course_id': self.course.section,
+            'course_name': self.good_name,
         })
 
         error = self.assertContextError(resp)
@@ -77,7 +77,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         # never user that value as a course_id
         resp = self.client.post(reverse('sections-create'), {
             'section_code': self.good_code,
-            # 'course_id': self.good_name,
+            # 'course_name': self.good_name,
         })
         error = self.assertContextError(resp)
 

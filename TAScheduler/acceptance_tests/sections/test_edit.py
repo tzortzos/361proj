@@ -1,4 +1,3 @@
-from django.shortcuts import reverse
 from django.test import TestCase, Client
 from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
@@ -21,8 +20,8 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
             password_tmp=False,
         )
 
-        self.course = Course.objects.create(
-            code='361',
+        self.section = Section.objects.create(
+            code='902',
             course='Software Engineering',
         )
 
@@ -32,17 +31,51 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         self.good_code = '901'
         self.good_name = 'Software Engineering'
 
-        self.url = reverse('sections-edit')
+        self.edit_url = reverse('sections-edit', args=[self.section])
+        self.view_url = reverse('sections-view', args=[self.section])
 
     def test_edits(self):
-        resp = self.client.post(self.url, {
+        resp = self.client.post(self.edit_url, {
             'section_code': self.good_code,
             'course_name': self.good_name,
         })
 
         self.assertRedirects(resp, self.view_url)
 
-        self.course.refresh_from_db()
+        self.section.refresh_from_db()
 
-        self.assertEqual('361', self.course.code, msg='Did not save code to database')
-        self.assertEqual('Software Engineering', self.course.name, msg='Did not save course name to database')
+        self.assertEqual(self.good_code, self.section.code)
+        self.assertEqual(self.good_name, self.section.name)
+
+    def test_rejects_missing_code(self):
+        resp = self.client.post(self.edit_url, {
+            # 'course_code': self.good_code,
+            'course_name': self.good_name,
+        })
+
+        error = self.assertContextError(resp)
+
+        self.assertEqual(SectionEditPlace.CODE, error.place())
+        self.assertEqual('You cannot remove a course code', error.message())
+
+    def test_rejects_short_code(self):
+        resp = self.client.post(self.edit_url, {
+            'course_code': self.good_code[:2],
+            'course_name': self.good_name,
+        })
+
+        error = self.assertContextError(resp)
+
+        self.assertEqual(SectionEditPlace.CODE, error.place())
+        self.assertEqual('A section code must be exactly 3 digits', error.message())
+
+    def test_rejects_missing_name(self):
+        resp = self.client.post(self.edit_url, {
+            'course_code': self.good_code,
+            # 'course_name': self.good_name,
+        })
+
+        error = self.assertContextError(resp)
+
+        self.assertEqual(SectionEditPlace.COURSE, error.place())
+        self.assertEqual('You must select a course for this section', error.message())

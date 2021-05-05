@@ -22,17 +22,17 @@ class SectionDeletes(TASAcceptanceTestCase[SectionEditError]):
             password_tmp=False,
         )
 
-        self.course = Course.objects.create(code='361', course='Software Engineering')
+        self.section = Section.objects.create(code='901', course='Software Engineering')
 
         # Set current user
         self.session['user_id'] = self.admin_user.id
         self.session.save()
 
     def test_deletes_from_database(self):
-        resp = self.client.post(reverse('sections-delete', args=[self.course.section.id]))
+        resp = self.client.post(reverse('sections-delete', args=[self.section.id]))
 
-        with self.assertRaises(Course.DoesNotExist):
-            Section.objects.get(section_id=self.course.section.id)
+        with self.assertRaises(Section.DoesNotExist):
+            Section.objects.get(section_id=self.section.id)
 
-        self.assertRedirects(resp, reverse('section-view'))
-        self.assertContainsMessage(resp, Message('Course 361 Software Engineering deleted successfully'))
+        self.assertRedirects(resp, reverse('sections-view'))
+        self.assertContainsMessage(resp, Message('Section 901 of Software Engineering deleted successfully'))
