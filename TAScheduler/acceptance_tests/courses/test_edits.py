@@ -61,7 +61,7 @@ class CourseEdit(TASAcceptanceTestCase[CourseEditError]):
 
     def test_rejects_short_code(self):
         resp = self.client.post(self.edit_url, {
-            'course_code': self.good_code2,
+            'course_code': self.good_code[:2],
             'course_name': self.good_name2,
         })
 
