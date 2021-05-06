@@ -16,16 +16,16 @@ class CourseEdit(TASAcceptanceTestCase[CourseEditError]):
 
         # Add user
         self.admin_user = User.objects.create(
-            univ_id='josiahth',
+            username='josiahth',
             password='password',
             type=UserType.ADMIN,
-            tmp_password=False
+            password_tmp=False
         )
 
-        self.course = Course.objects.create(course_code='351', course_name='DSA')
+        self.course = Course.objects.create(code='351', name='DSA')
 
-        self.edit_url = reverse('courses-edit', args=[self.course.section])
-        self.view_url = reverse('courses-view', args=[self.course.section])
+        self.edit_url = reverse('courses-edit', args=[self.course.id])
+        self.view_url = reverse('courses-view', args=[self.course.id])
         self.good_code = '361'
         self.good_name = 'Software Engineering'
         self.good_name2 = 'Data Structures and Algorithms'
