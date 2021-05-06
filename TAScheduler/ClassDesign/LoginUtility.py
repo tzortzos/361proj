@@ -14,7 +14,7 @@ class LoginUtility:
     @staticmethod
     def update_password(user: User, password: str):
         user.password = password
-        user.tmp_password = False
+        user.password_tmp = False
         user.save()
 
     @staticmethod

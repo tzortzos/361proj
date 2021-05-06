@@ -21,6 +21,12 @@ class UserAPI:
         if type(user_type) is str:
             user_type = UserType.from_str(user_type)
 
+        if univ_id is None or univ_id == '':
+            raise TypeError('username cannot be blank')
+
+        if password is None or password == '':
+            raise TypeError('password cannot be blank')
+
         new_user = User.objects.create(
             type=user_type,
             username=univ_id,
