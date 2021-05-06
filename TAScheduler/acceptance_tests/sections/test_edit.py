@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.http import HttpRequest, HttpResponse
 from django.db.models import ObjectDoesNotExist
+from django.shortcuts import reverse
 
 from TAScheduler.models import User, UserType, Course, Section
 from TAScheduler.viewsupport.errors import SectionEditError, SectionEditPlace
