@@ -11,21 +11,24 @@ class TestUser(TestCase):
         self.lname1 = 'smith'
         self.fname1 = 'bob'
         self.phone1 = '123-456-7890'
-        self.password1 = 'password123'
         self.univ_id1 = 'bsmith'
-        self.univ_id2 = ''
-        self.password2 = ''
-        self.univ_id3 = 'BroderickChristophersonJames'
-        self.user_id1 = User.objects.create(type=UserType.ADMIN, username=self.univ_id1, password=self.password1)
-        self.user_id2= User.objects.create(type=UserType.PROF, username='jboyland', password='Password456')
+        self.password1 = 'password123'
+        self.user_id1 = User.objects.create(
+            type=UserType.ADMIN,
+            univ_id=self.univ_id1,
+            password=self.password1,
+            l_name=self.lname1,
+            f_name= self.fname1,
+            phone=self.phone1)
+        self.user_id2 = User.objects.create(type=UserType.PROF,univ_id='ateacher',password='Password456')
 
     def test_create_user(self):
         user_id = UserAPI.create_user(UserType.ADMIN, 'asmith','password456')
         self.assertTrue(user_id > 0, msg='Expecting id returned confirming saved to database.')
 
     def test_get_user_by_user_id(self):
-        user = UserAPI.get_user_by_user_id(self.user_id1.id)
-        self.assertEqual(self.user_id1, user, msg='User id should be equal userId1')
+        user = UserAPI.get_user_by_user_id(self.user_id1.user_id)
+        self.assertEqual(self.user_id1.user_id, user.id, msg='User id should be equal userId1')
 
     def test_get_user_by_univ_id(self):
         user = UserAPI.get_user_by_univ_id(self.univ_id1)
@@ -36,40 +39,40 @@ class TestUser(TestCase):
         list_of_users = list(user_set)
         length = more_itertools.ilen(list_of_users)
         self.assertEqual(2, length, msg='Expected list of courses to be 2.')
-        self.assertTrue(self.user_id1 in list_of_users, msg='Exepect user1 in list of users.')
-        self.assertTrue(self.user_id2 in list_of_users, msg='Expected user2 in list of users.')
+        self.assertTrue(self.user_id1 in list_of_users, msg='Exepect course1 in all courses.')
+        self.assertTrue(self.user_id1 in list_of_users, msg='Expected course2 in all courses.')
 
     def test_delete_user(self):
-        response = UserAPI.delete_user(self.user_id1.id)
+        response = UserAPI.delete_user(self.user_id1.user_id)
         self.assertEqual(True, response, msg='Because we expect that the object is not in database.')
 
     def test_update_user(self):
-        user = UserAPI.get_user_by_user_id(self.user_id1.id)
+        user = UserAPI.get_user_by_user_id(self.user_id2.id)
         lname2 = 'Foley'
         fname2 = 'B'
         phone2 = '456-123-7890'
         UserAPI.update_user(user, lname2, fname2, phone2)
-        user = UserAPI.get_user_by_user_id(self.user_id1.id)
+        user = UserAPI.get_user_by_user_id(self.user_id2.id)
         self.assertEqual(lname2, user.l_name, msg='')
         self.assertEqual(fname2, user.f_name, msg='')
         self.assertEqual(phone2, user.phone,msg='')
 
     def test_update_password(self):
         new_password = 'NewPassword123'
-        user = UserAPI.get_user_by_user_id(self.user_id1.id)
+        user = UserAPI.get_user_by_user_id(self.user_id1.user_id)
         LoginUtility.update_password(user, new_password)
-        user = UserAPI.get_user_by_user_id(self.user_id1.id)
+        user = UserAPI.get_user_by_user_id(self.user_id1.user_id)
         self.assertEqual(new_password, user.password, msg="Password is expected to be updated with new password.")
         self.assertEqual(False, user.password_tmp, msg='Failed because expected tmp password was updated.')
 
     def test_check_user_type(self):
-        user = UserAPI.get_user_by_user_id(self.user_id1.id)
+        user = UserAPI.get_user_by_user_id(self.user_id1.user_id)
         self.assertEqual('A', user.type, msg="Expected Admin as type for user1")
 
     def test_empty_user_type(self):
         new_user = UserAPI.create_user('', 'asmith', 'password456')
         user = UserAPI.get_user_by_user_id(new_user)
-        self.assertRaises(TypeError, msg='Usertype can not be blank!')
+        self.assertRaises(ValueError, user, msg='Usertype can not be blank!')
 
     def test_empty_univ_id(self):
         new_user = UserAPI.create_user(UserType.ADMIN, self.univ_id2, self.password1)

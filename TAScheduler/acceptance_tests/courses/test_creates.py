@@ -26,50 +26,53 @@ class CourseCreates(TASAcceptanceTestCase[CourseEditError]):
         self.session['user_id'] = self.admin_user.id
         self.session.save()
 
+        self.good_code = '361'
+        self.good_name = 'Software Engineering'
+
+        self.url = reverse('courses-create')
+
     def test_creates(self):
-        resp = self.client.post(reverse('courses-create'), {
-            'course_code': '351',
-            'course_name': 'Data Structures and Algorithms',
+        resp = self.client.post(self.url, {
+            'course_code': self.good_code,
+            'course_name': self.good_name,
         })
 
         course = list(Course.objects.all())[0]
 
         self.assertRedirects(resp, reverse('courses-view', args=[course.section]))
 
-        self.assertEqual('351', course.code, msg='Did not save code to database')
-        self.assertEqual('Data Structures and Algorithms', course.name, msg='Did not save course name to database')
+        self.assertEqual(self.good_code, course.code)
+        self.assertEqual(self.good_name, course.name)
 
     def test_rejects_missing_code(self):
-        resp = self.client.post(reverse('courses-create'), {
-            # 'course_code': '351',
-            'course_name': 'Data Structures and Algorithms',
+        resp = self.client.post(self.url, {
+            # 'course_code': self.good_code,
+            'course_name': self.good_name,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('A course code must be exactly 3 digits', error.message(), 'Did not return correct error message')
-        self.assertEqual(CourseError.Place.CODE, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.CODE, error.place())
+        self.assertEqual('you must input a 3 digit course code', error.message())
 
     def test_rejects_short_code(self):
-        resp = self.client.post(reverse('courses-create'), {
-            'course_code': '35',
-            'course_name': 'Data Structures and Algorithms',
+        resp = self.client.post(self.url, {
+            'course_code': self.good_code[:2],
+            'course_name': self.good_name,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('A course code must be exactly 3 digits', error.message(),
-                         'Did not return correct error message')
-        self.assertEqual(CourseError.Place.CODE, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.CODE, error.place())
+        self.assertEqual('A course code must be exactly 3 digits', error.message())
 
     def test_rejects_missing_name(self):
-        resp = self.client.post(reverse('courses-create'), {
-            'course_code': '351',
-            # 'course_name': 'Data Structures and Algorithms',
+        resp = self.client.post(self.url, {
+            'course_code': self.good_code,
+            # 'course_name': self.good_name,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual('You must provide a course name', error.message(),
-                         'Did not return correct error message')
-        self.assertEqual(CourseError.Place.NAME, error.place(), 'Did not associate incorrect code with correct place')
+        self.assertEqual(CourseEditPlace.CODE, error.place())
+        self.assertEqual('You must provide a course name', error.message())

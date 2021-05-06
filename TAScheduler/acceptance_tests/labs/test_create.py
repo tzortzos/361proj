@@ -2,13 +2,13 @@ from django.test import Client
 from django.shortcuts import reverse
 
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-from TAScheduler.viewsupport.errors import LabError
+from TAScheduler.viewsupport.errors import LabEditError, LabEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
-class LabsCreate(TASAcceptanceTestCase[LabError]):
+class LabsCreate(TASAcceptanceTestCase[LabEditError]):
 
     def setUp(self):
         self.client = Client()
@@ -121,7 +121,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditPlace.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You must provide a 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_non_digit_code(self):
@@ -132,7 +132,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditPlace.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You must provide a 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_mislengthed_code(self):
@@ -143,7 +143,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditPlace.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You must provide a 3 digit lab code', error.error(), 'Did not return correct message')
 
         resp = self.client.post(reverse('labs-create'), {
@@ -153,7 +153,7 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditPlace.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You must provide a 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_missing_section(self):
@@ -164,5 +164,5 @@ class LabsCreate(TASAcceptanceTestCase[LabError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.SECTION, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditPlace.SECTION, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You must pick a section for this lab', error.error(), 'Did not return correct message')
