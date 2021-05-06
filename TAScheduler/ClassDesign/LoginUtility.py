@@ -50,7 +50,7 @@ class LoginUtility:
             MessageQueue.push(session, Message('You must log into the application before you can view that page'))
             return redirect(reverse('login'))
 
-        if user.tmp_password and password_change_redirect:
+        if user.password_tmp and password_change_redirect:
             MessageQueue.push(session, Message('You must change your password before accessing the application'))
             return redirect(reverse('users-edit', args=(user_id,)))
 
