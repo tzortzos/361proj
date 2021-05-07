@@ -16,7 +16,7 @@ class LabsView(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabAPI.get_by_id(lab_id)
+        lab = LabAPI.get_lab_section_by_lab_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(

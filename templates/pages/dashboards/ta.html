@@ -10,7 +10,7 @@ Context:
 {% endcomment %}
 
 {% block application_pane %}
-    <div class="row align-items-center h-100">
+    <div class="row h-100">
         {# message count #}
 
         <div class="col-sm-6" >
@@ -21,14 +21,14 @@ Context:
         <div class="col-sm-6" >
             <h3>my course sections</h3>
             {% for section in sections %}
-                {% include 'partials/section_card.html' with section=section self=self noassignments=True only %}
+                {% include 'partials/section_card.html' with section=section self=self noextrainfo=True only %}
             {% endfor %}
         </div>
         {# my labs #}
         <div class="col-sm-6" >
             <h3>my labs</h3>
             {% for lab in labs %}
-                {% include 'partials/cards/lab.html' with lab=lab self=self noassignments=True only %}
+                {% include 'partials/cards/lab.html' with lab=lab self=self noextrainfo=True only %}
             {% endfor %}
         </div>
     </div>

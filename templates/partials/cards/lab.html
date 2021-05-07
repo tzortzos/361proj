@@ -10,7 +10,7 @@ Takes the following context variables:
 - noextrainfo: bool     Hide all informaiton on the card other than that which is identifying
 {% endcomment %}
 
-<div class="card p-3" id="lab_card_{{ lab.lab_section_id }}">
+<div class="card p-3" id="lab_card_{{ lab.id }}">
     <div class="card-body">
 
         {# Header #}
@@ -18,8 +18,8 @@ Takes the following context variables:
 
             {# Title #}
             <div class="me-auto">
-                <h4 class="card-title me-1">{{ lab.course_section_id.course_id.course_code }} {{ lab.course_section_id.course_id.course_name }}</h4>
-                <h5 class="card-title me-1">Lab: {{ lab.course_section_id.course_section_code }} - {{ lab.lab_section_code }}</h5>
+                <h4 class="card-title me-1">{{ lab.section.course.code }} {{ lab.section.course.name }}</h4>
+                <h5 class="card-title me-1">Lab: {{ lab.section.code }} - {{ lab.code }}</h5>
             </div>
 
             {# Controls #}
@@ -28,14 +28,14 @@ Takes the following context variables:
                     {% if self.type == 'A' %}
 
                         {# Edit #}
-                        <a class="btn btn-dark" href="{% url 'labs-edit' lab.lab_section_id %}">
+                        <a class="btn btn-dark" href="{% url 'labs-edit' lab.id %}">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
 
                         {% if not nodelete %}
                             {# Delete #}
                             <a class="btn btn-danger"
-                               href="{% url 'labs-delete' lab.lab_section_id %}">
+                               href="{% url 'labs-delete' lab.id %}">
                                 <i class="bi bi-trash-fill"></i>
                             </a>
                         {% endif %}
@@ -56,7 +56,7 @@ Takes the following context variables:
                     <div class="btn-group px-0">
                         {# Monay #}
                         <input type="checkbox" class="btn-check pe-none" id="M"
-                                {% if lab and 'M' in lab.lab_days %}
+                                {% if lab and 'M' in lab.day %}
                                checked
                                 {% endif %}
                         >
@@ -64,7 +64,7 @@ Takes the following context variables:
 
                         {# Tuesday #}
                         <input type="checkbox" class="btn-check pe-none" id="T"
-                                {% if lab and 'T' in lab.lab_days %}
+                                {% if lab and 'T' in lab.day %}
                                checked
                                 {% endif %}
                         >
@@ -72,7 +72,7 @@ Takes the following context variables:
 
                         {# Wednesday #}
                         <input type="checkbox" class="btn-check pe-none" id="W"
-                                {% if lab and 'W' in lab.lab_days %}
+                                {% if lab and 'W' in lab.day %}
                                checked
                                 {% endif %}
                         >
@@ -80,15 +80,15 @@ Takes the following context variables:
 
                         {# Thursday #}
                         <input type="checkbox" class="btn-check pe-none" id="H"
-                                {% if lab and 'H' in lab.lab_days %}
+                                {% if lab and 'H' in lab.day %}
                                checked
                                 {% endif %}
                         >
                         <label for="H" class="btn btn-outline-dark pe-none">Thursday</label>
 
-                        {# Wednesday #}
+                        {# Friday #}
                         <input type="checkbox" class="btn-check pe-none" id="F"
-                                {% if lab and 'F' in lab.lab_days %}
+                                {% if lab and 'F' in lab.day %}
                                checked
                                 {% endif %}
                         >
@@ -98,20 +98,20 @@ Takes the following context variables:
 
                 {# Times #}
                 <div class="col-12 col-md-6 mb-3">
-                    {% if lab.lab_time != '' %}
+                    {% if lab.time != '' %}
                         <div class="d-flex align-items-center">
                             <h6 class="mb-0 me-3">Lab Times:</h6>
-                            <p class="card-text">{{ lab.lab_time }}</p>
+                            <p class="card-text">{{ lab.time }}</p>
                         </div>
                     {% endif %}
                 </div>
 
                 {# Assignment #}
                 <div class="col-12 col-md-6">
-                    {% if not notassignments and lab.ta_id %}
+                    {% if not noassignments and lab.ta %}
                         <h6 class="card-title">TA: </h6>
-                        <a href="{% url 'users-view' lab.ta_id.user_id %}">
-                            {{ lab.ta_id.univ_id }}
+                        <a href="{% url 'users-view' lab.ta.id %}">
+                            {{ lab.ta.username }}
                         </a>
                     {% endif %}
                 </div>

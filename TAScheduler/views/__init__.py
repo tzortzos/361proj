@@ -34,10 +34,17 @@ from TAScheduler.views.courses.directory import CoursesDirectory
 from TAScheduler.views.courses.edit import CoursesEdit
 from TAScheduler.views.courses.view import CoursesView
 
+from TAScheduler.views.dashboards import ta
+from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 
 class Index(View):
     def get(self, request: HttpRequest):
-        return render(request, 'pages/index.html', context={
+        '''       return render(request, 'pages/index.html', context={
             'navbar_items': AdminItems.HOME.items_iterable_except(),
             'messages': MessageQueue.drain(request.session),
         })
+        '''
+        user = LoginUtility.get_user_and_validate_by_user_id(
+            request.session
+        )
+        return ta.get(request, user)
