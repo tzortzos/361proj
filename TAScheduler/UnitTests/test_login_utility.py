@@ -48,13 +48,3 @@ class TestLoginUtility(TestCase):
         self.session.save()
         user = LoginUtility.get_user_and_validate_by_user_id(self.session)
         self.assertEqual('/login/', user.url, msg='Expected redirect to login for non-existent user.')
-
-    def test_same_password_update(self):
-        new_pass = "NewPassword123"
-
-        try:
-            if new_pass is not self.user1.tmp_password:
-                LoginUtility.update_password(self.user1, new_pass)
-        except False:
-            print('Error, new password can not be the same as temp password!')
-

@@ -16,10 +16,10 @@ class CourseCreates(TASAcceptanceTestCase[CourseEditError]):
 
         # Add user
         self.admin_user = User.objects.create(
-            univ_id='josiahth',
+            username='josiahth',
             password='password',
             type=UserType.ADMIN,
-            tmp_password=False
+            password_tmp=False
         )
 
         # Set current user
@@ -39,7 +39,7 @@ class CourseCreates(TASAcceptanceTestCase[CourseEditError]):
 
         course = list(Course.objects.all())[0]
 
-        self.assertRedirects(resp, reverse('courses-view', args=[course.section]))
+        self.assertRedirects(resp, reverse('courses-view', args=[course.id]))
 
         self.assertEqual(self.good_code, course.code)
         self.assertEqual(self.good_name, course.name)
@@ -53,7 +53,7 @@ class CourseCreates(TASAcceptanceTestCase[CourseEditError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(CourseEditPlace.CODE, error.place())
-        self.assertEqual('you must input a 3 digit course code', error.message())
+        self.assertEqual('A course code must be exactly 3 digits', error.message())
 
     def test_rejects_short_code(self):
         resp = self.client.post(self.url, {
@@ -74,5 +74,5 @@ class CourseCreates(TASAcceptanceTestCase[CourseEditError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(CourseEditPlace.CODE, error.place())
+        self.assertEqual(CourseEditPlace.NAME, error.place())
         self.assertEqual('You must provide a course name', error.message())

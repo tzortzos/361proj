@@ -4,7 +4,7 @@ from django.urls import reverse
 from TAScheduler.viewsupport.errors import PageError, LoginError
 
 
-class TestLoginView(TestCase):
+class TestLogoutView(TestCase):
 
     def setUp(self):
         self.client = Client()

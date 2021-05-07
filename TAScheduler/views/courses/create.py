@@ -75,6 +75,6 @@ class CoursesCreate(View):
                 ),
             })
 
-        course_id: int = CourseAPI.create_course(course_code, course_name, user)
+        course_id: int = CourseAPI.create_course(course_code, course_name)
 
         return redirect(reverse('courses-view', args=[course_id]))
