@@ -1,0 +1,36 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Context:
+- message_count: int        number of messages in inbox
+- sections: List[Section]   Sections assigned to me
+- labs: List[Lab]           Labs assigned to me
+
+{% endcomment %}
+
+{% block application_pane %}
+    <div class="row align-items-center h-100">
+        {# message count #}
+
+        <div class="col-sm-6" >
+            <h3>inbox: {{ message_count }}</h3>
+        </div>
+        {# my sections #}
+
+        <div class="col-sm-6" >
+            <h3>my course sections</h3>
+            {% for section in sections %}
+                {% include 'partials/section_card.html' with section=section self=self noassignments=True only %}
+            {% endfor %}
+        </div>
+        {# my labs #}
+        <div class="col-sm-6" >
+            <h3>my labs</h3>
+            {% for lab in labs %}
+                {% include 'partials/cards/lab.html' with lab=lab self=self noassignments=True only %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
