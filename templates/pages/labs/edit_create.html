@@ -46,12 +46,12 @@ Post returns the following variables
                 {% endif %}
 
                 {% for section in sections %}
-                    <option value="{{ section.course_section_id }}"
-                            {% if edit and edit.course_section_id == section %}
+                    <option value="{{ section.id }}"
+                            {% if edit and edit.section == section %}
                             selected
                             {% endif %}
                     >
-                        {{ section.course_id.course_code }} - {{ section.course_id.course_name }} - Section: {{ section.course_section_code }}
+                        {{ section.course.code }} - {{ section.course.name }} - Section: {{ section.code }}
                     </option>
                 {% endfor %}
             </select>
@@ -98,7 +98,7 @@ Post returns the following variables
 
                     {# Tuesday #}
                     <input type="radio" class="btn-check" id="T" name="lab_day" value="T"
-                            {% if edit and 'T' in edit.lab_days %}
+                            {% if edit and 'T' in edit.day %}
                            checked
                             {% endif %}
                     >
@@ -120,7 +120,7 @@ Post returns the following variables
                     >
                     <label for="H" class="btn btn-outline-primary">Thursday</label>
 
-                    {# Wednesday #}
+                    {# Friday #}
                     <input type="radio" class="btn-check" id="F" name="lab_day" value="F"
                             {% if edit and 'F' in edit.day %}
                            checked

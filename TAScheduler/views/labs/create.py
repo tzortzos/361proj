@@ -88,7 +88,7 @@ class LabsCreate(View):
         if ta_id is not None:
             ta_id = UserAPI.get_user_by_user_id(ta_id)
 
-        lab_id = LabAPI.create(lab_code, section, lab_day, lab_time, ta_id)
+        lab_id = LabAPI.create_lab_section(lab_code, section, lab_day, lab_time, ta_id)
 
         return redirect(reverse('labs-view', args=[lab_id]))
 

@@ -45,7 +45,7 @@
                     {% endif %}
 
                     {% for course in courses %}
-                        <option value="{{ course.course_id }}"
+                        <option value="{{ course.id }}"
                                 {% if section and course == section.course %}
                                 selected
                                 {% endif %}

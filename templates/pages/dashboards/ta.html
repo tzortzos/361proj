@@ -1,0 +1,48 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Context:
+- message_count: int        number of messages in inbox
+- sections: List[Section]   Sections assigned to me
+- labs: List[Lab]           Labs assigned to me
+
+{% endcomment %}
+
+{% block application_pane %}
+    <div class="row h-100">
+        <div class="col-12 mb-3 mt-2" >
+            <h1>
+                {{ self.f_name }} {{ self.l_name }}
+                {% if self.f_name == '' and self.l_name == '' %}
+                    {{ self.username }}
+                {% endif %}
+            </h1>
+        </div>
+        {# message count #}
+
+        <div class="col-12 mb-3" >
+            <h3>inbox: {{ message_count }}</h3>
+        </div>
+        {# my sections #}
+
+        <div class="col-12 mb-3" >
+            <h3>my course sections</h3>
+            <div class="list-group">
+                {% for section in sections %}
+                    {% include 'partials/section_list_row.html' with section=section self=self noextrainfo=True only %}
+                {% endfor %}
+            </div>
+        </div>
+        {# my labs #}
+        <div class="col-12 mb-3" >
+            <h3>my labs</h3>
+            <div class="list-group">
+                {% for lab in labs %}
+                    {% include 'partials/list_row/lab.html' with lab=lab self=self noextrainfo=True only %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
