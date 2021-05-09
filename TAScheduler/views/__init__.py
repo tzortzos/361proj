@@ -34,6 +34,10 @@ from TAScheduler.views.courses.directory import CoursesDirectory
 from TAScheduler.views.courses.edit import CoursesEdit
 from TAScheduler.views.courses.view import CoursesView
 
+from TAScheduler.views.skills.create import SkillsCreate
+from TAScheduler.views.skills.delete import SkillsDelete
+from TAScheduler.views.skills.directory import SkillsDirectory
+
 from TAScheduler.views.dashboards import ta
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 

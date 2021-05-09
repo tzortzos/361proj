@@ -55,6 +55,7 @@ class AdminItems(Enum):
     COURSES = 2
     SECTIONS = 3
     LABS = 4
+    SKILLS = 5
 
     def get_item(self):
         if self == AdminItems.HOME:
@@ -67,6 +68,8 @@ class AdminItems(Enum):
             return NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')
         elif self == AdminItems.LABS:
             return NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')
+        elif self == AdminItems.SKILLS:
+            return NavbarItem('skills', reverse('skills-directory'), icon='award-fill')
 
     def map_disable(self):
         """
