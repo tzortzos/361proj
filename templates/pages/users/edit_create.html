@@ -143,7 +143,7 @@ Post returns the following variables:
 
             </div>
 
-            {% if edit and edit.type == 'T' %}
+            {% if edit and edit == self and edit.type == 'T' %}
                 <div class="col-12 col-sm-6">
 
                     {# Skills #}
