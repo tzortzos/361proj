@@ -30,14 +30,14 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         self.session.save()
 
         self.good_code = '901'
-        self.good_name = 'Software Engineering'
+        self.bad_course_id = '-1'
 
         self.url = reverse('sections-create')
 
     def test_adds_to_database(self):
         resp = self.client.post(self.url, {
             'section_code': self.good_code,
-            'course_name': self.good_name,
+            'course_id': self.course.id,
         })
 
         section = list(Section.objects.all())[0]
@@ -45,12 +45,12 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         self.assertRedirects(resp, reverse('sections-view', args=[section.id]))
 
         self.assertEqual(self.good_code, section.code)
-        self.assertEqual(self.course, section.section)
+        self.assertEqual(self.course.id, section.section)
 
     def test_redirects_on_success(self):
         resp = self.client.post(self.url, {
             'section_code': self.good_code,
-            'course_name': self.good_name,
+            'course_id': self.course.id,
         })
 
         section = list(Section.objects.all())[0]
@@ -63,7 +63,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
     def test_rejects_missing_section_code(self):
         resp = self.client.post(reverse('sections-create'), {
             # 'section_code': self.good_code,
-            'course_name': self.good_name,
+            'course_id': self.course.id,
         })
 
         error = self.assertContextError(resp)
@@ -77,9 +77,22 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         # never user that value as a course_id
         resp = self.client.post(reverse('sections-create'), {
             'section_code': self.good_code,
-            # 'course_name': self.good_name,
+            # 'course_id': self.good_name,
         })
         error = self.assertContextError(resp)
 
         self.assertEqual(SectionEditPlace.COURSE, error.place())
         self.assertEqual('You must select a course for this section', error.message())
+
+    def test_rejects_invalid_course_id(self):
+        # The course_id should always exist, but the default value is
+        # -1 which is used as our invalidity sigill as the database will
+        # never user that value as a course_id
+        resp = self.client.post(reverse('sections-create'), {
+            'section_code': self.good_code,
+            'course_id': self.bad_course_id,
+        })
+        error = self.assertContextError(resp)
+
+        self.assertEqual(SectionEditPlace.COURSE, error.place())
+        self.assertEqual('-1 isn not a valid course id', error.message())

@@ -30,7 +30,6 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         self.session.save()
 
         self.good_code = '901'
-        self.good_name = 'Software Engineering'
 
         self.edit_url = reverse('sections-edit', args=[self.section])
         self.view_url = reverse('sections-view', args=[self.section])
@@ -38,7 +37,7 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
     def test_edits(self):
         resp = self.client.post(self.edit_url, {
             'section_code': self.good_code,
-            'course_name': self.good_name,
+            'course_id': self.course.id,
         })
 
         self.assertRedirects(resp, self.view_url)
@@ -46,12 +45,12 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         self.section.refresh_from_db()
 
         self.assertEqual(self.good_code, self.section.code)
-        self.assertEqual(self.good_name, self.section.name)
+        self.assertEqual(self.course.id, self.section.section)
 
     def test_rejects_missing_code(self):
         resp = self.client.post(self.edit_url, {
             # 'course_code': self.good_code,
-            'course_name': self.good_name,
+            'course_id': self.course.id,
         })
 
         error = self.assertContextError(resp)
@@ -62,7 +61,7 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
     def test_rejects_short_code(self):
         resp = self.client.post(self.edit_url, {
             'course_code': self.good_code[:2],
-            'course_name': self.good_name,
+            'course_id': self.course.id,
         })
 
         error = self.assertContextError(resp)
@@ -70,13 +69,3 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         self.assertEqual(SectionEditPlace.CODE, error.place())
         self.assertEqual('A section code must be exactly 3 digits', error.message())
 
-    def test_rejects_missing_name(self):
-        resp = self.client.post(self.edit_url, {
-            'course_code': self.good_code,
-            # 'course_name': self.good_name,
-        })
-
-        error = self.assertContextError(resp)
-
-        self.assertEqual(SectionEditPlace.COURSE, error.place())
-        self.assertEqual('You must select a course for this section', error.message())
