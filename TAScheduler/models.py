@@ -14,27 +14,18 @@ class UserType(models.TextChoices):
         """
         Try to translate a UserType string, as stored in the database and returned from templates, into a
         UserType object. Must be in the set ["A", "P", "T"].
-
         Raises TypeError if it is not in said set.
         """
-
         if user_types is None:
             user_types = dict([('A', UserType.ADMIN), ('P', UserType.PROF), ('T', UserType.TA)])
-
         for key in user_types:
             if maybe_type == key:
                 return user_types[key]
-
         raise TypeError(f'user_type {maybe_type} is not in the set of {user_types}')
 
 
     @classmethod
     def try_from_str(cls, maybe_type: str) -> Optional[UserType]:
-        """
-        See `from_str`.
-
-        Returns None if maybe_str not in set.
-        """
         try:
             return cls.from_str(maybe_type)
         except TypeError:
