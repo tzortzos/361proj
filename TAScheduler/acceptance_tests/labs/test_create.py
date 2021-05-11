@@ -91,25 +91,34 @@ class LabsCreate(TASAcceptanceTestCase[LabEditError]):
         self.assertRedirects(resp, reverse('labs-view', args=[lab.id]))
 
     def test_professor_rejected(self):
+        self.session['user_id'] = self.prof_user.id
+        self.session.save()
+
         resp = self.client.post(self.url, {
             'lab_code': self.good_code,
             'section_id': self.section.id,
         })
-        print(resp)
-        # self.assertContainsMessage(resp, Message(
-        #         'You do not have permission to create new lab sections',
-        #         Message.Type.ERROR,
-        #     ))
+
+        self.assertContainsMessage(resp, Message(
+                'You do not have permission to create new lab sections',
+                Message.Type.ERROR,
+            ))
 
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_ta_redirects(self):
+        self.session['user_id'] = self.ta_user.id
+        self.session.save()
+
         resp = self.client.post(self.url, {
             'lab_code': self.good_code,
             'section_id': self.section.id,
         })
 
-        self.assertContainsMessage(resp, Message('You do not have permission to create new lab sections', Message.Type.ERROR))
+        self.assertContainsMessage(resp, Message(
+            'You do not have permission to create new lab sections',
+            Message.Type.ERROR,
+        ))
 
         self.assertRedirects(resp, reverse('labs-directory'))
 

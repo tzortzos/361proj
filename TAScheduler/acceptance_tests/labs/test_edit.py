@@ -7,6 +7,7 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
+
 class LabsEdit(TASAcceptanceTestCase[LabEditError]):
 
     def setUp(self):
@@ -70,9 +71,12 @@ class LabsEdit(TASAcceptanceTestCase[LabEditError]):
         self.url = reverse('labs-edit', args=[self.lab_partial.id])
 
     def test_ta_redirects(self):
+        self.session['user_id'] = self.ta_user.id
+        self.session.save()
+
         resp = self.client.post(self.url, {
             'lab_code': self.good_code,
-            'section_id': self.section,
+            'section_id': self.section.id,
         })
 
         self.assertContainsMessage(resp, Message(
@@ -92,8 +96,8 @@ class LabsEdit(TASAcceptanceTestCase[LabEditError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
+        self.assertEqual(LabEditPlace.CODE, error.place())
+        self.assertEqual('You cannot remove the 3 digit lab code', error.message())
 
     def test_rejects_non_digit_code(self):
         resp = self.client.post(self.url, {
@@ -103,8 +107,8 @@ class LabsEdit(TASAcceptanceTestCase[LabEditError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
+        self.assertEqual(LabEditPlace.CODE, error.place())
+        self.assertEqual('You cannot remove the 3 digit lab code', error.message())
 
     def test_rejects_mislengthed_code(self):
         # Test that code lengths must be 3
@@ -115,8 +119,8 @@ class LabsEdit(TASAcceptanceTestCase[LabEditError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
+        self.assertEqual(LabEditPlace.CODE, error.place())
+        self.assertEqual('You cannot remove the 3 digit lab code', error.message())
 
         resp = self.client.post(self.url, {
             'lab_code': '9',
@@ -125,5 +129,5 @@ class LabsEdit(TASAcceptanceTestCase[LabEditError]):
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
-        self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
+        self.assertEqual(LabEditPlace.CODE, error.place())
+        self.assertEqual('You cannot remove the 3 digit lab code', error.message())

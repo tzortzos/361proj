@@ -64,10 +64,7 @@ class LabsDirectory(TASAcceptanceTestCase[LabEditError]):
         self.url = reverse('labs-directory')
 
     def test_context_contains_labs(self):
-        resp = self.client.post(self.url, {
-            'lab_code': self.good_code,
-            'section_id': self.section.id,
-        })
+        resp = self.client.get(self.url)
 
         labs: List[object] = resp.context.get('labs')
 
