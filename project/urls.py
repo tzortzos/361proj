@@ -52,4 +52,10 @@ urlpatterns = [
     path('labs/<int:lab_id>/', LabsView.as_view(), name='labs-view'),
     path('labs/create/', LabsCreate.as_view(), name='labs-create'),
     path('labs/', LabsDirectory.as_view(), name='labs-directory'),
+
+    # Skills resource management
+    path('skills/<int:skill_id>/delete', SkillsDelete.as_view(), name='skills-delete'),
+    path('skills/create', SkillsCreate.as_view(), name='skills-create'),
+    path('skills/', SkillsDirectory.as_view(), name='skills-directory'),
+
 ]
