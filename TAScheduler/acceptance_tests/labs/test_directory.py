@@ -4,13 +4,13 @@ from django.shortcuts import reverse
 from typing import List
 
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-from TAScheduler.viewsupport.errors import LabError
+from TAScheduler.viewsupport.errors import LabEditError, LabEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
 
-class LabsDirectory(TASAcceptanceTestCase[LabError]):
+class LabsDirectory(TASAcceptanceTestCase[LabEditError]):
 
     def setUp(self):
         self.client = Client()
@@ -18,50 +18,56 @@ class LabsDirectory(TASAcceptanceTestCase[LabError]):
 
         # Add users
         self.admin_user = User.objects.create(
-            univ_id='josiahth',
+            username='josiahth',
             password='password',
             type=UserType.ADMIN,
-            tmp_password=False
+            password_tmp=False
         )
 
         self.ta_user = User.objects.create(
-            univ_id='nleverence',
+            username='nleverence',
             password='password',
             type=UserType.TA,
-            tmp_password=False
+            password_tmp=False
         )
 
         # Add prerequisite objects
         self.course = Course.objects.create(
-            course_code='361',
-            course_name='Software Engineering',
-            admin_id=self.admin_user,
+            code='361',
+            name='Software Engineering',
         )
 
         self.section = Section.objects.create(
-            course_section_code='201',
-            course_id=self.course,
+            code='201',
+            course=self.course,
         )
 
         self.lab_partial = Lab.objects.create(
-            lab_section_code='901',
-            course_section_id=self.section,
+            code='901',
+            section=self.section,
         )
 
         self.lab_full = Lab.objects.create(
-            lab_section_code='902',
-            course_section_id=self.section,
-            lab_days='MWF',
-            lab_time='2-4',
-            ta_id=self.ta_user,
+            code='902',
+            section=self.section,
+            day='MWF',
+            time='2-4',
+            ta=self.ta_user,
         )
 
         # Set current user
         self.session['user_id'] = self.admin_user.id
         self.session.save()
 
+        self.good_code = '901'
+
+        self.url = reverse('labs-directory')
+
     def test_context_contains_labs(self):
-        resp = self.client.get(reverse('labs-directory'))
+        resp = self.client.post(self.url, {
+            'lab_code': self.good_code,
+            'section_id': self.section.id,
+        })
 
         labs: List[object] = resp.context.get('labs')
 

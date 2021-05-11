@@ -2,12 +2,12 @@ from django.test import Client
 from django.shortcuts import reverse
 
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
-from TAScheduler.viewsupport.errors import LabError
+from TAScheduler.viewsupport.errors import LabEditError, LabEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 from TAScheduler.models import User, UserType, Course, Section, Lab
 
-class LabsEdit(TASAcceptanceTestCase[LabError]):
+class LabsEdit(TASAcceptanceTestCase[LabEditError]):
 
     def setUp(self):
         self.client = Client()
@@ -15,62 +15,64 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
 
         # Add users
         self.admin_user = User.objects.create(
-            univ_id='josiahth',
+            username='josiahth',
             password='password',
             type=UserType.ADMIN,
-            tmp_password=False
+            password_tmp=False
         )
 
         self.ta_user = User.objects.create(
-            univ_id='nleverence',
+            username='nleverence',
             password='password',
             type=UserType.TA,
-            tmp_password=False
+            password_tmp=False
         )
 
         self.prof_user = User.objects.create(
-            univ_id='rock',
+            username='rock',
             password='password',
             type=UserType.PROF,
-            tmp_password=False
+            password_tmp=False
         )
 
         # Add prerequisite objects
         self.course = Course.objects.create(
-            course_code='361',
-            course_name='Software Engineering',
-            admin_id=self.admin_user,
+            code='361',
+            name='Software Engineering',
         )
 
         self.section = Section.objects.create(
-            course_section_code='201',
-            course_id=self.course,
+            code='201',
+            course=self.course,
         )
 
         self.lab_partial = Lab.objects.create(
-            lab_section_code='901',
-            course_section_id=self.section,
+            code='901',
+            section=self.section,
         )
 
         self.lab_full = Lab.objects.create(
-            lab_section_code='902',
-            course_section_id=self.section,
-            lab_days='MWF',
-            lab_time='2-4',
-            ta_id=self.ta_user,
+            code='902',
+            section=self.section,
+            day='MWF',
+            time='2-4',
+            ta=self.ta_user,
         )
 
         # Set current user
         self.session['user_id'] = self.admin_user.id
         self.session.save()
 
-    def test_ta_redirects(self):
-        self.session['user_id'] = self.ta_user.id
-        self.session.save()
+        self.good_code = '901'
+        self.non_digit_code = 'abc'
+        self.mislen_code = '90103'
 
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
-            'lab_code': '901',
-            'section_id': self.section.section,
+        self.url = reverse('labs-edit', args=[self.lab_partial.id])
+
+    def test_ta_redirects(self):
+        resp = self.client.post(self.url, {
+            'lab_code': self.good_code,
+            'section_id': self.section,
         })
 
         self.assertContainsMessage(resp, Message(
@@ -83,45 +85,45 @@ class LabsEdit(TASAcceptanceTestCase[LabError]):
     # TODO needs the positive cases for updating existing, as well as removing things
 
     def test_rejects_remove_code(self):
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
+        resp = self.client.post(self.url, {
             # 'lab_code': '901',
-            'section_id': self.section.section,
+            'section_id': self.section.id,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_non_digit_code(self):
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
-            'lab_code': 'abc',
-            'section_id': self.section.section,
+        resp = self.client.post(self.url, {
+            'lab_code': self.non_digit_code,
+            'section_id': self.section.id,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
     def test_rejects_mislengthed_code(self):
         # Test that code lengths must be 3
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
-            'lab_code': '90103',
-            'section_id': self.section.section,
+        resp = self.client.post(self.url, {
+            'lab_code': self.mislen_code,
+            'section_id': self.section.id,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
 
-        resp = self.client.post(reverse('labs-edit', args=[self.lab_partial.id]), {
+        resp = self.client.post(self.url, {
             'lab_code': '9',
-            'section_id': self.section.section,
+            'section_id': self.section.id,
         })
 
         error = self.assertContextError(resp)
 
-        self.assertEqual(LabError.Place.CODE, error.place(), 'Did not associate error with correct field')
+        self.assertEqual(LabEditError.Place.CODE, error.place(), 'Did not associate error with correct field')
         self.assertEqual('You cannot remove the 3 digit lab code', error.error(), 'Did not return correct message')
