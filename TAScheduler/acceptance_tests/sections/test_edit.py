@@ -45,7 +45,7 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         self.section.refresh_from_db()
 
         self.assertEqual(self.good_code, self.section.code)
-        self.assertEqual(self.course.id, self.section.section)
+        self.assertEqual(self.course, self.section.section)
 
     def test_rejects_missing_code(self):
         resp = self.client.post(self.edit_url, {

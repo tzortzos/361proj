@@ -45,7 +45,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         self.assertRedirects(resp, reverse('sections-view', args=[section.id]))
 
         self.assertEqual(self.good_code, section.code)
-        self.assertEqual(self.course.id, section.section)
+        self.assertEqual(self.course, section.section)
 
     def test_redirects_on_success(self):
         resp = self.client.post(self.url, {
