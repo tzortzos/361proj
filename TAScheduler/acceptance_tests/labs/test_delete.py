@@ -85,6 +85,9 @@ class LabsDelete(TASAcceptanceTestCase[LabEditError]):
         self.assertRedirects(resp, reverse('labs-directory'))
 
     def test_redirects_ta(self):
+        self.session['user_id'] = self.ta_user.id
+        self.session.save()
+
         resp = self.client.post(self.url, {
             'lab_code': self.good_code,
             'section_id': self.section.id,
@@ -100,7 +103,7 @@ class LabsDelete(TASAcceptanceTestCase[LabEditError]):
     def test_removes_database(self):
         resp = self.client.post(self.url, {
             'lab_code': self.good_code,
-            'section_id': self.section.section,
+            'section_id': self.section.id,
         })
 
         labs: List[Lab] = list(Lab.objects.all())
