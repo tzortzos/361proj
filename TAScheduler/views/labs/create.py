@@ -73,7 +73,7 @@ class LabsCreate(View):
             })
 
         if section_id is None:
-            return render_error(LabEditError('You must pick a section for this lab'))
+            return render_error(LabEditError('You must pick a section for this lab', LabEditPlace.SECTION))
 
         non_digits = ilen((a for a in lab_code if a not in set(digits)))
 

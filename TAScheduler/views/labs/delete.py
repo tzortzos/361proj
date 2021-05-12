@@ -56,7 +56,7 @@ class LabsDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabAPI.get_by_id(lab_id)
+        lab = LabAPI.get_lab_section_by_lab_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(
@@ -65,7 +65,7 @@ class LabsDelete(View):
             ))
             return redirect(reverse('labs-directory'))
 
-        LabAPI.delete_by_id(lab_id)
+        LabAPI.delete_lab_section(lab_id)
 
         MessageQueue.push(request.session, Message('Successfully deleted lab section'))
 

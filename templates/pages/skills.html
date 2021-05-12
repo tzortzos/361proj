@@ -1,0 +1,60 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Skill management for admins:
+
+Context:
+- skills: List[Skill]
+
+{% endcomment %}
+
+{% block application_pane %}
+
+<div class="row">
+
+    <h3 class="mt-2 mb-3">All Skills</h3>
+
+    <div class="list-group">
+        {# Existing Skills #}
+        {% for skill in skills %}
+
+            <div class="list-group-item d-flex align-items-center">
+
+                <span class="h6 me-auto">{{ skill.name }}</span>
+
+                <a class="btn btn-danger"
+                   href="{% url 'skills-delete' skill.id %}">
+                    <i class="bi bi-trash-fill"></i>
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+        {# Create New Skill #}
+        <form class="form needs-validation list-group-item"
+              action="{% url 'skills-create' %}"
+              method="post"
+              novalidate>
+            {% csrf_token %}
+
+            {# <label for="new_skill" class="form-label">New Skill</label> #}
+            <div class="input-group has-validation">
+                <input type="text" class="form-control"
+                       id="new_skill" name="new_skill"
+                       placeholder="name"
+                       required/>
+
+                <input type="submit" class="btn btn-primary" value="create">
+
+                <div class="invalid-feedback">You cannot create a skill without a name</div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% include 'partials/validate.html' %}
+
+{% endblock application_pane %}

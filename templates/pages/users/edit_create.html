@@ -9,6 +9,7 @@ Context Variables:
 - self: User                        The User object that is viewing the page
 - edit: Optional[User]              the existing user
 - new_user_pass: Optional[str]      the new password to be used when creating a user (does nothing if edit is not None)
+- skills: List[Skill]               A list of skills that the user could have, only used if edit.type == TA and edit == self
 - error: Optional[UserEditError]:   Used on post request failure to indicate server side validation failed
 
 To use in the following configurations set these variables:
@@ -106,44 +107,66 @@ Post returns the following variables:
         {# first / last name #}
         <div class="mb-3 row">
 
-            {# first name #}
             <div class="col-12 col-sm-6">
+                {# first name #}
                 <label for="f_name" class="form-label">first name</label>
-                <input type="text" class="form-control" name="f_name"
+                <input type="text" class="form-control mb-3" name="f_name"
                 {% if edit is not None %}
                         value="{{ edit.f_name }}"
                 {% endif %}
                 >
-            </div>
 
-            {# last name #}
-            <div class="col-12 col-sm-6">
+                {# last name #}
                 <label for="l_name" class="form-label">last name</label>
-                <input type="text" class="form-control" name="l_name"
+                <input type="text" class="form-control mb-3" name="l_name"
                         {% if edit is not None %}
                        value="{{ edit.l_name }}"
                         {% endif %}
                 >
+
+                <label for="phone" class="form-label">phone number</label>
+                <div class="input-group has-validation mb-3">
+                    <div class="input-group-text">+1 </div>
+                    <input type="text" pattern="[0-9]{10}"
+                           class="form-control" id="phone" name="phone"
+                            {% if edit is not None %}
+                           value=""{{ edit.phone }}
+                            {% endif %}
+                    >
+                    {% if error is not None and error.place.phone %}
+                        <div class="invalid-feedback is-invalid">{{ error.message }}</div>
+                    {% else %}
+                        <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
+                    {% endif %}
+                </div>
+                {# phone #}
+
             </div>
+
+            {% if edit and edit == self and edit.type == 'T' %}
+                <div class="col-12 col-sm-6">
+
+                    {# Skills #}
+                    <label class="form-label">skills</label>
+                    <div class="list-group">
+                        {% for skill in skills %}
+
+                            <label class="list-group-item">
+                                <input type="checkbox"
+                                       class="form-check-control me-1"
+                                       name="skill_ids" id="{{ skill.id }}" value="{{ skill.id }}"
+                                       {% if skill in edit.skills.all %}checked{% endif %}
+                                >
+                                <span class="form-label">{{ skill.name }}</span>
+                            </label>
+
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
-        {# phone #}
         <div class="mb-3">
-            <label for="phone" class="form-label">phone number</label>
-            <div class="input-group has-validation">
-                <div class="input-group-text">+1 </div>
-                <input type="text" pattern="[0-9]{10}"
-                       class="form-control" id="phone" name="phone"
-                {% if edit is not None %}
-                    value=""{{ edit.phone }}
-                {% endif %}
-                >
-                {% if error is not None and error.place.phone %}
-                    <div class="invalid-feedback is-invalid">{{ error.message }}</div>
-                {% else %}
-                    <div class="invalid-feedback">You must input all 10 digits of a phone number without any special characters</div>
-                {% endif %}
-            </div>
         </div>
 
         {# password (can only be changed by self, seen by admin if new user) #}

@@ -5,11 +5,12 @@ from django.db.models import ObjectDoesNotExist
 from typing import Optional
 
 from TAScheduler.models import User, UserType
-from TAScheduler.viewsupport.errors import UserEditError, PageError
+from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
+from TAScheduler.viewsupport.errors import UserEditError, UserEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
-class TestEditUser(TestCase):
+class TestEditUser(TASAcceptanceTestCase[UserEditError]):
     def setUp(self):
         self.client = Client()
         self.session = self.client.session
@@ -20,19 +21,19 @@ class TestEditUser(TestCase):
 
         self.admin_username = 'josiahth'
         self.admin = User.objects.create(
-            univ_id=self.admin_username,
+            username=self.admin_username,
             password=self.old_password,
-            tmp_password=False,
+            password_tmp=False,
             type=UserType.ADMIN
         )
 
-        self.admin_edit_url = reverse('users-edit', args=(int(self.admin.id),))
+        self.admin_edit_url = reverse('users-edit', args=(self.admin.id,))
 
         self.prof_username = 'nleverence'
         self.prof = User.objects.create(
-            univ_id=self.prof_username,
+            username=self.prof_username,
             password=self.old_password,
-            tmp_password=False,
+            password_tmp=False,
             type=UserType.PROF
         )
 
@@ -45,30 +46,6 @@ class TestEditUser(TestCase):
     def set_prof_session(self):
         self.session['user_id'] = self.prof.id
         self.session.save()
-
-    def assertDoesNotRedirect(self, resp, msg: Optional[str] = None):
-        if msg is None:
-            msg = f'Page redirected with sequence {resp.redirect_chain}'
-
-        self.assertEqual(len(resp.redirect_chain), 0, msg)
-
-    def get_message(self, resp, nth: int = 0) -> Message:
-        self.assertIsNotNone(resp.context['messages'], 'Did not send success message to user')
-        self.assertTrue(len(resp.context['messages']) == 1, 'Did not send any success messages to user')
-
-        return resp.context['messages'][nth]
-
-    def assertContainsMessage(self, resp, message: Message, msg: str = 'Message object was not in context'):
-        self.assertTrue(message in MessageQueue.get(resp.client.session), msg=msg)
-
-    def assertUserEditError(self, resp) -> UserEditError:
-        """Assert that a UserEditError was returned in the context and return it"""
-        context = resp.context
-
-        self.assertIsNotNone(context['error'], 'Did not return error')
-        self.assertEqual(type(context['error']), UserEditError, 'Did not return correctly typed error')
-
-        return context['error']
 
     def test_edit_self_contact(self):
         self.set_admin_session()
@@ -108,7 +85,7 @@ class TestEditUser(TestCase):
             'phone': self.new_phone,
         }, follow=False)
 
-        new_prof = User.objects.get(univ_id=self.prof_username)
+        new_prof = User.objects.get(username=self.prof_username)
 
         self.assertIsNotNone(new_prof)
         self.assertEqual(new_prof.phone, self.new_phone, 'Did not change contact information in database')
@@ -120,7 +97,7 @@ class TestEditUser(TestCase):
             'phone': self.new_phone,
         }, follow=False)
 
-        new_prof = User.objects.get(univ_id=self.prof_username)
+        new_prof = User.objects.get(username=self.prof_username)
 
         self.assertIsNotNone(new_prof)
         self.assertEqual(new_prof.phone, self.new_phone, 'Did not change contact information in database')
@@ -158,12 +135,11 @@ class TestEditUser(TestCase):
 
         }, follow=True)
 
-        self.assertDoesNotRedirect(resp)
+        error = self.assertContextError(resp)
 
-        error = self.assertUserEditError(resp)
-        self.assertTrue(error.place() is UserEditError.Place.USERNAME,
+        self.assertTrue(error.place() is UserEditPlace.USERNAME,
                         msg='Didn\'t return username error when attempting to remove username.')
-        self.assertEqual(error.error().body(), 'You can\'t remove a user\'s username.')
+        self.assertEqual(error.message(), 'You can\'t remove a user\'s username.')
 
     def test_rejects_too_long_username(self):
         self.set_admin_session()
@@ -172,28 +148,25 @@ class TestEditUser(TestCase):
 
         }, follow=True)
 
-        self.assertDoesNotRedirect(resp)
-
-        error = self.assertUserEditError(resp)
-        self.assertTrue(error.place() is UserEditError.Place.USERNAME,
+        error = self.assertContextError(resp)
+        self.assertTrue(error.place() is UserEditPlace.USERNAME,
                         msg='Should have received an error about an username that was too long.')
-        self.assertEqual(error.error().body(), 'A username may not be longer than 20 characters.')
-
+        self.assertEqual(error.message(), 'A username may not be longer than 20 characters.')
 
     def test_rejects_incorrect_password_change(self):
-        self.set_admin_session()
+        self.session['user_id'] = self.admin.id
+        self.session.save()
+
         resp = self.client.post(self.admin_edit_url, {
             'univ_id': self.admin_username,
             'old_password': 'a password that is definitely correct',
             'new_password': self.new_password,
         }, follow=True)
 
-        self.assertDoesNotRedirect(resp)
-
-        error = self.assertUserEditError(resp)
-        self.assertTrue(error.place() is UserEditError.Place.PASSWORD,
+        error = self.assertContextError(resp)
+        self.assertTrue(error.place() is UserEditPlace.PASSWORD,
                     msg='Should have received an error about incorrect password.')
-        self.assertEqual(error.error().body(), 'Incorrect password')
+        self.assertEqual(error.message(), 'Incorrect password')
 
 
 
@@ -205,12 +178,10 @@ class TestEditUser(TestCase):
             'new_password': '',
         }, follow=True)
 
-        self.assertDoesNotRedirect(resp)
-
-        error = self.assertUserEditError(resp)
-        self.assertTrue(error.place() is UserEditError.Place.PASSWORD,
+        error = self.assertContextError(resp)
+        self.assertTrue(error.place() is UserEditPlace.PASSWORD,
                         msg='Should have recieved an error about empty new password.')
-        self.assertEqual(error.error().body(), 'New password can\'t be empty.')
+        self.assertEqual(error.message(), 'New password can\'t be empty.')
 
 
     def test_rejects_too_short_password_change(self):
@@ -221,12 +192,10 @@ class TestEditUser(TestCase):
             'new_password': '1234',
         }, follow=True)
 
-        self.assertDoesNotRedirect(resp)
-
-        error = self.assertUserEditError(resp)
-        self.assertTrue(error.place() is UserEditError.Place.PASSWORD,
+        error = self.assertContextError(resp)
+        self.assertTrue(error.place() is UserEditPlace.PASSWORD,
                         msg='Should have received an error about new password being too short.')
-        self.assertEqual(error.error().body(), 'New Password needs to be 8 or more characters.')
+        self.assertEqual(error.message(), 'New Password needs to be 8 or more characters.')
 
     def test_rejects_invalid_phone(self):
         self.set_admin_session()
@@ -235,12 +204,11 @@ class TestEditUser(TestCase):
             'phone': '123456'
         }, follow=True)
 
-        self.assertDoesNotRedirect(resp)
+        error = self.assertContextError(resp)
 
-        error = self.assertUserEditError(resp)
-        self.assertTrue(error.place() is UserEditError.Place.PHONE,
+        self.assertTrue(error.place() is UserEditPlace.PHONE,
                         msg='Should have received an error about incorrect phone edit.')
-        self.assertEqual(error.error().body(), 'Phone number needs to be exactly 10 digits long.')
+        self.assertEqual(error.message(), 'Phone number needs to be exactly 10 digits long.')
 
     def test_rejects_non_admin_edit_other(self):
         self.set_prof_session()

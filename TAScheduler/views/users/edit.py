@@ -8,6 +8,7 @@ from TAScheduler.viewsupport.errors import UserEditError, UserEditPlace
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.models import Skill
 
 
 # Obviously just a stub, needed to make login acceptance tests pass.
@@ -36,6 +37,8 @@ class UserEdit(View):
             'navbar_items': AdminItems.items_iterable(),  # TODO Change based on user type later
             'self': user,
             'edit': to_edit,
+
+            'skills': list(Skill.objects.all()),
         })
 
     def post(self, request: HttpRequest, user_id: int):
@@ -91,6 +94,17 @@ class UserEdit(View):
         except KeyError:
             fields['new_password'] = None
 
+        def render_error(error: UserEditError):
+            return render(request, 'pages/users/edit_create.html', {
+                'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                'self': user,
+                'edit': to_edit,
+
+                'skills': list(Skill.objects.all()),
+
+                'error': error,
+            })
+
         # Check error cases
         if fields['new_password'] is not None and len(fields['new_password']) > 0:
             # Attempting to change password
@@ -107,60 +121,30 @@ class UserEdit(View):
                 })
 
             if fields['old_password'] is None or str(to_edit.password) != fields['old_password']:
-                return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                    'self': user,
-                    'edit': to_edit,
-                    'error': UserEditError('Incorrect password', UserEditError.Place.PASSWORD),
-                })
+                return render_error(UserEditError('Incorrect password', UserEditPlace.PASSWORD))
 
             if len(fields['new_password']) < 8:
-                return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                    'self': user,
-                    'edit': to_edit,
-                    'error': UserEditError('New Password needs to be 8 or more characters.', UserEditError.Place.PASSWORD),
-                })
+                return render_error(UserEditError('New Password needs to be 8 or more characters.', UserEditPlace.PASSWORD))
 
             LoginUtility.update_password(to_edit, fields['new_password'])
             MessageQueue.push(request.session, Message('Password Updated'))
             # Done changing password
 
         if fields['old_password'] is not None and len(fields['old_password']) > 0 and (fields['new_password'] is None or len(fields['new_password']) == 0):
-            return render(request, 'pages/users/edit_create.html', {
-                'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                'self': user,
-                'edit': to_edit,
-                'error': UserEditError('New password can\'t be empty.', UserEditPlace.PASSWORD),
-            })
+            return render_error(UserEditError('New password can\'t be empty.', UserEditPlace.PASSWORD))
 
         if fields['univ_id'] is None or len(fields['univ_id']) == 0:
-            return render(request, 'pages/users/edit_create.html', {
-                'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                'self': user,
-                'edit': to_edit,
-                'error': UserEditError('You can\'t remove a user\'s username.', UserEditPlace.USERNAME),
-            })
+            return render_error(UserEditError('You can\'t remove a user\'s username.', UserEditPlace.USERNAME))
 
         if fields['univ_id'] != to_edit.username:
             if UserAPI.check_user_type(user) != UserType.ADMIN:
-                return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                    'self': user,
-                    'edit': to_edit,
-                    'error': UserEditError('You cannot change your own username', UserEditPlace.USERNAME),
-                })
+                return render_error(UserEditError('You cannot change your own username', UserEditPlace.USERNAME))
 
             if len(fields['univ_id']) > 20:
-                return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                    'self': user,
-                    'edit': to_edit,
-                    'error': UserEditError(
+                return render_error(UserEditError(
                         'A username may not be longer than 20 characters.',
                         UserEditPlace.USERNAME
-                    ),
-                })
+                    ))
 
             to_edit.username = fields['univ_id']
             to_edit.save()
@@ -172,15 +156,10 @@ class UserEdit(View):
             print(f'Phone number extracted: ' + fields['phone'])
 
             if len(fields['phone']) > 0 and len(fields['phone']) != 10:
-                return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                    'self': user,
-                    'edit': to_edit,
-                    'error': UserEditError(
+                return render_error(UserEditError(
                         'Phone number needs to be exactly 10 digits long.',
                         UserEditPlace.PHONE
-                    ),
-                })
+                    ))
 
         UserAPI.update_user(to_edit, fields['l_name'], fields['f_name'], fields['phone'])
 
@@ -190,15 +169,10 @@ class UserEdit(View):
         if fields['user_type'] is not None:
             # Chane user type
             if UserAPI.check_user_type(user) != UserType.ADMIN:
-                return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
-                    'self': user,
-                    'edit': to_edit,
-                    'error': UserEditError(
+                return render_error(UserEditError(
                         'Only admins may change user types',
                         UserEditPlace.TYPE
-                    ),
-                })
+                    ))
 
             # to_edit.type = fields['user_type']
 
