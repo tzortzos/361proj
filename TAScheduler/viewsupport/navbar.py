@@ -77,12 +77,12 @@ class AllItems(Enum):
 
         items = {
             AllItems.HOME: ([], NavbarItem('home', reverse('index'), icon='house-door-fill')),
-            AllItems.MAIL: ([], NavbarItem('inbox', reverse('index'), icon='mailbox')),
+            AllItems.MAIL: ([], NavbarItem('inbox', reverse('index'), icon='mailbox')),  # TODO change me to final view name
             AllItems.USERS: ([], NavbarItem('user directory', reverse('users-directory'), icon='people-fill')),
             AllItems.COURSES: ([], NavbarItem('courses', reverse('courses-directory'), icon='text-paragraph')),
             AllItems.SECTIONS: ([], NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')),
             AllItems.LABS: ([], NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')),
-            AllItems.SKILLS: ([UserType.ADMIN], NavbarItem('skills', reverse('index'), icon='award-fill')),
+            AllItems.SKILLS: ([UserType.ADMIN], NavbarItem('skills', reverse('skills-directory'), icon='award-fill')),
         }
 
         class PartialIterator:
