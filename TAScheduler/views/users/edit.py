@@ -93,7 +93,7 @@ class UserEdit(View):
 
         def render_error(error: UserEditError):
             return render(request, 'pages/users/edit_create.html', {
-                'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'self': user,
                 'edit': to_edit,
 

@@ -45,7 +45,7 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         self.assertRedirects(resp, reverse('sections-view', args=[section.id]))
 
         self.assertEqual(self.good_code, section.code)
-        self.assertEqual(self.course, section.id)
+        self.assertEqual(self.course.id, section.id)
 
     def test_redirects_on_success(self):
         resp = self.client.post(self.url, {
@@ -95,4 +95,4 @@ class CreateSection(TASAcceptanceTestCase[SectionEditError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(SectionEditPlace.COURSE, error.place())
-        self.assertEqual('-1 isn not a valid course id', error.message())
+        self.assertEqual('You must select a course for this section', error.message())
