@@ -2,28 +2,6 @@ from django.test import TestCase
 from TAScheduler.viewsupport.navbar import *
 
 
-class TestAdminItemsEnum(TestCase):
-    def test_returns_correct_item(self):
-        item = AdminItems.HOME
-        navbar_item = item.get_item()
-        self.assertEqual(navbar_item.name, 'home', 'did not set correct home message')
-        self.assertEqual(navbar_item.enabled, True, 'did not default enabled correctly')
-        self.assertEqual(navbar_item.url, '/', 'did not default url to admin home')
-        self.assertEqual(navbar_item.icon.name, 'house-door-fill')
-
-    def test_map_disable(self):
-        map_fn = AdminItems.USERS.map_disable()
-
-        disabled = map_fn(AdminItems.USERS)
-        enabled = map_fn(AdminItems.HOME)
-
-        self.assertEqual(type(disabled), NavbarItem, 'did not return the correct type when disabling')
-        self.assertEqual(type(enabled), NavbarItem, 'did not return the correct type when leaving enabled')
-
-        self.assertEqual(disabled.get_enabled(), False, 'did not actually disable')
-        self.assertEqual(enabled.get_enabled(), True, 'did not leave others enabled')
-
-
 class TestNavbarItem(TestCase):
     def setUp(self):
         self.item_defaults = NavbarItem('home', '/home')

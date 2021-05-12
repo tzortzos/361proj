@@ -52,16 +52,13 @@ class NavbarItem:
 class AllItems(Enum):
     """Represents exactly one of the possible menu items for an admin,
     intended to be used as an iterable"""
-    HOME =      [],                 NavbarItem('home', reverse('index'), icon='house-door-fill')
-    MAIL =      [],                 NavbarItem('inbox', reverse('index'), icon='mailbox')
-    USERS =     [],                 NavbarItem('user directory', reverse('users-directory'), icon='people-fill')
-    COURSES =   [],                 NavbarItem('courses', reverse('courses-directory'), icon='text-paragraph')
-    SECTIONS =  [],                 NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')
-    LABS =      [],                 NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')
-    SKILLS =    [UserType.ADMIN],   NavbarItem('skills', reverse('skills-directory'), icon='award-fill')
-
-    def __init__(self):
-        self._for = None
+    HOME = 0
+    MAIL = 1
+    USERS = 2
+    COURSES = 3
+    SECTIONS = 4
+    LABS = 5
+    SKILLS = 6
 
     @classmethod
     def for_type(cls, user_type: UserType):
@@ -74,6 +71,16 @@ class AllItems(Enum):
         or
         AllItems.for_type(UserType.TA).iter()
         """
+
+        items = {
+            AllItems.HOME: ([], NavbarItem('home', reverse('index'), icon='house-door-fill')),
+            AllItems.MAIL: ([], NavbarItem('inbox', reverse('index'), icon='mailbox')),
+            AllItems.USERS: ([], NavbarItem('user directory', reverse('users-directory'), icon='people-fill')),
+            AllItems.COURSES: ([], NavbarItem('courses', reverse('courses-directory'), icon='text-paragraph')),
+            AllItems.SECTIONS: ([], NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')),
+            AllItems.LABS: ([], NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')),
+            AllItems.SKILLS: ([UserType.ADMIN], NavbarItem('skills', reverse('index'), icon='award-fill')),
+        }
 
         class PartialIterator:
             """
@@ -89,12 +96,12 @@ class AllItems(Enum):
             @staticmethod
             def __map_disable__(maybe_disable: Optional[AllItems]) -> Callable[[AllItems], NavbarItem]:
                 if maybe_disable is None:
-                    return lambda a: a
+                    return lambda i: items[i][1]
                 else:
-                    def disable(item: AllItems) -> NavbarItem:
-                        if maybe_disable == item:
-                            item[1].disable()
-                        return item[1]
+                    def disable(i: AllItems) -> NavbarItem:
+                        if maybe_disable == items[i]:
+                            items[i][1].disable()
+                        return items[i][1]
 
                     return disable
 
@@ -110,7 +117,6 @@ class AllItems(Enum):
         # Return the partially applied iterator class defined above
         return PartialIterator(
             filter(
-                lambda a: a[0] is [] or user_type in a[0],
-                iter(cls),
+                lambda a: items[a][0] is [] or user_type in items[a][0],
             )
         )
