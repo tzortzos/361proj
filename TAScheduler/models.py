@@ -116,6 +116,9 @@ class Assignment(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     max_labs = models.IntegerField(verbose_name='Maximum number of labs that this TA can be assigned', blank=False)
 
+    class Meta:
+        # Adds a unique constraint combination on the two fields
+        unique_together = ['ta', 'section']
 
 class Lab(models.Model):
     """
