@@ -61,7 +61,7 @@ class AllItems(Enum):
     SKILLS = 6
 
     @classmethod
-    def for_type(cls, user_type: UserType):
+    def for_type(cls, user_type: Union[UserType, str]):
         """
         Create a new (partially applied) iterator to get the list of navbar items.
 
@@ -71,6 +71,9 @@ class AllItems(Enum):
         or
         AllItems.for_type(UserType.TA).iter()
         """
+
+        if type(user_type) is str:
+            user_type = UserType.from_str(user_type)
 
         items = {
             AllItems.HOME: ([], NavbarItem('home', reverse('index'), icon='house-door-fill')),
