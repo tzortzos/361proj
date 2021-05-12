@@ -55,4 +55,8 @@ class Index(View):
         user = LoginUtility.get_user_and_validate_by_user_id(
             request.session
         )
+
+        if type(user) is HttpResponseRedirect:
+            return user
+
         return prof.get(request, user)

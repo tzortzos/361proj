@@ -21,9 +21,14 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
             password_tmp=False,
         )
 
+        self.course = Course.objects.create(
+                code='361',
+                name='Software Engineering',
+            )
+
         self.section = Section.objects.create(
             code='902',
-            course='Software Engineering',
+            course=self.course
         )
 
         self.session['user_id'] = self.admin_user.id
@@ -31,8 +36,8 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
 
         self.good_code = '901'
 
-        self.edit_url = reverse('sections-edit', args=[self.section])
-        self.view_url = reverse('sections-view', args=[self.section])
+        self.edit_url = reverse('sections-edit', args=[self.section.id])
+        self.view_url = reverse('sections-view', args=[self.section.id])
 
     def test_edits(self):
         resp = self.client.post(self.edit_url, {
@@ -45,7 +50,7 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         self.section.refresh_from_db()
 
         self.assertEqual(self.good_code, self.section.code)
-        self.assertEqual(self.course, self.section.section)
+        self.assertEqual(self.course, self.section.course)
 
     def test_rejects_missing_code(self):
         resp = self.client.post(self.edit_url, {
@@ -56,7 +61,7 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(SectionEditPlace.CODE, error.place())
-        self.assertEqual('You cannot remove a course code', error.message())
+        self.assertEqual('All sections must have a 3 digit code', error.message())
 
     def test_rejects_short_code(self):
         resp = self.client.post(self.edit_url, {
@@ -67,5 +72,5 @@ class SectionEdit(TASAcceptanceTestCase[SectionEditError]):
         error = self.assertContextError(resp)
 
         self.assertEqual(SectionEditPlace.CODE, error.place())
-        self.assertEqual('A section code must be exactly 3 digits', error.message())
+        self.assertEqual('All sections must have a 3 digit code', error.message())
 

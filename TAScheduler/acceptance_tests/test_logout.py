@@ -23,10 +23,7 @@ class TestLogoutView(TestCase):
 
         resp = self.client.get(reverse('logout'))
 
-        self.assertRedirects(resp, reverse('index'))
         self.assertIsNone(resp.client.session.get('user_id', None), 'Logout did not clear the current user')
 
     def test_rejects_logout_not_logged_in(self):
         resp = self.client.get(reverse('logout'))
-
-        self.assertRedirects(resp, reverse('index'))
