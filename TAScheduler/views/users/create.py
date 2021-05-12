@@ -22,6 +22,11 @@ class UserCreate(View):
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
+            reverse('users-directory'),
+            Message(
+                'You do not have permission to create users',
+                Message.Type.ERROR,
+            )
         )
         if type(maybe_user) is HttpResponseRedirect:
             return maybe_user
@@ -39,6 +44,11 @@ class UserCreate(View):
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
+            reverse('users-directory'),
+            Message(
+                'You do not have permission to create users',
+                Message.Type.ERROR,
+            )
         )
         if type(maybe_user) is HttpResponseRedirect:
             return maybe_user

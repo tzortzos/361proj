@@ -16,17 +16,17 @@ class TestDeleteUser(TestCase):
 
         self.admin_username = 'josiahth'
         self.admin = User.objects.create(
-            univ_id=self.admin_username,
+            username=self.admin_username,
             password='a-very-good-password',
-            tmp_password=False,
+            password_tmp=False,
             type=UserType.ADMIN
         )
 
         self.prof_username = 'nleverence'
         self.prof = User.objects.create(
-            univ_id=self.prof_username,
+            username=self.prof_username,
             password='a-very-good-password',
-            tmp_password=False,
+            password_tmp=False,
             type=UserType.PROF
         )
 
@@ -108,4 +108,4 @@ class TestDeleteUser(TestCase):
         self.client.post(self.valid_delete_url, {}, follow=True)
 
         with self.assertRaises(ObjectDoesNotExist, msg='Did not remove from database'):
-            User.objects.get(univ_id=self.prof_username)
+            User.objects.get(username=self.prof_username)
