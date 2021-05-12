@@ -121,5 +121,6 @@ class AllItems(Enum):
         return PartialIterator(
             filter(
                 lambda a: items[a][0] is [] or user_type in items[a][0],
+                iter(cls),
             )
         )
