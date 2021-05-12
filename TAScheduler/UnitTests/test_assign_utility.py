@@ -24,6 +24,7 @@ class TestAssignUtility(TestCase):
         self.code4 = str(uuid.uuid4())[:3]
         self.Lab1 = Lab.objects.create(code=self.code3, section=self.section1, ta=self.user1)
         self.Lab2 = Lab.objects.create(code=self.code4, section=self.section1, ta=self.user2)
+        self.Lab3 = Lab.objects.create(code=str(uuid.uuid4())[:3], section=self.section1)
 
     def test_assign_prof_to_section(self):
         self.assertTrue(AssignUtility.assign_prof_to_section(self.user3,self.section1))
@@ -55,6 +56,16 @@ class TestAssignUtility(TestCase):
 
     def test_update_ta_assign_number(self):
         self.assertTrue(AssignUtility.update_ta_assign_number(self.user3, self.section1, 4))
-        new = Assignment
-        print()
+        self.assignment2.refresh_from_db()
         self.assertEqual(4, self.assignment2.max_labs, msg='Expected new max_lab value to be 4.')
+
+    def test_assign_ta_to_lab(self):
+        user = User.objects.create(type=UserType.TA, username='newuser', password='PasswordMe')
+        self.assertTrue(AssignUtility.assign_ta_to_lab(user,self.Lab3))
+        self.Lab3.ta.refresh_from_db()
+        self.assertEqual(user, self.Lab3.ta, msg='Expected user3 to be the TA assigned to Lab3')
+
+    def test_remove_ta_from_lab(self):
+        self.assertTrue(AssignUtility.remove_ta_from_lab(self.user1, self.Lab1))
+        self.assertEqual(None, self.Lab1.ta, msg='Expected Lab1 TA to be none after removal.')
+

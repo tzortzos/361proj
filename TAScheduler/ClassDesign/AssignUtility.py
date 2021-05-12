@@ -1,4 +1,5 @@
-from TAScheduler.models import User, Section, Lab, Assignment
+from TAScheduler.models import User, Section, Lab, Assignment, UserType
+from typing import List, Tuple
 
 
 class AssignUtility:
@@ -8,7 +9,7 @@ class AssignUtility:
         """
         Assigns a Prof to a Section if there has not been one already assigned
         """
-        if section.prof is None:
+        if user.type is UserType.PROF and section.prof is None:
             section.prof = user
             return True
         else:
@@ -19,7 +20,7 @@ class AssignUtility:
         """
         Removes a Prof from a Section if there has been one assigned
         """
-        if section.prof is not None:
+        if user.type is UserType.PROF and section.prof is not None:
             section.prof = None
             return True
         else:
@@ -54,11 +55,23 @@ class AssignUtility:
 
     @staticmethod
     def assign_ta_to_lab(user: User, lab: Lab) -> bool:
-        pass
+        """
+        Assigns a TA to a lab if one has not already been assigned.
+        """
+        if user.type is UserType.TA and lab.ta is None:
+            lab.ta = user
+            return True
+        else:
+            return False
 
     @staticmethod
     def remove_ta_from_lab(user: User, lab: Lab) -> bool:
-        pass
+
+        if user.type is UserType.TA and lab.ta is not None:
+            lab.ta = None
+            return True
+        else:
+            return False
 
     @staticmethod
     def check_ta_assign_number(user: User, section: Section) -> bool:
@@ -68,7 +81,7 @@ class AssignUtility:
         max_labs = Assignment.objects.get(ta=user, section=section).max_labs
         labs_assigned = len(Lab.objects.filter(ta=user, section=section))
 
-        response = False if max_labs == labs_assigned else True
+        response = False if max_labs <= labs_assigned else True
         return response
 
 
@@ -85,3 +98,11 @@ class AssignUtility:
             return True
         else:
             return False
+
+    @staticmethod
+    def get_ta_live_assignments(section: Section, lab_list: List[Tuple[int,int]]) -> bool:
+        """
+        Takes a list of tuples of (user id, actual # assigns) and checks the status against the database,
+        determines if any updates needed, and does the update on each user.
+        """
+        pass
