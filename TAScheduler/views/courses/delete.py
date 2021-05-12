@@ -6,7 +6,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
 
 
@@ -37,7 +37,7 @@ class CoursesDelete(View):
 
         return render(request, 'pages/courses/delete.html', {
             'self': user,
-            'navbar_items': AdminItems.COURSES.items_iterable_except(),
+            'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'course': course,

@@ -7,7 +7,7 @@ from string import digits
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI, Course
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import CourseEditError, CourseEditPlace
 
 class CoursesEdit(View):
@@ -37,7 +37,7 @@ class CoursesEdit(View):
 
         return render(request, 'pages/courses/edit_create.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'edit': course
@@ -72,7 +72,7 @@ class CoursesEdit(View):
         def render_error(error: CourseEditError):
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'edit': course,

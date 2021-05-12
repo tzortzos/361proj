@@ -7,7 +7,7 @@ from string import digits
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import CourseEditPlace, CourseEditError
 
 class CoursesCreate(View):
@@ -28,7 +28,7 @@ class CoursesCreate(View):
 
         return render(request, 'pages/courses/edit_create.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
             'messages': MessageQueue.drain(request.session),
         })
 
@@ -54,7 +54,7 @@ class CoursesCreate(View):
         if course_code is None or len(course_code) != 3:
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'error': CourseEditError(
@@ -66,7 +66,7 @@ class CoursesCreate(View):
         if course_name is None:
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'error': CourseEditError(
