@@ -111,7 +111,7 @@ class UserEdit(View):
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
-                    'error': UserEditError('Incorrect password', UserEditError.Place.PASSWORD),
+                    'error': UserEditError('Incorrect password', UserEditPlace.PASSWORD),
                 })
 
             if len(fields['new_password']) < 8:
@@ -119,7 +119,7 @@ class UserEdit(View):
                     'navbar_items': AdminItems.items_iterable(),  # TODO change based on user type
                     'self': user,
                     'edit': to_edit,
-                    'error': UserEditError('New Password needs to be 8 or more characters.', UserEditError.Place.PASSWORD),
+                    'error': UserEditError('New Password needs to be 8 or more characters.', UserEditPlace.PASSWORD),
                 })
 
             LoginUtility.update_password(to_edit, fields['new_password'])

@@ -15,7 +15,10 @@ class TASAcceptanceTestCase(Generic[E], TestCase):
         if msg is None:
             msg = f'Context did not contain message {has}'
 
-        self.assertTrue(has in MessageQueue.get(resp.client.session), msg=msg)
+        self.assertTrue(
+            has in MessageQueue.get(resp.client.session),
+            msg=f'{msg}\nMessage queue had these items:{MessageQueue.get(resp.client.session)}'
+        )
 
     def assertContextVar(self, resp, var_name: str) -> object:
         ret = resp.context.get(var_name)
