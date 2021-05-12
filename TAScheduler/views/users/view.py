@@ -3,7 +3,7 @@ from django.views import View
 from django.shortcuts import render, redirect, reverse
 
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserAPI
@@ -24,7 +24,7 @@ class UserView(View):
             return redirect(reverse('index'))
 
         return render(request, 'pages/users/view.html', context={
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
             'self': user,
             'user': to_display,
