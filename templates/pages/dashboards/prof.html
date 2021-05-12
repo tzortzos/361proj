@@ -1,0 +1,38 @@
+{% extends 'app_base.html' %}
+
+{% comment %}
+
+Context:
+- message_count: int        number of messages in inbox
+- course: List[Course]      Courses assigned to me
+
+{% endcomment %}
+
+{% block application_pane %}
+    <div class="row h-100">
+        <div class="col-12 mb-3 mt-2" >
+            <h1>
+                {{ self.f_name }} {{ self.l_name }}
+                {% if self.f_name == '' and self.l_name == '' %}
+                    {{ self.username }}
+                {% endif %}
+            </h1>
+        </div>
+        {# message count #}
+
+        <div class="col-12 mb-3" >
+            <h3>inbox: {{ message_count }}</h3>
+        </div>
+        {# my courses #}
+
+        <div class="col-12 mb-3" >
+            <h3>my courses</h3>
+            <div class="list-group">
+                {% for course in courses %}
+                    {% include 'partials/list_row/course.html' with course=course self=self noextrainfo=True only %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
