@@ -22,7 +22,7 @@ class CoursesDirectory(View):
 
         return render(request, 'pages/courses/directory.html', {
             'self': user,
-            'navbar_items': AllItems.for_type(UserType.ADMIN).without(AllItems.COURSES).iter(),
+            'navbar_items': AllItems.for_type(user.type).without(AllItems.COURSES).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'courses': courses,

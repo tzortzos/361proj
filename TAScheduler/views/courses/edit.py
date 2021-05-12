@@ -37,7 +37,7 @@ class CoursesEdit(View):
 
         return render(request, 'pages/courses/edit_create.html', {
             'self': user,
-            'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'edit': course
@@ -72,7 +72,7 @@ class CoursesEdit(View):
         def render_error(error: CourseEditError):
             return render(request, 'pages/courses/edit_create.html', {
                 'self': user,
-                'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'edit': course,

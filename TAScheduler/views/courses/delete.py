@@ -37,7 +37,7 @@ class CoursesDelete(View):
 
         return render(request, 'pages/courses/delete.html', {
             'self': user,
-            'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'course': course,

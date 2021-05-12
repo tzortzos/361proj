@@ -28,7 +28,7 @@ class CoursesView(View):
 
         return render(request, 'pages/courses/view.html', {
             'self': user,
-            'navbar_items': AllItems.for_type(UserType.ADMIN).iter(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'course': course,
