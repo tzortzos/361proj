@@ -121,10 +121,10 @@ class UserEdit(View):
                 })
 
             if fields['old_password'] is None or str(to_edit.password) != fields['old_password']:
-                return render_error(UserEditError('Incorrect password', UserEditError.Place.PASSWORD))
+                return render_error(UserEditError('Incorrect password', UserEditPlace.PASSWORD))
 
             if len(fields['new_password']) < 8:
-                return render_error(UserEditError('New Password needs to be 8 or more characters.', UserEditError.Place.PASSWORD))
+                return render_error(UserEditError('New Password needs to be 8 or more characters.', UserEditPlace.PASSWORD))
 
             LoginUtility.update_password(to_edit, fields['new_password'])
             MessageQueue.push(request.session, Message('Password Updated'))
