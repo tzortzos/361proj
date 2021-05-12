@@ -9,7 +9,7 @@ from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import SectionEditPlace, SectionEditError
 from TAScheduler.models import User, UserType, Course
 
@@ -28,7 +28,7 @@ class SectionsCreate(View):
 
         return render(request, 'pages/sections/edit_create.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
 
             'courses': Course.objects.all(),
             'professors': User.objects.filter(type=UserType.PROF),
@@ -59,7 +59,7 @@ class SectionsCreate(View):
         if course is None:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),
@@ -71,7 +71,7 @@ class SectionsCreate(View):
         if section_code is None:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),
@@ -89,7 +89,7 @@ class SectionsCreate(View):
         except IntegrityError:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),

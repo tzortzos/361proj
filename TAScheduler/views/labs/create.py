@@ -7,7 +7,7 @@ from string import digits
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.models import Section
 from TAScheduler.viewsupport.errors import LabEditPlace, LabEditError
 from TAScheduler.ClassDesign.LabAPI import LabAPI, Lab
@@ -33,7 +33,7 @@ class LabsCreate(View):
 
         return render(request, 'pages/labs/edit_create.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'sections': Section.objects.all(),
@@ -63,7 +63,7 @@ class LabsCreate(View):
         def render_error(error: LabEditError):
             return render(request, 'pages/labs/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'sections': Section.objects.all(),

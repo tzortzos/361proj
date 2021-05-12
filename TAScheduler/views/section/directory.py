@@ -6,7 +6,7 @@ from typing import Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.SectionAPI import Section
 from TAScheduler.viewsupport.message import MessageQueue
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 
 
 class SectionsDirectory(View):
@@ -18,7 +18,7 @@ class SectionsDirectory(View):
 
         return render(request, 'pages/sections/directory.html', {
             'self': user,
-            'navbar_items': AdminItems.SECTIONS.items_iterable_except(),
+            'navbar_items': AllItems.for_type(user.type).without(AllItems.SECTIONS).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'sections': list(Section.objects.all()),

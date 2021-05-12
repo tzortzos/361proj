@@ -6,7 +6,7 @@ from typing import List, Union
 from TAScheduler.models import Skill
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.viewsupport.message import Message, MessageQueue
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 
 
 class SkillsCreate(View):

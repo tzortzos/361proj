@@ -7,9 +7,8 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.errors import UserEditError, UserEditPlace
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.models import Skill
-
 
 # Obviously just a stub, needed to make login acceptance tests pass.
 class UserEdit(View):
@@ -34,11 +33,9 @@ class UserEdit(View):
             return redirect(reverse('index'))
 
         return render(request, 'pages/users/edit_create.html', {
-            'navbar_items': AdminItems.items_iterable(),  # TODO Change based on user type later
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'self': user,
             'edit': to_edit,
-
-            'skills': list(Skill.objects.all()),
         })
 
     def post(self, request: HttpRequest, user_id: int):
@@ -115,7 +112,7 @@ class UserEdit(View):
                     Message('You may not change another users password', Message.Type.ERROR)
                 )
                 return render(request, 'pages/users/edit_create.html', {
-                    'navbar_items': AdminItems.items_iterable(),
+                    'navbar_items': AllItems.for_type(user.type).iter(),
                     'self': user,
                     'edit': to_edit,
                 })

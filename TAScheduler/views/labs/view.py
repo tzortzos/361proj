@@ -5,7 +5,7 @@ from typing import Union
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.ClassDesign.LabAPI import LabAPI
 
 class LabsView(View):
@@ -27,7 +27,7 @@ class LabsView(View):
 
         return render(request, 'pages/labs/view.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'lab': lab,

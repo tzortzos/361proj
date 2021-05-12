@@ -6,7 +6,7 @@ from typing import List, Union, Iterable
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.ClassDesign.CourseAPI import CourseAPI
 from TAScheduler.models import Course
 
@@ -22,7 +22,7 @@ class CoursesDirectory(View):
 
         return render(request, 'pages/courses/directory.html', {
             'self': user,
-            'navbar_items': AdminItems.COURSES.items_iterable_except(),
+            'navbar_items': AllItems.for_type(user.type).without(AllItems.COURSES).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'courses': courses,

@@ -3,9 +3,6 @@ from django.views import View
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from typing import List
 
-from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.message import MessageQueue
-
 # Reexport Views from Submodules
 from TAScheduler.views.login import Login
 from TAScheduler.views.logout import Logout

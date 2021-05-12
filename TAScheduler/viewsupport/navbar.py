@@ -1,6 +1,8 @@
+from __future__ import annotations
 from django.shortcuts import reverse
 from TAScheduler.viewsupport.icons import IconItem
-from typing import Union, Optional, Iterable
+from TAScheduler.models import UserType
+from typing import Union, Optional, Iterable, Callable
 from enum import Enum
 
 
@@ -47,47 +49,77 @@ class NavbarItem:
             return self.icon.classes()
 
 
-class AdminItems(Enum):
+class AllItems(Enum):
     """Represents exactly one of the possible menu items for an admin,
     intended to be used as an iterable"""
     HOME = 0
-    USERS = 1
-    COURSES = 2
-    SECTIONS = 3
-    LABS = 4
-    SKILLS = 5
-
-    def get_item(self):
-        if self == AdminItems.HOME:
-            return NavbarItem('home', reverse('index'), icon='house-door-fill')
-        elif self == AdminItems.USERS:
-            return NavbarItem('user directory', reverse('users-directory'), icon='people-fill')
-        elif self == AdminItems.COURSES:
-            return NavbarItem('courses', reverse('courses-directory'), icon='text-paragraph')
-        elif self == AdminItems.SECTIONS:
-            return NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')
-        elif self == AdminItems.LABS:
-            return NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')
-        elif self == AdminItems.SKILLS:
-            return NavbarItem('skills', reverse('skills-directory'), icon='award-fill')
-
-    def map_disable(self):
-        """
-        returns a function to be used in map which will call get item for each
-        AdminItem passed in, but disable in the case that that item is self
-        """
-        return lambda a : a.get_item() if a != self else a.get_item().disable()
-
-    def items_iterable_except(self) -> Iterable[NavbarItem]:
-        """
-        Iterate over all AdminItems values, with the one equal to self disabled
-        """
-        return map(self.map_disable(), iter(AdminItems))
+    MAIL = 1
+    USERS = 2
+    COURSES = 3
+    SECTIONS = 4
+    LABS = 5
+    SKILLS = 6
 
     @classmethod
-    def items_iterable(cls) -> Iterable[NavbarItem]:
+    def for_type(cls, user_type: Union[UserType, str]):
         """
-        Iterate over all AdminItems values, with none disabled.
-        """
-        return map(lambda a: a.get_item(), iter(cls))
+        Create a new (partially applied) iterator to get the list of navbar items.
 
+        can be used like:
+        AllItems.for_type(UserType.ADMIN).without(AllItems.MAIL).iter()
+
+        or
+        AllItems.for_type(UserType.TA).iter()
+        """
+
+        if type(user_type) is str:
+            user_type = UserType.from_str(user_type)
+
+        items = {
+            AllItems.HOME: ([], NavbarItem('home', reverse('index'), icon='house-door-fill')),
+            AllItems.MAIL: ([], NavbarItem('inbox', reverse('index'), icon='mailbox')),  # TODO change me to final view name
+            AllItems.USERS: ([], NavbarItem('user directory', reverse('users-directory'), icon='people-fill')),
+            AllItems.COURSES: ([], NavbarItem('courses', reverse('courses-directory'), icon='text-paragraph')),
+            AllItems.SECTIONS: ([], NavbarItem('course sections', reverse('sections-directory'), icon='kanban-fill')),
+            AllItems.LABS: ([], NavbarItem('labs', reverse('labs-directory'), icon='bar-chart-fill')),
+            AllItems.SKILLS: ([UserType.ADMIN], NavbarItem('skills', reverse('skills-directory'), icon='award-fill')),
+        }
+
+        class PartialIterator:
+            """
+            Represents a list of nav items for the current user
+            has items which are not applicable to the current type removed
+            has the option to select a current page
+            """
+
+            def __init__(self, partial):
+                self._part = partial
+                self._except = None
+
+            @staticmethod
+            def __map_disable__(maybe_disable: Optional[AllItems]) -> Callable[[AllItems], NavbarItem]:
+                if maybe_disable is None:
+                    return lambda i: items[i][1]
+                else:
+                    def disable(i: AllItems) -> NavbarItem:
+                        if maybe_disable == items[i]:
+                            items[i][1].disable()
+                        return items[i][1]
+
+                    return disable
+
+            def without(self, item: AllItems) -> PartialIterator:
+                """Disable the page item that you are currently on"""
+                self._except = item
+                return self
+
+            def iter(self) -> Iterable[NavbarItem]:
+                """Return the final iterable of items for the user type"""
+                return map(PartialIterator.__map_disable__(self._except), self._part)
+
+        # Return the partially applied iterator class defined above
+        return PartialIterator(
+            filter(
+                lambda a: items[a][0] is [] or user_type in items[a][0],
+            )
+        )
