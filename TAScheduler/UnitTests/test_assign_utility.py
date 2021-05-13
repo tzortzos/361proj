@@ -70,3 +70,15 @@ class TestAssignUtility(TestCase):
         self.assertTrue(AssignUtility.remove_ta_from_lab(self.user1, self.Lab1))
         self.assertEqual(None, self.Lab1.ta, msg='Expected Lab1 TA to be none after removal.')
 
+    def test_get_ta_live_assignments(self):
+        test1 = [(3,2), (1,1)]
+        test2 = [(1,1), (3,2)]
+        test3 = [(3,1), (4,2)]
+        self.assertTrue(AssignUtility.get_ta_live_assignments(self.section1,test1))
+        self.assertTrue(AssignUtility.get_ta_live_assignments(self.section1,test2))
+        self.assertFalse(AssignUtility.get_ta_live_assignments(self.section1,test3))
+        ids = []
+        for user in self.section1.tas.all():
+            ids.append(user.id)
+        self.assertTrue(3 in ids, msg='Expected user id 3 in this sections tas.')
+        self.assertTrue(4 in ids, msg='Expected user id 4 in this sections tas.')

@@ -41,7 +41,9 @@ class AssignUtility:
 
     @staticmethod
     def remove_ta_from_section(user: User, section: Section) -> bool:
-
+        """
+        Removes a TA from a section
+        """
         qs = Assignment.objects.filter(ta=user, section=section)
 
         if len(qs) == 1:
@@ -66,7 +68,9 @@ class AssignUtility:
 
     @staticmethod
     def remove_ta_from_lab(user: User, lab: Lab) -> bool:
-
+        """
+        Removes a TA from a particular lab if the TA was assigned, else returns false
+        """
         if user.type is UserType.TA and lab.ta is not None:
             lab.ta = None
             return True
@@ -100,9 +104,23 @@ class AssignUtility:
             return False
 
     @staticmethod
-    def get_ta_live_assignments(section: Section, lab_list: List[Tuple[int,int]]) -> bool:
+    def get_ta_live_assignments(section: Section, id_max: List[Tuple[int,int]]) -> bool:
         """
         Takes a list of tuples of (user id, actual # assigns) and checks the status against the database,
         determines if any updates needed, and does the update on each user.
         """
-        pass
+        current = []
+        for ta in list(section.tas.all()):
+            value = Assignment.objects.get(ta=ta, section=section).max_labs
+            current.append((ta.id, value))
+        current.sort()
+        id_max.sort()
+        result = current == id_max
+        if result:
+            return True
+        else:
+            section.tas.clear()
+            for unit in id_max:
+                user = User.objects.get(id=unit[0])
+                Assignment.objects.create(ta=user, section=section, max_labs=unit[1])
+            return False
