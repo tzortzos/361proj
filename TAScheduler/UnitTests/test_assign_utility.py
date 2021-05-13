@@ -24,7 +24,8 @@ class TestAssignUtility(TestCase):
         self.code4 = str(uuid.uuid4())[:3]
         self.Lab1 = Lab.objects.create(code=self.code3, section=self.section1, ta=self.user1)
         self.Lab2 = Lab.objects.create(code=self.code4, section=self.section1, ta=self.user2)
-        self.Lab3 = Lab.objects.create(code=str(uuid.uuid4())[:3], section=self.section1)
+        self.code5 = str(uuid.uuid4())[:3]
+        self.Lab3 = Lab.objects.create(code=self.code5, section=self.section1)
 
     def test_assign_prof_to_section(self):
         self.assertTrue(AssignUtility.assign_prof_to_section(self.user3,self.section1))
