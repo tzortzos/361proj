@@ -22,9 +22,13 @@ class SkillsUtility:
         return True
 
     def delete_skill(skill_id: int) -> bool:
+        """
+        Deletes a skill from the global list of skills that the CS department solicts
+        """
 
         try:
-            skill = Skill.objects.get(id=skill_id)
+            Skill.objects.get(id=skill_id).delete()
+            
             return True
         except Skill.DoesNotExist:
             return False
