@@ -1,5 +1,6 @@
 from django.shortcuts import reverse, redirect
 from django.test import Client
+from django.contrib.sessions.backends.base import SessionBase
 
 from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.models import User, UserType, Skill
@@ -8,8 +9,8 @@ from TAScheduler.viewsupport.message import Message, MessageQueue
 class SkillsCreate(TASAcceptanceTestCase[()]):
 
     def setUp(self):
-        self.client = Client
-        self.session = self.client.session
+        self.client = Client()
+        self.session: SessionBase = self.client.session
 
         self.user_admin = User.objects.create(
             username='lnahnan',
