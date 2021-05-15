@@ -33,13 +33,6 @@ class SkillsDelete(TASAcceptanceTestCase[object]):
     def test_delete_exiting(self):
         resp = self.client.get(self.url, {})
 
-        self.assertContainsMessage(
-            resp,
-            Message(
-                f'Skill \'{self.skill.name}\' deleted',
-            )
-        )
-
         self.assertRedirects(resp, reverse('skills-directory'))
 
     def test_delete_nonexistent(self):

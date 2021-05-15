@@ -11,7 +11,7 @@ class SkillsCreate(TASAcceptanceTestCase[object]):
 
     def setUp(self):
         self.client = Client()
-        self.session: SessionBase = self.client.session
+        self.session = self.client.session
 
         self.user_admin = User.objects.create(
             username='lnahnan',
@@ -46,15 +46,17 @@ class SkillsCreate(TASAcceptanceTestCase[object]):
         )
 
     def test_does_not_crash_on_creating_existing_skill(self):
+        Skill.objects.create(name=self.skill_name)
+
         resp = self.client.post(self.url, {
             'new_skill': self.skill_name,
         })
 
         self.assertRedirects(resp, reverse('skills-directory'))
 
-        resp = self.client.post(self.url, {
-            'new_skill': self.skill_name,
-        })
+        # resp = self.client.post(self.url, {
+        #     'new_skill': self.skill_name,
+        # })
 
         self.assertEqual(
             0,

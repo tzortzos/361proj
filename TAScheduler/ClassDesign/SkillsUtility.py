@@ -11,13 +11,23 @@ class SkillsUtility:
         Creates a new skill in the global list of skills that are avaialble to be assigned to course
         or linked to TA
         """
-        if len(skill_name) > 30: return False
+        if len(skill_name) > 30:
+            return False
+
         try:
+            Skill.objects.get(name=skill_name)
+        except Skill.DoesNotExist:
             Skill.objects.create(name=skill_name)
-        except IntegrityError:
-            pass
+
         return True
 
+    def delete_skill(skill_id: int) -> bool:
+
+        try:
+            skill = Skill.objects.get(id=skill_id)
+            return True
+        except Skill.DoesNotExist:
+            return False
 
     @staticmethod
     def add_skill_to_course(skill_id: int, course_id: int) -> bool:

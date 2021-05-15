@@ -19,8 +19,10 @@ class TestSkillsUtility(TestCase):
         self.assertTrue(SkillsUtility.create_skill('Django'))
 
     def test_skill_already_in_list(self):
-
         self.assertTrue(SkillsUtility.create_skill(self.skill1.name))
+
+    def test_delete_skill(self):
+        self.assertTrue(SkillsUtility.delete_skill(self.skill2.id))
 
     def test_add_skill_to_course(self):
         self.assertTrue(SkillsUtility.add_skill_to_course(self.skill1.id ,self.course1.id))
