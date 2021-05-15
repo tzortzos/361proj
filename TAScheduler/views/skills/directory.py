@@ -27,5 +27,5 @@ class SkillsDirectory(View):
             'navbar_items': AllItems.for_type(user.type).without(AllItems.SKILLS).iter(),
             'message': MessageQueue.drain(request.session),
 
-            'skills': list(Skill.objects.all()),
+            'skills': list(Skill.objects.order_by('name').all()),
         })

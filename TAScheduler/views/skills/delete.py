@@ -12,4 +12,16 @@ from TAScheduler.viewsupport.navbar import AllItems
 class SkillsDelete(View):
 
     def get(self, request: HttpRequest, skill_id: int) -> Union[HttpResponse, HttpResponseRedirect]:
+        user = LoginUtility.get_user_and_validate_by_user_id(
+            request.session,
+            [UserType.ADMIN],
+            reverse('index'),
+            Message('You do not have permission to edit skills', Message.Type.ERROR),
+        )
+
+        if type(user) is HttpResponseRedirect:
+            return user
+
+        # TODO use SkillsUtility to delete the skill, check result to see success
+
         return redirect(reverse('skills-directory'))
