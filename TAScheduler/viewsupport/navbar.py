@@ -102,7 +102,7 @@ class AllItems(Enum):
                     return lambda i: items[i][1]
                 else:
                     def disable(i: AllItems) -> NavbarItem:
-                        if maybe_disable == items[i]:
+                        if maybe_disable == i:
                             items[i][1].disable()
                         return items[i][1]
 
@@ -120,7 +120,7 @@ class AllItems(Enum):
         # Return the partially applied iterator class defined above
         return PartialIterator(
             filter(
-                lambda a: items[a][0] is [] or user_type in items[a][0],
+                lambda a: items[a][0] == [] or user_type in items[a][0],
                 iter(cls),
             )
         )
