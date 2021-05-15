@@ -7,6 +7,7 @@ from TAScheduler.models import Skill
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AllItems
+from TAScheduler.ClassDesign.SkillsUtility import Skill, SkillsUtility
 
 
 class SkillsCreate(View):
@@ -22,12 +23,19 @@ class SkillsCreate(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        new_skill = request.POST.get(key='new_skill', default='')
+        new_skill: str = request.POST.get(key='new_skill', default='')
 
         # Do not try to create empty skills
         if new_skill == '':
             return redirect(reverse('skills-directory'))
 
-        # TODO use SkillsUtility to create the new skill
+        if not SkillsUtility.create_skill(new_skill):
+            MessageQueue.push(
+                request.session,
+                Message(
+                    'A skills name may not be more than 30 characters',
+                    Message.Type.ERROR,
+                )
+            )
 
         return redirect(reverse('skills-directory'))
