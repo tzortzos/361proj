@@ -6,7 +6,8 @@ from TAScheduler.acceptance_tests.acceptance_base import TASAcceptanceTestCase
 from TAScheduler.models import User, UserType, Skill
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
-class SkillsCreate(TASAcceptanceTestCase[()]):
+
+class SkillsCreate(TASAcceptanceTestCase[object]):
 
     def setUp(self):
         self.client = Client()

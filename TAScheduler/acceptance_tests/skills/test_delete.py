@@ -7,7 +7,7 @@ from TAScheduler.models import User, UserType, Skill
 from TAScheduler.viewsupport.message import Message, MessageQueue
 
 
-class SkillsDelete(TASAcceptanceTestCase[()]):
+class SkillsDelete(TASAcceptanceTestCase[object]):
 
     def setUp(self) -> None:
         self.client = Client()
