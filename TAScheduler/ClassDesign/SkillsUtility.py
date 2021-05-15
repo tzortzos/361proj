@@ -19,7 +19,9 @@ class SkillsUtility:
         return True
 
     def delete_skill(skill_id: int) -> bool:
-
+        """
+        Deletes a skill from the global list of skills that the CS department solicts
+        """
         skill = Skill.objects.get(id=skill_id)
         if skill is not None:
             skill.delete()
