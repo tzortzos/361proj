@@ -7,6 +7,9 @@ Skill management for admins:
 Context:
 - skills: List[Skill]
 
+Posts to skills-create view with the following values:
+- new_skill: str
+
 {% endcomment %}
 
 {% block application_pane %}
@@ -44,7 +47,7 @@ Context:
                 <input type="text" class="form-control"
                        id="new_skill" name="new_skill"
                        placeholder="name"
-                       required/>
+                       maxlength="30" required/>
 
                 <input type="submit" class="btn btn-primary" value="create">
 
