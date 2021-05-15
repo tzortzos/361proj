@@ -20,6 +20,14 @@ class SkillsUtility:
             Skill.objects.create(name=skill_name)
 
         return True
+    def delete_skill(skill_id: int) -> bool:
+
+        skill = Skill.objects.get(id=skill_id)
+        if skill is not None:
+            skill.delete()
+            return True
+        else:
+            return False
 
     @staticmethod
     def add_skill_to_course(skill_id: int, course_id: int) -> bool:
