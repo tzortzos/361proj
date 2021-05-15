@@ -32,7 +32,7 @@ class SectionsCreate(View):
 
             'courses': Course.objects.all(),
             'professors': User.objects.filter(type=UserType.PROF),
-            'tas': User.objects.filter(type=UserType.TA),
+            'tas': map(lambda a: (a, 0), User.objects.filter(type=UserType.TA)),
         })
 
     def post(self, request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
