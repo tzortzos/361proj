@@ -6,7 +6,7 @@ from typing import List, Union
 from TAScheduler.models import Skill
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility, UserType
 from TAScheduler.viewsupport.message import Message, MessageQueue
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 
 
 class SkillsDirectory(View):
@@ -24,8 +24,8 @@ class SkillsDirectory(View):
 
         return render(request, 'pages/skills.html', {
             'self': user,
-            'navbar_items': AdminItems.SKILLS.items_iterable_except(),
+            'navbar_items': AllItems.for_type(user.type).without(AllItems.SKILLS).iter(),
             'message': MessageQueue.drain(request.session),
 
-            'skills': list(Skill.objects.all()),
+            'skills': list(Skill.objects.order_by('name').all()),
         })

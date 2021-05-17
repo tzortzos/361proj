@@ -9,7 +9,7 @@ from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.message import Message, MessageQueue
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import SectionEditError, SectionEditPlace
 from TAScheduler.models import User, UserType, Course
 
@@ -37,7 +37,7 @@ class SectionsEdit(View):
 
         return render(request, 'pages/sections/edit_create.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'section': edit,
@@ -91,7 +91,7 @@ class SectionsEdit(View):
         if course is None:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'section': edit,
@@ -106,7 +106,7 @@ class SectionsEdit(View):
         if section_code is None:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'section': edit,
@@ -129,7 +129,7 @@ class SectionsEdit(View):
             edit.refresh_from_db()
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'section': edit,

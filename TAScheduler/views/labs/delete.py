@@ -6,7 +6,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.ClassDesign.LabAPI import LabAPI
 
 class LabsDelete(View):
@@ -36,7 +36,7 @@ class LabsDelete(View):
 
         return render(request, 'pages/labs/view.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'lab': lab,
@@ -56,7 +56,7 @@ class LabsDelete(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabAPI.get_by_id(lab_id)
+        lab = LabAPI.get_lab_section_by_lab_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(
@@ -65,7 +65,7 @@ class LabsDelete(View):
             ))
             return redirect(reverse('labs-directory'))
 
-        LabAPI.delete_by_id(lab_id)
+        LabAPI.delete_lab_section(lab_id)
 
         MessageQueue.push(request.session, Message('Successfully deleted lab section'))
 

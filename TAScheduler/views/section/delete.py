@@ -7,7 +7,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 
 from TAScheduler.ClassDesign.SectionAPI import SectionAPI
 
@@ -36,7 +36,7 @@ class SectionsDelete(View):
 
         return render(request, 'pages/sections/delete.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'to_delete': section,
@@ -61,8 +61,8 @@ class SectionsDelete(View):
 
         if success:
             MessageQueue.push(request.session, Message(
-                f'Successfully deleted Course Section {section.code}'
-                f' for course {section.course.code} {section.course.name}'
+                f'Successfully deleted Section {section.code}'
+                f' of course {section.course.code} {section.course.name}'
             ))
             return redirect(reverse('sections-directory'))
         else:

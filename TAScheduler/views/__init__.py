@@ -3,9 +3,6 @@ from django.views import View
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from typing import List
 
-from TAScheduler.viewsupport.navbar import AdminItems
-from TAScheduler.viewsupport.message import MessageQueue
-
 # Reexport Views from Submodules
 from TAScheduler.views.login import Login
 from TAScheduler.views.logout import Logout
@@ -34,11 +31,18 @@ from TAScheduler.views.courses.directory import CoursesDirectory
 from TAScheduler.views.courses.edit import CoursesEdit
 from TAScheduler.views.courses.view import CoursesView
 
+
+from TAScheduler.views.dashboards import prof
+
+
 from TAScheduler.views.skills.create import SkillsCreate
 from TAScheduler.views.skills.delete import SkillsDelete
 from TAScheduler.views.skills.directory import SkillsDirectory
 
+
 from TAScheduler.views.dashboards import ta
+
+
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 
 class Index(View):
@@ -51,4 +55,8 @@ class Index(View):
         user = LoginUtility.get_user_and_validate_by_user_id(
             request.session
         )
-        return ta.get(request, user)
+
+        if type(user) is HttpResponseRedirect:
+            return user
+
+        return prof.get(request, user)

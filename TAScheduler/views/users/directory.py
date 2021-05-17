@@ -7,7 +7,7 @@ from typing import List, Union
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType, User
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.viewsupport.message import Message, MessageQueue
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 
 
 class UserDirectory(View):
@@ -19,7 +19,7 @@ class UserDirectory(View):
 
         return render(request, 'pages/users/directory.html', {
             'self': user,
-            'navbar_items': AdminItems.USERS.items_iterable_except(),  # TODO change for other user types
+            'navbar_items': AllItems.for_type(user.type).without(AllItems.USERS).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'users': User.objects.iterator(),  # TODO change to use new function on UserAPI

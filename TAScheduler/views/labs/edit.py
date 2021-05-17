@@ -8,7 +8,7 @@ from more_itertools import ilen
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserType, User, UserAPI
 from TAScheduler.viewsupport.message import MessageQueue, Message
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.ClassDesign.LabAPI import LabAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
 from TAScheduler.viewsupport.errors import LabEditError, LabEditPlace
@@ -28,7 +28,7 @@ class LabsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabAPI.get_by_id(lab_id)
+        lab = LabAPI.get_lab_section_by_lab_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(
@@ -39,7 +39,7 @@ class LabsEdit(View):
 
         return render(request, 'pages/labs/edit_create.html', {
             'self': user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(user.type).iter(),
             'messages': MessageQueue.drain(request.session),
 
             'edit': lab,
@@ -62,7 +62,7 @@ class LabsEdit(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        lab = LabAPI.get_by_id(lab_id)
+        lab = LabAPI.get_lab_section_by_lab_id(lab_id)
 
         if lab is None:
             MessageQueue.push(request.session, Message(
@@ -80,7 +80,7 @@ class LabsEdit(View):
         def render_error(error: LabEditError):
             return render(request, 'pages/labs/edit_create.html', {
                 'self': user,
-                'navbar_items': AdminItems.items_iterable(),
+                'navbar_items': AllItems.for_type(user.type).iter(),
                 'messages': MessageQueue.drain(request.session),
 
                 'sections': Section.objects.all(),

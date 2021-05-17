@@ -27,6 +27,8 @@ class CourseDeletes(TASAcceptanceTestCase[CourseEditError]):
             name='DSA',
         )
 
+        self.course = Course.objects.create(code='351', name='DSA')
+
         # Set current user
         self.session['user_id'] = self.admin_user.id
         self.session.save()

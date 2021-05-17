@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import UserAPI, UserType
-from TAScheduler.viewsupport.navbar import AdminItems
+from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import UserEditError, UserEditPlace
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.ClassDesign.Util import Util
@@ -22,6 +22,11 @@ class UserCreate(View):
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
+            reverse('users-directory'),
+            Message(
+                'You do not have permission to create users',
+                Message.Type.ERROR,
+            )
         )
         if type(maybe_user) is HttpResponseRedirect:
             return maybe_user
@@ -30,7 +35,7 @@ class UserCreate(View):
 
         return render(request, 'pages/users/edit_create.html', {
             'self': maybe_user,
-            'navbar_items': AdminItems.items_iterable(),
+            'navbar_items': AllItems.for_type(maybe_user.type).iter(),
             'new_user_pass': tmp_pass,
             'messages': MessageQueue.drain(request.session),
         })
@@ -39,6 +44,11 @@ class UserCreate(View):
         maybe_user = LoginUtility.get_user_and_validate_by_user_id(
             request.session,
             [UserType.ADMIN],
+            reverse('users-directory'),
+            Message(
+                'You do not have permission to create users',
+                Message.Type.ERROR,
+            )
         )
         if type(maybe_user) is HttpResponseRedirect:
             return maybe_user
