@@ -44,7 +44,10 @@ class SectionsEdit(View):
 
             'courses': Course.objects.all(),
             'professors': User.objects.filter(type=UserType.PROF),
-            'tas': User.objects.filter(type=UserType.TA),
+            'tas': map(
+                lambda a: (0, a),
+                User.objects.filter(type=UserType.TA),
+            ),
         })
 
     def post(self, request: HttpRequest, section_id: int) -> Union[HttpResponse, HttpResponseRedirect]:
@@ -73,7 +76,15 @@ class SectionsEdit(View):
         lecture_days = ''.join(request.POST.getlist('lecture_days', []))
         lecture_time = request.POST.get('lecture_time', None)
         instructor_id = request.POST.get('professor_id', None)
-        ta_ids = request.POST.getlist('ta_ids', [])
+        # ta_ids = request.POST.getlist('ta_ids', [])
+
+        # Get all the tas that were assigned to this section with a max greater than 0
+        ta_ids = list(map(
+                lambda ta: (
+                    request.POST.get(key=f'ta_{ta.id}', default=0)
+                ),
+                User.objects.filter(type=UserType.TA),
+            ))
 
         course = CourseAPI.get_course_by_course_id(course_id)
 
@@ -87,7 +98,7 @@ class SectionsEdit(View):
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),
-                'tas': User.objects.filter(type=UserType.TA),
+                'tas': ta_ids,
 
                 'error': SectionEditError('You cannot remove a course from this section', SectionEditPlace.COURSE),
             })
@@ -102,7 +113,7 @@ class SectionsEdit(View):
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),
-                'tas': User.objects.filter(type=UserType.TA),
+                'tas': ta_ids,
 
                 'error': SectionEditError('All sections must have a 3 digit code', SectionEditPlace.CODE),
             })
@@ -125,7 +136,7 @@ class SectionsEdit(View):
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),
-                'tas': User.objects.filter(type=UserType.TA),
+                'tas': ta_ids,
 
                 'error': SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE),
             })
@@ -154,9 +165,7 @@ class SectionsEdit(View):
 
         section.tas.clear()
 
-        # TODO replace with AssignUtility (?) methods when implemented
-        for ta in tas:
-            section.tas.add(ta)
+
 
         section.save()
 
