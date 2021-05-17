@@ -88,6 +88,17 @@ class AssignUtility:
         response = False if max_labs <= labs_assigned else True
         return response
 
+    @staticmethod
+    def get_ta_assign_number(user: User, section: Section) -> int:
+        """
+        Gets the max assignments value for a user, or 0 if they are not assigned to this course
+        """
+
+        try:
+            return Assignment.objects.get(ta=user, section=section).max_labs
+        except Assignment.DoesNotExist:
+            return 0
+
 
     @staticmethod
     def update_ta_assign_number(user: User, section: Section, new_max_lab: int) -> bool:
@@ -120,7 +131,8 @@ class AssignUtility:
             return True
         else:
             section.tas.clear()
-            for unit in id_max:
-                user = User.objects.get(id=unit[0])
-                Assignment.objects.create(ta=user, section=section, max_labs=unit[1])
+            for user_id, max_labs in id_max:
+                if int(max_labs) > 0:
+                    user = User.objects.get(id=user_id)
+                    Assignment.objects.create(ta=user, section=section, max_labs=max_labs)
             return False

@@ -2,12 +2,13 @@ from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.shortcuts import render, redirect, reverse
-from typing import List, Union
+from typing import List, Union, Tuple, Iterable
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
+from TAScheduler.ClassDesign.AssignUtility import AssignUtility
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import SectionEditPlace, SectionEditError
@@ -52,33 +53,34 @@ class SectionsCreate(View):
         lecture_days = ''.join(request.POST.getlist('lecture_days', []))
         lecture_time = request.POST.get('lecture_time', None)
         instructor_id = request.POST.get('professor_id', None)
-        ta_ids = request.POST.getlist('ta_ids', [])
+
+        ta_ids: List[Tuple[int, int]] = list(map(
+            lambda ta: (
+                ta,
+                request.POST.get(key=f'ta_{ta.id}_count', default=0),
+            ),
+            User.objects.filter(type=UserType.TA),
+        ))
 
         course = CourseAPI.get_course_by_course_id(course_id)
 
-        if course is None:
+        def render_error(error: SectionEditError) -> HttpResponse:
             return render(request, 'pages/sections/edit_create.html', {
                 'self': user,
                 'navbar_items': AllItems.for_type(user.type).iter(),
 
                 'courses': Course.objects.all(),
                 'professors': User.objects.filter(type=UserType.PROF),
-                'tas': User.objects.filter(type=UserType.TA),
+                'tas': ta_ids,
 
-                'error': SectionEditError('You must select a course for this section', SectionEditPlace.COURSE),
+                'error': error,
             })
+
+        if course is None:
+            return render_error(SectionEditError('You must select a course for this section', SectionEditPlace.COURSE))
 
         if section_code is None:
-            return render(request, 'pages/sections/edit_create.html', {
-                'self': user,
-                'navbar_items': AllItems.for_type(user.type).iter(),
-
-                'courses': Course.objects.all(),
-                'professors': User.objects.filter(type=UserType.PROF),
-                'tas': User.objects.filter(type=UserType.TA),
-
-                'error': SectionEditError('You must input a 3 digit section code', SectionEditPlace.CODE),
-            })
+            return render_error(SectionEditError('You must input a 3 digit section code', SectionEditPlace.CODE))
 
 
         try:
@@ -87,16 +89,7 @@ class SectionsCreate(View):
             #      the relevant information in this case.
             section_id: int = SectionAPI.create_course_section(section_code, course)
         except IntegrityError:
-            return render(request, 'pages/sections/edit_create.html', {
-                'self': user,
-                'navbar_items': AllItems.for_type(user.type).iter(),
-
-                'courses': Course.objects.all(),
-                'professors': User.objects.filter(type=UserType.PROF),
-                'tas': User.objects.filter(type=UserType.TA),
-
-                'error': SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE),
-            })
+            return render_error(SectionEditError('A section already exists for this course with that code', SectionEditPlace.CODE))
 
 
         # TODO Replace with CourseSectionAPI methods when complete
@@ -117,11 +110,8 @@ class SectionsCreate(View):
             if instructor is not None:
                 section.prof = instructor
 
-        tas = list(filter(lambda a: a is not None, map(UserAPI.get_user_by_user_id, ta_ids)))
-
-        for ta in tas:
-            section.tas.add(ta)
-
+        section.save()
+        AssignUtility.get_ta_live_assignments(section, list(map(lambda a: (a[0].id, a[1]), ta_ids)))
         section.save()
 
         return redirect(reverse('sections-view', args=(section_id,)))

@@ -2,12 +2,13 @@ from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.shortcuts import render, redirect, reverse
-from typing import List, Union
+from typing import List, Union, Tuple
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
 from TAScheduler.ClassDesign.UserAPI import User, UserType, UserAPI
 from TAScheduler.ClassDesign.CourseAPI import Course, CourseAPI
 from TAScheduler.ClassDesign.SectionAPI import Section, SectionAPI
+from TAScheduler.ClassDesign.AssignUtility import Assignment, AssignUtility
 from TAScheduler.viewsupport.message import Message, MessageQueue
 from TAScheduler.viewsupport.navbar import AllItems
 from TAScheduler.viewsupport.errors import SectionEditError, SectionEditPlace
@@ -45,7 +46,7 @@ class SectionsEdit(View):
             'courses': Course.objects.all(),
             'professors': User.objects.filter(type=UserType.PROF),
             'tas': map(
-                lambda a: (0, a),
+                lambda a: (a, AssignUtility.get_ta_assign_number(a, edit)),
                 User.objects.filter(type=UserType.TA),
             ),
         })
@@ -79,9 +80,10 @@ class SectionsEdit(View):
         # ta_ids = request.POST.getlist('ta_ids', [])
 
         # Get all the tas that were assigned to this section with a max greater than 0
-        ta_ids = list(map(
+        ta_ids: List[Tuple[int, int]] = list(map(
                 lambda ta: (
-                    request.POST.get(key=f'ta_{ta.id}', default=0)
+                    ta,
+                    request.POST.get(key=f'ta_{ta.id}_count', default=0),
                 ),
                 User.objects.filter(type=UserType.TA),
             ))
@@ -161,11 +163,11 @@ class SectionsEdit(View):
             instructor = None
         section.prof = instructor
 
-        tas = list(filter(lambda a: a is not None, map(UserAPI.get_user_by_user_id, ta_ids)))
-
-        section.tas.clear()
-
-
+        tas_changed = AssignUtility.get_ta_live_assignments(section, list(map(lambda a: (a[0].id, a[1]), ta_ids)))
+        if tas_changed:
+            MessageQueue.push(request.session, Message(
+                'Updated TA assignments'
+            ))
 
         section.save()
 
