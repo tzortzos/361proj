@@ -1,6 +1,6 @@
 from __future__ import annotations
 from django.db import models
-from typing import Optional
+from typing import Optional, List, Tuple, Iterable
 
 
 
@@ -103,6 +103,15 @@ class Section(models.Model):
     class Meta:
         # Adds a unique constraint combination on the two fields
         unique_together = ['code', 'course']
+
+    def get_assignment_spec(self) -> Iterable[Tuple[User, int]]:
+        return map(
+            lambda ass: (
+                ass.ta,
+                ass.max_labs
+            ),
+            Assignment.objects.filter(section=self)
+        )
 
     def __str__(self):
         if self.prof is not None:

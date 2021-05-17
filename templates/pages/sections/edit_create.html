@@ -8,7 +8,8 @@
     - section: Optional[Section]        The section to be edited, if not being created from scratch
     - courses: List[(Course, int)]      All courses and how many sections they currently have
     - professors: List[User]            A list of User objects that may be assigned to this section as it's professor
-    - tas: List[User]                   A list of User objects that may be assigned to this section as it's tas
+    - tas: List[(User, int)]            A list of User objects that may be assigned to this section as it's tas
+                                        The second item in the tuple is the current number of items.
     - error: Optional[SectionError]     Add a server side validation error to this rendering of the template
 
     POST variables:
@@ -17,7 +18,9 @@
     - lecture_days: List[str] from set [ M, T, W, H, F ]
     - lecture_time: str
     - professor_id: int     (-1 if none selected)
-    - ta_ids: List[int]
+
+    - for each ta passed in above return the new max assignments in the follwing format:
+      ta_{{ ta.id }}: int
 {% endcomment %}
 
 {% block application_pane %}
@@ -158,18 +161,21 @@
             {# TA selection #}
             <div class="col-12 col-md-6 mb-3">
                 <div class="input-group mb-3 d-flex flex-column">
-                    <p class="mb-1">Select TAs</p>
+                    <p class="mb-1">
+                        Assign TAs <br/>
+                        <small>maximum lab sections</small>
+                    </p>
                     <div class="list-group">
-                        {% for ta in tas %}
-                            <label class="list-group-item">
-                                <input type="checkbox" class="form-check-input me-1"
-                                       name="ta_ids" id="{{ ta.id }}" value="{{ ta.id }}"
-                                        {% if ta in section.tas.all %}
-                                            checked
-                                        {% endif %}
-                                >
-                                <strong>{{ ta.username }}</strong> {{ ta.f_name }} {{ ta.l_name }}
-                            </label>
+                        {% for ta, cur_max in tas %}
+                            <div class="list-group-item d-flex align-items-center">
+                                <label class="pe-1 me-auto">
+                                    <strong>{{ ta.username }}</strong><br/>
+                                    {{ ta.f_name }} {{ ta.l_name }}
+                                </label>
+                                <input type="number" class="form-control" style="width: 25%!important;"
+                                       name="ta_{{ ta.id }}_count" id="ta_{{ ta.id }}_count"
+                                       value="{{ cur_max }}">
+                            </div>
                         {% endfor %}
                     </div>
                 </div>

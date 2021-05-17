@@ -108,20 +108,23 @@ Takes the following context:
             {# Assignment information / links to info pages #}
             {% if not noassignments %}
                 <div class="col-12 col-md-6 mb-3">
-                    {% if section.instructor %}
+                    {% if section.prof %}
                         <h6 class="card-title">Professor</h6>
-                        <a href="{% url 'users-view' section.instructor.id %}">
-                            {{ section.instructor.username }}
+                        <a href="{% url 'users-view' section.prof.id %}">
+                            {{ section.prof.username }}
                         </a>
                     {% endif %}
                 </div>
 
-                <div class="col-12 col-md-6 mb-3">
+                <div class="col-12 col-md-6 mb-3 d-flex flex-column">
                     <h6 class="card-title">TAs</h6>
-                    {% for ta in section.tas.all %}
-                        <a href="{% url 'users-view' ta.id %}">
-                            {{ ta.username }}
-                        </a>
+                    {% for ta, max_labs in section.get_assignment_spec %}
+                        <span class="d-flex justify-content-between">
+                            <a href="{% url 'users-view' ta.id %}">
+                                {{ ta.username }}
+                            </a>
+                            {{ max_labs }}
+                        </span>
 
                     {% endfor %}
                 </div>
