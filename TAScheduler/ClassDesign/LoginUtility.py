@@ -63,6 +63,10 @@ class LoginUtility:
 
             if redirect_to is None:
                 redirect_to = redirect(reverse('index'))
+
+            if type(redirect_to) is str:
+                redirect_to = redirect(redirect_to)
+
             return redirect_to
 
         return user

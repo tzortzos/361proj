@@ -30,11 +30,14 @@ Takes the following context variables:
             {# Information #}
             <a class="btn btn-dark" href="{% url 'labs-view' lab.id %}"><i class="bi bi-info-circle-fill"></i></a>
 
-            {% if self.type == 'A' %}
+            {% if self.type == 'A' or self.type == 'P' %}
 
                 {# Edit #}
                 <a class="btn btn-dark" href="{% url 'labs-edit' lab.id %}"><i class="bi bi-pencil-fill"></i></a>
 
+            {% endif %}
+
+            {% if self.type == 'A' %}
                 {% if not nodelete %}
                     {# Delete #}
                     <a class="btn btn-danger" href="{% url 'labs-delete' lab.id %}"><i class="bi bi-trash-fill"></i></a>

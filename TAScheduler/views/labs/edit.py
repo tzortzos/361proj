@@ -37,6 +37,11 @@ class LabsEdit(View):
             ))
             return redirect(reverse('labs-directory'))
 
+        if UserType.try_from_str(user.type) == UserType.ADMIN:
+            tas = User.objects.filter(type=UserType.TA)
+        else:
+            tas = map(lambda a: a[0], lab.section.get_assignment_spec())
+
         return render(request, 'pages/labs/edit_create.html', {
             'self': user,
             'navbar_items': AllItems.for_type(user.type).iter(),
@@ -45,7 +50,7 @@ class LabsEdit(View):
             'edit': lab,
 
             'sections': Section.objects.all(),
-            'tas': User.objects.filter(type=UserType.TA),
+            'tas': tas,
         })
 
     def post(self, request: HttpRequest, lab_id: int) -> Union[HttpResponse, HttpResponseRedirect]:
@@ -71,6 +76,11 @@ class LabsEdit(View):
             ))
             return redirect(reverse('labs-directory'))
 
+        if UserType.try_from_str(user.type) == UserType.ADMIN:
+            tas = User.objects.filter(type=UserType.TA)
+        else:
+            tas = map(lambda a: a[0], lab.section.get_assignment_spec())
+
         section_id = request.POST.get('section_id', None)
         lab_code = request.POST.get('lab_code', '')
         ta_id = request.POST.get('ta_id', None)
@@ -84,36 +94,37 @@ class LabsEdit(View):
                 'messages': MessageQueue.drain(request.session),
 
                 'sections': Section.objects.all(),
-                'tas': User.objects.filter(type=UserType.TA),
+                'tas': tas,
 
                 'error': error,
             })
 
-        if section_id is None:
-            return render_error(LabEditError('You cannot remove the 3 digit lab code', LabEditPlace.SECTION))
+        if UserType.from_str(user.type) == UserType.ADMIN:
+            if section_id is None:
+                return render_error(LabEditError('You cannot remove the 3 digit lab code', LabEditPlace.SECTION))
 
-        non_digits = ilen((a for a in lab_code if a not in set(digits)))
+            non_digits = ilen((a for a in lab_code if a not in set(digits)))
 
-        if lab_code is None or len(lab_code) != 3 or non_digits > 0:
-            return render_error(LabEditError('You cannot remove the 3 digit lab code', LabEditPlace.CODE))
+            if lab_code is None or len(lab_code) != 3 or non_digits > 0:
+                return render_error(LabEditError('You cannot remove the 3 digit lab code', LabEditPlace.CODE))
 
-        lab.code = lab_code
+            lab.code = lab_code
 
-        section = SectionAPI.get_by_id(section_id)
+            section = SectionAPI.get_by_id(section_id)
 
-        if section is None:
-            return render_error(LabEditError('You cannot remove a section from this lab', LabEditPlace.SECTION))
+            if section is None:
+                return render_error(LabEditError('You cannot remove a section from this lab', LabEditPlace.SECTION))
 
-        lab.section = section
+            lab.section = section
+
+            lab.day = lab_day
+            lab.time = lab_time
 
         if ta_id is not None and ta_id != -1:
             lab.ta = UserAPI.get_user_by_user_id(ta_id)
 
         if ta_id is not None and ta_id == -1:
             lab.ta = None
-
-        lab.day = lab_day
-        lab.time = lab_time
 
         lab.save()
 
