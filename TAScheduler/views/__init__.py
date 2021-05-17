@@ -40,7 +40,7 @@ from TAScheduler.views.skills.delete import SkillsDelete
 from TAScheduler.views.skills.directory import SkillsDirectory
 
 
-from TAScheduler.views.dashboards import ta
+from TAScheduler.views.dashboards import admin as admin_dashboard
 
 
 from TAScheduler.ClassDesign.LoginUtility import LoginUtility
@@ -59,4 +59,4 @@ class Index(View):
         if type(user) is HttpResponseRedirect:
             return user
 
-        return prof.get(request, user)
+        return admin_dashboard.get(request, user)

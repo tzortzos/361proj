@@ -25,26 +25,92 @@ Context:
             <h3>inbox: {{ message_count }}</h3>
         </div>
 
-        {# prof bar #}
-        <div class="progress">
-                {% for course in courses %}
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="course">
-                {% endfor %}
-                professors
-                    </div>
-            <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
-                unassigned classes
+        {# Section Bar #}
+        <div class="col-12 col-md-6 mb-3" >
+            <h4>Sections <small>({{ num_sections }})</small></h4>
+            <div class="d-flex justify-content-between">
+                <span>
+                    Assigned <br/>
+                    <small>{{ section_assigned_percent }}%</small>
+                </span>
+                <span class="text-end">
+                    Unassigned <br/>
+                    <small>{{ section_unassigned_percent }}%</small>
+                </span>
             </div>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width:{{section_assigned_percent}}%;">
+                </div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width:{{section_unassigned_percent}}%;">
+                </div>
+            </div>
+            <small>percent of sections with a professor assigned</small>
         </div>
 
-        {# ta bar #}
-        <div class="progress">
-            <div class="progress-bar progress-bar-success" role="progressbar" style="width:40%">
-                professors
+        {# lab bar #}
+        <div class="col-12 col-md-6 mb-3" >
+            <h4>Labs <small>({{ num_labs }})</small></h4>
+            <div class="d-flex justify-content-between">
+                <span>
+                    Assigned <br/>
+                    <small>{{ lab_assigned_percent }}%</small>
+                </span>
+                <span class="text-end">
+                    Unassigned <br/>
+                    <small>{{ lab_unassigned_percent }}%</small>
+                </span>
             </div>
-            <div class="progress-bar progress-bar-warning" role="progressbar" style="width:10%">
-                unassigned classes
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width:{{lab_assigned_percent}}%;">
+                </div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width:{{lab_unassigned_percent}}%;">
+                </div>
             </div>
+            <small>percent of labs with a ta assigned</small>
+        </div>
+
+        {# Prof Bar #}
+        <div class="col-12 col-md-6 mb-3" >
+            <h4>Professors <small>({{ num_prof }})</small></h4>
+            <div class="d-flex justify-content-between">
+                <span>
+                    Assigned <br/>
+                    <small>{{ prof_assigned_percent }}%</small>
+                </span>
+                <span class="text-end">
+                    Unassigned <br/>
+                    <small>{{ prof_unassigned_percent }}%</small>
+                </span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width:{{prof_assigned_percent}}%;">
+                </div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width:{{prof_unassigned_percent}}%;">
+                </div>
+            </div>
+            <small>percent of professors that are assigned to a section</small>
+        </div>
+
+        {# TA Bar #}
+        <div class="col-12 col-md-6 mb-3" >
+            <h4>TAs <small>({{ num_tas }})</small></h4>
+            <div class="d-flex justify-content-between">
+                <span>
+                    Assigned <br/>
+                    <small>{{ ta_assigned_percent }}%</small>
+                </span>
+                <span class="text-end">
+                    Unassigned <br/>
+                    <small>{{ ta_unassigned_percent }}%</small>
+                </span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width:{{ta_assigned_percent}}%;">
+                </div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width:{{ta_unassigned_percent}}%;">
+                </div>
+            </div>
+            <small>percent of tas that are assigned to a lab</small>
         </div>
     </div>
 
