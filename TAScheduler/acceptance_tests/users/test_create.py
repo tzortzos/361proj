@@ -146,7 +146,7 @@ class TestCreateUserView(TASAcceptanceTestCase[UserEditError]):
             Message.Type.ERROR,
         ))
 
-        old_user = User.objects.get(username='nleverence')
-        self.assertIsNotNone(old_user, 'Did not remove user')
+        with self.assertRaises(ObjectDoesNotExist):
+            User.objects.get(username='nleverence')
 
         self.assertRedirects(resp, reverse('users-directory'))
