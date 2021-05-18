@@ -127,13 +127,15 @@ class UserEdit(View):
             MessageQueue.push(request.session, Message('Password Updated'))
             # Done changing password
 
-        if fields['old_password'] is not None and len(fields['old_password']) > 0 and (fields['new_password'] is None or len(fields['new_password']) == 0):
+        if fields['old_password'] is not None and\
+                len(fields['old_password']) > 0 and\
+                (fields['new_password'] is None or len(fields['new_password']) == 0):
             return render_error(UserEditError('New password can\'t be empty.', UserEditPlace.PASSWORD))
 
         if fields['univ_id'] is None or len(fields['univ_id']) == 0:
             return render_error(UserEditError('You can\'t remove a user\'s username.', UserEditPlace.USERNAME))
 
-        if fields['univ_id'] != to_edit.username:
+        if fields['univ_id'] != to_edit.username and to_edit != user:
             if UserAPI.check_user_type(user) != UserType.ADMIN:
                 return render_error(UserEditError('You cannot change your own username', UserEditPlace.USERNAME))
 
